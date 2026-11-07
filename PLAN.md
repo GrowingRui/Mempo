@@ -271,6 +271,36 @@ Only after the core app works. Each AI call costs a little money, so this breaks
 - [ ] Check sentences the learner writes with a new word, and give feedback
 - [ ] Daily usage limit to keep costs small
 
+### Backlog: next ideas (noted 2026-11-07, not started)
+Pick any of these up whenever we want; each still needs approval before work starts.
+
+**A. Tests for the learning logic** ✅ (done 2026-11-07, waiting for approval)
+- [x] Vitest added (free, open source). `npm test` runs everything once, `npm run test:watch` reruns on every change. Config: `vitest.config.ts` (kept apart from `vite.config.ts`, so no PWA/Tailwind plugins load).
+- [x] 75 tests in `src/lib/*.test.ts` (shared builders in `src/lib/test-helpers.ts`). They aren't part of the website build.
+  - `srs.test.ts`: boxes and intervals, mastered, "not sure" / "don't know", lapses, only the first answer of the day moves a card up, leaving the "Don't know" list after 2 "know" days, history counts, `isDue`, `statusOf`, `nextReview`
+  - `session.test.ts`: daily goal left, session order (reviews → don't know → new), new words only from the chosen level and in a stable order, review / dontknow modes, `requeue` gaps (3–5 and 6–9 cards)
+  - `stats.test.ts`: streak (today not done yet, gaps, longest, across year end), 14-day chart, per-level breakdown
+  - `storage.test.ts`: cleaning saved/restored progress, backup file reading and its error messages, date helpers
+- Checked that the tests catch real mistakes: changing the 60-day interval or the "2 days to leave Don't know" rule makes 4 tests fail.
+- Run `npm test` before pushing changes to the learning logic.
+
+**B. Learning improvements**
+- [ ] **Active recall mode** (chosen by the user): its own section/button, separate from the normal swipe study. Instead of judging yourself, you have to produce or recognise the answer:
+  - Reverse cards: show 中文 / Español → recall the English word
+  - Listening: play the audio → pick the right word
+  - Can reuse the level test's multiple-choice code (`src/lib/leveltest.ts`)
+- [ ] English definitions on the card back (added at build time from Wiktionary, free)
+- [ ] "Report a translation" button on cards → feeds fixes into `scripts/manual.ts`
+- [ ] Notes for sensitive / offensive words (see decision 5 below)
+- [ ] Daily review cap (e.g. max 100) so a missed week doesn't create a huge pile
+
+**C. Keeping users coming back**
+- [ ] Daily reminder notification (works for installed web apps, iOS 16.4+ too)
+- [ ] Sync across devices (Phase 6), or first a simpler "move to another device" QR code built on the backup file
+- [ ] Privacy-friendly usage stats (e.g. Vercel Analytics, free) to see if people come back
+
+**Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
+
 ---
 
 ## 6. Planned folder structure
