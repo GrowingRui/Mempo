@@ -87,6 +87,12 @@ body,
   min-height: 100%;
 }
 
+/* A card swiped off to the right must not make the page wider (it made the screen jump sideways).
+   Clipped on #root, not body: overflow on body would move to the whole window instead. */
+#root {
+  overflow-x: clip;
+}
+
 body {
   background: linear-gradient(180deg, var(--color-paper) 0%, var(--color-paper-2) 100%) fixed;
   color: var(--color-ink);

@@ -166,6 +166,25 @@ export default function Home({ progress, setProgress, go }: Props) {
         <NavTile onClick={() => go({ name: "words" })} n={index?.counts.total} label="All words" tone="text-ink" />
       </nav>
 
+      <button
+        type="button"
+        onClick={() => go({ name: "recall" })}
+        className="press mt-2.5 flex items-center gap-3 rounded-[20px] border-2 border-line bg-card px-3 py-2.5 text-left hover:border-brand/40"
+      >
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand-ink">
+          <svg viewBox="0 0 24 24" className="size-[22px]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 19.5h5M10.5 22h3" />
+          </svg>
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-display text-lg leading-tight font-extrabold">Recall</span>
+          <span className="block text-[13px] font-semibold text-muted">Test yourself on words you’ve studied</span>
+        </span>
+        <svg viewBox="0 0 24 24" className="size-4 shrink-0 text-muted" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
       {/* Level */}
       <section className="mt-7">
         <div className="mb-2.5 flex items-baseline justify-between gap-2">
@@ -289,6 +308,11 @@ export default function Home({ progress, setProgress, go }: Props) {
               {allSeen && left > 0 ? `You’ve seen every ${settings.level} word. Try another level!` : "All done for today. See you tomorrow!"}
             </p>
           </div>
+        )}
+        {parts.heldBack > 0 && sessionSize > 0 && (
+          <p className="mt-2 text-center text-xs font-semibold text-muted">
+            {plural(parts.heldBack, "more review")} {parts.heldBack === 1 ? "waits" : "wait"} for the next days (limit: {settings.maxReviews} a day).
+          </p>
         )}
         <InstallBanner />
         <p className="mt-4 text-center text-xs font-semibold text-muted">Your progress is saved in this browser.</p>

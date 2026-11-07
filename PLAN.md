@@ -90,7 +90,7 @@ Each file is an array of words, one per line. `public/data/index.json` holds the
 ### User progress format (stored in the browser)
 ```json
 {
-  "settings": { "level": "B2", "dailyNew": 20, "showZh": true, "showEs": true, "swipeKnow": "left" },
+  "settings": { "level": "B2", "dailyNew": 20, "showZh": true, "showEs": true, "showEn": true, "swipeKnow": "left", "theme": "light", "maxReviews": 100 },
   "cards": {
     "b2-0001": { "state": "review", "box": 3, "due": "2026-11-13", "streak": 2, "lapses": 1, "inDontKnow": false }
   },
@@ -284,15 +284,17 @@ Pick any of these up whenever we want; each still needs approval before work sta
 - Checked that the tests catch real mistakes: changing the 60-day interval or the "2 days to leave Don't know" rule makes 4 tests fail.
 - Run `npm test` before pushing changes to the learning logic.
 
-**B. Learning improvements**
-- [ ] **Active recall mode** (chosen by the user): its own section/button, separate from the normal swipe study. Instead of judging yourself, you have to produce or recognise the answer:
-  - Reverse cards: show 中文 / Español → recall the English word
-  - Listening: play the audio → pick the right word
-  - Can reuse the level test's multiple-choice code (`src/lib/leveltest.ts`)
-- [ ] English definitions on the card back (added at build time from Wiktionary, free)
-- [ ] "Report a translation" button on cards → feeds fixes into `scripts/manual.ts`
-- [ ] Notes for sensitive / offensive words (see decision 5 below)
-- [ ] Daily review cap (e.g. max 100) so a missed week doesn't create a huge pile
+**B. Learning improvements** (started 2026-11-07, waiting for approval)
+- [x] **Active recall mode** (chosen by the user): "Recall" button on Home, its own screen (`src/pages/Recall.tsx`, logic in `src/lib/recall.ts`). Three exercises, 15 words a round, only words you've studied, weakest first ("Don't know" → due → low boxes → the rest):
+  - **Meaning → word:** see 中文 / Español, pick the English word from 4 (wrong choices share the level and part of speech, never the same meaning)
+  - **Listen → word:** hear the audio, pick the written word
+  - **Spell it:** see the meaning, a gap-fill example and the first letter, type the word. Forms and spelling variants count; one typo shows "Almost!" but counts as wrong
+  - A Spanish meaning that spells out the answer (secular = secular, aluminio = aluminium) is hidden when Chinese is shown too
+  - It doesn't move cards between boxes. At the end, missed words can be added to "Don't know" with one tap
+- [ ] English definitions on the card back (added at build time from Wiktionary, free). App side done (`en` field, "English" toggle in Settings → Meanings); data comes from `data/dict/kaikki-en-defs.jsonl` (new step in `npm run data:fetch-dicts`), filled in by `npm run data:enrich`
+- [x] "Report a translation" link on the back of the card. No server: it opens a pre-filled GitHub issue on the public repo with what's shown now, the suggestion, and a line ready to paste into `scripts/manual.ts` (`src/lib/report.ts`)
+- [ ] Notes for sensitive / offensive words (see decision 5 below): `scripts/sensitive.ts` (hand-written, shown on the card with an "Offensive" tag on the front). The enrich report lists words whose Wiktionary senses are labelled offensive/vulgar/derogatory
+- [x] Daily review cap: Settings → "Reviews per day" (50 / **100** / 200 / no limit). Today's session takes the most overdue reviews first; the rest wait for the next days. "Reviews due" on Home still lets you do them all
 
 **C. Keeping users coming back**
 - [ ] Daily reminder notification (works for installed web apps, iOS 16.4+ too)

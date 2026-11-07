@@ -4,7 +4,7 @@ import { MAX_BOX, statusOf, type WordStatus } from "../lib/srs";
 import type { CardProgress, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import SpeakButton from "./SpeakButton";
-import { GlossList } from "./WordCard";
+import { GlossList, SensitiveNote } from "./WordCard";
 
 export const STATUS_LABEL: Record<WordStatus, string> = {
   new: "New",
@@ -50,8 +50,10 @@ export default function WordRow({ word, card, settings }: { word: Word; card?: C
       {open && (
         <div className="space-y-4 border-t-2 border-line px-4 pt-3 pb-4">
           {word.phonetic && <p className="text-sm text-muted">/{word.phonetic}/</p>}
-          {settings.showZh && <GlossList label="中文" glosses={word.zh} />}
-          {settings.showEs && <GlossList label="Español" glosses={word.es} />}
+          {word.note && <SensitiveNote note={word.note} />}
+          {settings.showEn && word.en && <GlossList label="English" glosses={word.en} lang="en" />}
+          {settings.showZh && <GlossList label="中文" glosses={word.zh} lang="zh" />}
+          {settings.showEs && <GlossList label="Español" glosses={word.es} lang="es" />}
           {word.examples[0] && (
             <p className="rounded-2xl bg-paper px-3.5 py-2.5 text-[15px] leading-relaxed text-ink/80">
               <Highlight text={word.examples[0].text} terms={terms} />

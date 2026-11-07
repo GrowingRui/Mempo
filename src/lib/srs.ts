@@ -98,3 +98,16 @@ export function nextReview(p: Progress, today = toDay()): { day: string; count: 
   }
   return day ? { day, count } : undefined;
 }
+
+/**
+ * Puts studied words on the "Don't know" list without changing their schedule
+ * (used after an active recall round). Words never studied are skipped.
+ */
+export function markDontKnow(p: Progress, ids: string[]): Progress {
+  const cards = { ...p.cards };
+  for (const id of ids) {
+    const c = cards[id];
+    if (c) cards[id] = { ...c, inDontKnow: true, streak: 0 };
+  }
+  return { ...p, cards };
+}

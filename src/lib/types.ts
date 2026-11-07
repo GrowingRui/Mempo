@@ -20,6 +20,10 @@ export interface Word {
   pos: string[];
   zh: Gloss[];
   es: Gloss[];
+  /** English definitions, grouped like the translations. */
+  en?: Gloss[];
+  /** Note for an offensive or sensitive word: what it means, why it hurts, what to say instead. */
+  note?: string;
   variants?: string[];
   forms?: string[];
   lemma?: string;
@@ -50,8 +54,12 @@ export interface Settings {
   dailyNew: number;
   showZh: boolean;
   showEs: boolean;
+  /** English definitions on the back of the card. */
+  showEn: boolean;
   swipeKnow: SwipeKnow;
   theme: Theme;
+  /** Most reviews in the daily session; 0 = no limit. */
+  maxReviews: number;
 }
 
 export interface DayHistory {

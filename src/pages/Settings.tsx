@@ -71,6 +71,8 @@ const THEMES: { value: Theme; label: string }[] = [
   { value: "system", label: "Auto" },
 ];
 
+const REVIEW_CAPS = [50, 100, 200, 0];
+
 export default function Settings({ progress, setProgress, onBack }: Props) {
   const { settings, cards } = progress;
   const [confirmReset, setConfirmReset] = useState(false);
@@ -140,6 +142,15 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
             { value: "right", label: swipeOption("right") },
           ]}
           onChange={(swipeKnow) => update({ swipeKnow })}
+        />
+      </Section>
+
+      <Section title="Reviews per day" hint="After a break, the oldest reviews come first and the rest wait for the next days. “Reviews due” on Home still lets you do them all.">
+        <Segmented
+          label="Reviews per day"
+          value={String(settings.maxReviews)}
+          options={REVIEW_CAPS.map((n) => ({ value: String(n), label: n ? n : "No limit" }))}
+          onChange={(v) => update({ maxReviews: Number(v) })}
         />
       </Section>
 

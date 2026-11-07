@@ -8,8 +8,10 @@ export const DEFAULT_SETTINGS: Settings = {
   dailyNew: 20,
   showZh: true,
   showEs: true,
+  showEn: true,
   swipeKnow: "left",
   theme: "light",
+  maxReviews: 100,
 };
 
 export function emptyProgress(): Progress {
@@ -28,8 +30,10 @@ function cleanSettings(s: unknown): Settings {
   if (Number.isInteger(s.dailyNew) && s.dailyNew >= 1 && s.dailyNew <= 500) out.dailyNew = s.dailyNew;
   if (typeof s.showZh === "boolean") out.showZh = s.showZh;
   if (typeof s.showEs === "boolean") out.showEs = s.showEs;
+  if (typeof s.showEn === "boolean") out.showEn = s.showEn;
   if (!out.showZh && !out.showEs) out.showZh = out.showEs = true;
   if (s.swipeKnow === "left" || s.swipeKnow === "right") out.swipeKnow = s.swipeKnow;
+  if (Number.isInteger(s.maxReviews) && s.maxReviews >= 0 && s.maxReviews <= 1000) out.maxReviews = s.maxReviews;
   if (s.theme === "light" || s.theme === "dark" || s.theme === "system") out.theme = s.theme;
   return out;
 }

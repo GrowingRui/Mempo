@@ -8,12 +8,13 @@ import type { Progress } from "./lib/types";
 import DontKnow from "./pages/DontKnow";
 import Home from "./pages/Home";
 import LevelTest from "./pages/LevelTest";
+import Recall from "./pages/Recall";
 import Settings from "./pages/Settings";
 import Stats from "./pages/Stats";
 import Study from "./pages/Study";
 import WordList from "./pages/WordList";
 
-export type Screen = { name: "home" } | { name: "study"; mode: SessionMode } | { name: "dontknow" } | { name: "words" } | { name: "test" } | { name: "stats" } | { name: "settings" };
+export type Screen = { name: "home" } | { name: "study"; mode: SessionMode } | { name: "dontknow" } | { name: "words" } | { name: "test" } | { name: "recall" } | { name: "stats" } | { name: "settings" };
 
 export default function App() {
   const [progress, setProgress] = useState<Progress>(loadProgress);
@@ -40,6 +41,8 @@ export default function App() {
           <DontKnow progress={progress} onPractise={() => setScreen({ name: "study", mode: "dontknow" })} onBack={home} />
         ) : screen.name === "test" ? (
           <LevelTest progress={progress} setProgress={setProgress} onExit={home} />
+        ) : screen.name === "recall" ? (
+          <Recall progress={progress} setProgress={setProgress} onExit={home} onStudy={() => setScreen({ name: "study", mode: "today" })} />
         ) : screen.name === "stats" ? (
           <Stats progress={progress} onBack={home} />
         ) : screen.name === "settings" ? (

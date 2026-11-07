@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Mascot from "../components/Mascot";
-import ScreenHeader, { CloseButton } from "../components/ScreenHeader";
+import QuizHeader from "../components/QuizHeader";
+import ScreenHeader from "../components/ScreenHeader";
 import SpeakButton from "../components/SpeakButton";
 import { buildTest, estimateKnown, PASS, PER_LEVEL, recommendLevel, scoreByLevel, type Question, type TestLang } from "../lib/leveltest";
 import { LEVELS, type Level, type Progress, type Word } from "../lib/types";
@@ -175,7 +176,6 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
   // ---------- Question ----------
   const i = answers.length;
   const q = questions[i];
-  const pct = (i / questions.length) * 100;
   const answered = picked !== undefined;
 
   const choose = (choice: number | null) => {
@@ -199,23 +199,7 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
 
   return (
     <main className="flex flex-1 flex-col">
-      <header className="flex items-center gap-2">
-        <CloseButton onClick={onExit} label="Stop the test" />
-        <div className="relative flex-1 py-3">
-          <div className="h-4 overflow-hidden rounded-full bg-card p-[3px] shadow-[inset_0_0_0_2px_var(--color-line)]">
-            <div className="h-full rounded-full bg-brand transition-[width] duration-500" style={{ width: `${pct}%` }} />
-          </div>
-          <div
-            className="pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 transition-[left] duration-500"
-            style={{ left: `clamp(14px, ${pct}%, calc(100% - 14px))` }}
-          >
-            <Mascot className="size-9" />
-          </div>
-        </div>
-        <span className="w-16 text-right font-display font-bold text-muted tabular-nums">
-          {i + 1}/{questions.length}
-        </span>
-      </header>
+      <QuizHeader done={i} total={questions.length} onClose={onExit} closeLabel="Stop the test" />
 
       <section className="raised mt-6 flex flex-col items-center rounded-[28px] border-2 border-line bg-card px-5 py-8 text-center">
         <p className="font-display text-[40px] leading-tight font-extrabold break-words">{q.word.word}</p>

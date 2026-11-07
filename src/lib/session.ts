@@ -15,7 +15,7 @@ export function hash(s: string): number {
 
 const byHash = (a: string, b: string) => hash(a) - hash(b);
 
-/** today: due reviews → "Don't know" words → new words. review: due cards only. dontknow: the whole list. */
+/** today: due reviews (capped) → "Don't know" words → new words. review: every due card, no cap. dontknow: the whole list. */
 export type SessionMode = "today" | "review" | "dontknow";
 
 export function newWordsLeftToday(p: Progress, today = toDay()): number {
@@ -23,20 +23,33 @@ export function newWordsLeftToday(p: Progress, today = toDay()): number {
   return Math.max(0, p.settings.dailyNew - done);
 }
 
-/** Card ids for each part of today's session (word data not needed, so Home can count without loading). */
+/** How many more reviews today's session may hold (the daily review cap minus what was already reviewed today). */
+export function reviewsLeftToday(p: Progress, today = toDay()): number {
+  const cap = p.settings.maxReviews;
+  if (!cap) return Infinity;
+  return Math.max(0, cap - (p.history[today]?.reviewed ?? 0));
+}
+
+/**
+ * Card ids for each part of today's session (word data not needed, so Home can count without loading).
+ * Reviews are capped by the daily review limit, most overdue first; `heldBack` counts the due reviews
+ * that wait for another day (they can still be practised from "Reviews due").
+ */
 export function sessionParts(p: Progress, today = toDay()) {
   const entries = Object.entries(p.cards);
-  const reviews = entries
+  const allReviews = entries
     .filter(([, c]) => isDue(c, today) && !c.inDontKnow)
     .sort(([a, x], [b, y]) => x.due.localeCompare(y.due) || byHash(a, b))
     .map(([id]) => id);
+  const reviews = allReviews.slice(0, reviewsLeftToday(p, today));
+  const heldBack = allReviews.length - reviews.length;
   const dontKnow = entries
     .filter(([, c]) => c.inDontKnow && c.lastSeen !== today)
     .map(([id]) => id)
     .sort(byHash);
   const allDue = entries.filter(([, c]) => isDue(c, today)).length;
   const dontKnowTotal = entries.filter(([, c]) => c.inDontKnow).length;
-  return { reviews, dontKnow, allDue, dontKnowTotal };
+  return { reviews, dontKnow, allDue, dontKnowTotal, heldBack };
 }
 
 /**

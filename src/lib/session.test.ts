@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { addDays } from "./date";
-import { buildSession, newWordsLeftToday, requeue, sessionParts } from "./session";
+import { buildSession, newWordsLeftToday, requeue, reviewsLeftToday, sessionParts } from "./session";
 import { card, progress, TODAY, word } from "./test-helpers";
 
 const ids = (ws: { id: string }[]) => ws.map((w) => w.id);
@@ -104,6 +104,38 @@ describe("sessionParts", () => {
     expect(parts.dontKnow.sort()).toEqual(["b", "c"]);
     expect(parts.allDue).toBe(2);
     expect(parts.dontKnowTotal).toBe(2);
+  });
+});
+
+describe("daily review cap", () => {
+  // 5 due reviews, oldest first: r0 (5 days overdue) … r4 (due today)
+  const cards = Object.fromEntries([0, 1, 2, 3, 4].map((i) => [`r${i}`, card({ due: addDays(TODAY, i - 4) })]));
+  const words = [0, 1, 2, 3, 4].map((i) => word(`r${i}`));
+
+  it("today's session holds at most maxReviews reviews, most overdue first", () => {
+    const p = progress({ settings: { maxReviews: 3, dailyNew: 0 }, cards });
+    expect(ids(buildSession(words, p, "today", TODAY))).toEqual(["r0", "r1", "r2"]);
+    expect(sessionParts(p, TODAY).heldBack).toBe(2);
+    expect(sessionParts(p, TODAY).allDue).toBe(5);
+  });
+
+  it("reviews already done today count against the cap", () => {
+    const p = progress({ settings: { maxReviews: 3 }, cards, history: { [TODAY]: { new: 0, reviewed: 2 } } });
+    expect(reviewsLeftToday(p, TODAY)).toBe(1);
+    expect(sessionParts(p, TODAY).reviews).toEqual(["r0"]);
+  });
+
+  it("0 means no limit", () => {
+    const p = progress({ settings: { maxReviews: 0 }, cards });
+    expect(sessionParts(p, TODAY).reviews).toHaveLength(5);
+    expect(sessionParts(p, TODAY).heldBack).toBe(0);
+  });
+
+  it("the Reviews due practice and the Don't know list ignore the cap", () => {
+    const dk = { ...cards, d1: card({ inDontKnow: true }), d2: card({ inDontKnow: true }) };
+    const p = progress({ settings: { maxReviews: 1 }, cards: dk });
+    expect(buildSession([...words, word("d1"), word("d2")], p, "review", TODAY)).toHaveLength(7);
+    expect(sessionParts(p, TODAY).dontKnow).toHaveLength(2);
   });
 });
 
