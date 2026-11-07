@@ -214,9 +214,18 @@ How it works:
 - **Review** opens the study screen with due cards only (shows the next review date if none). **Don't know** lists the words (most recently missed first) with a "Practise these" button. **Word list** searches English, Chinese and Spanish (accents ignored), filters by level and status, and opens a word to show its meanings and next review.
 - Progress saved by Phase 2 still loads; the new rules apply from the next answer.
 
+### Between Phase 3 and 4 (added on request, 2026-11-07)
+- [x] **Start over:** a "Start over" link under the Start button (only shown once there is progress) opens a confirmation dialog. It deletes all cards and daily history in this browser and keeps the level and daily goal. Move it into the Settings screen in Phase 4.
+- [x] **Redesign, "Playful & bright"** (chosen by the user from 4 directions):
+  - Colours (tokens in `src/index.css`): periwinkle-to-lilac background `#eef0ff → #f6eeff`, indigo text `#1f1a4d`, grape `#6b4ef5` as the main colour, mint `#1fbf78` = know, sunflower `#ffc233` = not sure, coral `#ff5a5f` = don't know, marker yellow `#ffe27a` behind the word in examples.
+  - Fonts: Bricolage Grotesque (words, headings, buttons) + Figtree (body). Fraunces removed.
+  - Chunky 3D keys: `.press` gives a solid edge underneath that disappears when pressed; set its colour with `[--edge:…]` and its height with `[--depth:…]`. `.press` / `.raised` live in `@layer components` so Tailwind utilities can override them.
+  - Mascot **Mempo** (`src/components/Mascot.tsx`): a grape blob with a sprout, moods `happy` / `cheer` / `sad`. It is the logo and favicon, rides along the study progress bar, cheers on the done screen and looks sad in the Start over dialog.
+  - No all-caps labels; section titles are sentence case.
+
 ### Phase 4: Polish (3–5 days)
 - [ ] Stats + daily streak
-- [ ] Settings screen (translation display, swipe direction, dark mode)
+- [ ] Settings screen (translation display, swipe direction, dark mode, move "Start over" here)
 - [ ] PWA: manifest + service worker (`vite-plugin-pwa`) so the app installs on a phone and works offline
 - [ ] Export / import progress as a JSON file (backup)
 - [ ] Mobile layout testing

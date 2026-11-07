@@ -1,5 +1,6 @@
 import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import Mascot from "../components/Mascot";
 import { CloseButton } from "../components/ScreenHeader";
 import SwipeCard, { answerDir, dirAnswers, type SwipeDir } from "../components/SwipeCard";
 import { formatDay } from "../lib/date";
@@ -84,7 +85,8 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
   if (error) {
     return (
       <Centered>
-        <p className="text-dontknow">{error}</p>
+        <Mascot mood="sad" className="size-20" />
+        <p className="mt-3 font-semibold text-dontknow">{error}</p>
         <BackButton onClick={onExit} />
       </Centered>
     );
@@ -93,7 +95,8 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
   if (!queue) {
     return (
       <Centered>
-        <p className="text-muted">Loading words…</p>
+        <Mascot className="size-16 animate-bounce" />
+        <p className="mt-3 font-semibold text-muted">Loading words…</p>
       </Centered>
     );
   }
@@ -104,27 +107,31 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
     const next = nextReview(progress);
     const tally = { know: 0, unsure: 0, dontknow: 0 };
     for (const a of Object.values(firstAnswer)) tally[a]++;
+    const nextDay = next && formatDay(next.day);
     return (
       <Centered>
         {queue.length === 0 ? (
-          <p className="font-display text-3xl font-semibold">{EMPTY[mode]}</p>
+          <>
+            <Mascot className="size-24" />
+            <p className="mt-4 max-w-xs font-display text-3xl leading-tight font-extrabold">{EMPTY[mode]}</p>
+          </>
         ) : (
           <>
-            <p className="font-display text-4xl font-semibold">Nice work!</p>
-            <p className="mt-2 text-muted">
-              You went through {unique} word{unique === 1 ? "" : "s"}.
-            </p>
-            <div className="mt-6 flex gap-3">
-              <Tally tone="bg-know/10 text-know" n={tally.know} label="knew" />
-              <Tally tone="bg-unsure/15 text-unsure-dark" n={tally.unsure} label="not sure" />
-              <Tally tone="bg-dontknow/10 text-dontknow" n={tally.dontknow} label="didn’t know" />
+            <Mascot mood="cheer" className="size-28" />
+            <p className="mt-3 font-display text-5xl font-extrabold">Nice work!</p>
+            <p className="mt-2 text-lg font-semibold text-muted">You went through {plural(unique, "word")}.</p>
+            <div className="mt-6 grid w-full grid-cols-3 gap-2.5">
+              <Tally tone="bg-know text-white [--edge:var(--color-know-edge)]" n={tally.know} label="knew" />
+              <Tally tone="bg-unsure text-ink [--edge:var(--color-unsure-edge)]" n={tally.unsure} label="not sure" />
+              <Tally tone="bg-dontknow text-white [--edge:var(--color-dontknow-edge)]" n={tally.dontknow} label="didn’t know" />
             </div>
-            {tally.know < unique && <p className="mt-4 max-w-xs text-sm text-muted">Every word came back until you knew it.</p>}
+            {tally.know < unique && <p className="mt-5 max-w-xs font-medium text-muted">Every word came back until you knew it.</p>}
           </>
         )}
-        {next && (
-          <p className="mt-6 text-sm text-muted">
-            Next review: <span className="font-semibold text-ink">{formatDay(next.day)}</span> · {next.count} word{next.count === 1 ? "" : "s"}
+        {next && nextDay && (
+          <p className="mt-6 rounded-full bg-card px-4 py-2 text-sm font-semibold text-muted">
+            Next review {nextDay === "today" || nextDay === "tomorrow" ? nextDay : `on ${nextDay}`}:{" "}
+            <span className="text-ink">{plural(next.count, "word")}</span>
           </p>
         )}
         <BackButton onClick={onExit} />
@@ -137,35 +144,48 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
   const prevCard = startProgress.current.cards[turn.word.id];
   const kind = mode === "dontknow" || prevCard?.inDontKnow ? "Don’t know" : prevCard ? "Review" : "New word";
   const again = queue.slice(0, pos).some((t) => t.word.id === turn.word.id);
+  const pct = ((unique - remaining) / unique) * 100;
+  const label = (a: Answer) => (a === "know" ? "Know" : a === "unsure" ? "Not sure" : "Don’t know");
 
   const btn = (a: Answer) => (
     <AnswerButton key={a} tone={a} onClick={() => respond(a)}>
-      {a === "know" ? "Know" : a === "unsure" ? "Not sure" : "Don’t know"}
+      {label(a)}
     </AnswerButton>
   );
 
   return (
     <main className="flex flex-1 flex-col">
-      <header className="flex items-center gap-3">
+      <header className="flex items-center gap-2">
         <CloseButton onClick={onExit} />
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-ink/[0.07]">
+        {/* progress bar with Mempo riding along it */}
+        <div className="relative flex-1 py-3">
+          <div className="h-4 overflow-hidden rounded-full bg-card p-[3px] shadow-[inset_0_0_0_2px_var(--color-line)]">
+            <div
+              className="relative h-full rounded-full bg-know transition-[width] duration-500 after:absolute after:inset-x-1.5 after:top-[2px] after:h-[3px] after:rounded-full after:bg-white/40"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
           <div
-            className="h-full rounded-full bg-brand transition-[width] duration-300"
-            style={{ width: `${((unique - remaining) / unique) * 100}%` }}
-          />
+            className="pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 transition-[left] duration-500"
+            style={{ left: `clamp(14px, ${pct}%, calc(100% - 14px))` }}
+          >
+            <Mascot className="size-9" mood={again ? "sad" : "happy"} />
+          </div>
         </div>
-        <span className="w-14 text-right text-sm text-muted tabular-nums">{remaining} left</span>
+        <span className="w-16 text-right font-display font-bold text-muted tabular-nums">{remaining} left</span>
       </header>
 
-      <p className="mt-3 text-center text-xs font-semibold tracking-[0.14em] text-muted uppercase">
-        {kind}
-        {again && <span className="text-dontknow"> · again</span>}
+      <p className="mt-2 text-center">
+        <span className={`rounded-full px-3 py-1 text-sm font-bold ${again ? "bg-dontknow/12 text-dontknow" : "bg-card text-muted"}`}>
+          {kind}
+          {again && ", once more"}
+        </span>
       </p>
 
-      <div className="relative mt-3 min-h-[440px] flex-1">
+      <div className="relative mt-4 min-h-[440px] flex-1">
         {/* the next card peeking out behind */}
         {pos + 1 < queue.length && (
-          <div aria-hidden className="absolute inset-0 translate-y-3 scale-[0.95] rounded-[28px] border border-line bg-card opacity-80" />
+          <div aria-hidden className="absolute inset-0 translate-y-3.5 scale-[0.94] rounded-[32px] border-2 border-line bg-card/70" />
         )}
         <AnimatePresence custom={exitDir} initial={false}>
           <SwipeCard
@@ -179,29 +199,37 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
         </AnimatePresence>
       </div>
 
-      <div className="mt-6 flex gap-2.5">
+      <div className="mt-7 flex gap-2.5">
         {settings.swipeKnow === "left" ? [btn("know"), btn("unsure"), btn("dontknow")] : [btn("dontknow"), btn("unsure"), btn("know")]}
       </div>
-      <p className="mt-3 text-center text-xs text-muted">
-        Swipe or use the arrow keys: ← {answers.left === "know" ? "Know" : "Don’t know"} · ↑ Not sure · {answers.right === "know" ? "Know" : "Don’t know"} →
+      <p className="mt-3 text-center text-xs font-semibold text-muted">
+        Swipe or use arrow keys: ← {label(answers.left)}, ↑ Not sure, → {label(answers.right)}
       </p>
     </main>
   );
 }
 
+const plural = (n: number, word: string) => `${n.toLocaleString()} ${word}${n === 1 ? "" : "s"}`;
+
 function Tally({ tone, n, label }: { tone: string; n: number; label: string }) {
   return (
-    <div className={`rounded-2xl px-5 py-3 ${tone}`}>
-      <div className="text-2xl font-semibold tabular-nums">{n}</div>
-      <div className="text-sm">{label}</div>
+    <div className={`press rounded-[20px] px-3 py-3 ${tone}`}>
+      <div className="font-display text-3xl font-extrabold tabular-nums">{n}</div>
+      <div className="text-sm font-bold">{label}</div>
     </div>
   );
 }
 
 const TONE_CLASS: Record<Answer, string> = {
-  know: "bg-know text-white shadow-[0_10px_22px_-12px_var(--color-know)]",
-  unsure: "bg-unsure text-ink shadow-[0_10px_22px_-12px_var(--color-unsure)]",
-  dontknow: "bg-dontknow text-white shadow-[0_10px_22px_-12px_var(--color-dontknow)]",
+  know: "bg-know text-white [--edge:var(--color-know-edge)]",
+  unsure: "bg-unsure text-ink [--edge:var(--color-unsure-edge)]",
+  dontknow: "bg-dontknow text-white [--edge:var(--color-dontknow-edge)]",
+};
+
+const ICON: Record<Answer, ReactNode> = {
+  know: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  unsure: <path d="M9.2 9a3 3 0 1 1 4 2.8c-.8.4-1.2 1-1.2 1.9v.3M12 17.6v.1" />,
+  dontknow: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
 };
 
 function AnswerButton({ tone, onClick, children }: { tone: Answer; onClick: () => void; children: ReactNode }) {
@@ -209,8 +237,11 @@ function AnswerButton({ tone, onClick, children }: { tone: Answer; onClick: () =
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 rounded-full px-2 py-4 text-base font-semibold whitespace-nowrap transition active:scale-[0.97] ${TONE_CLASS[tone]}`}
+      className={`press flex flex-1 flex-col items-center gap-0.5 rounded-[22px] px-1 pt-2.5 pb-2 font-display text-[17px] font-extrabold whitespace-nowrap [--depth:6px] hover:brightness-105 ${TONE_CLASS[tone]}`}
     >
+      <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        {ICON[tone]}
+      </svg>
       {children}
     </button>
   );
@@ -225,7 +256,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="mt-8 rounded-full border border-line bg-card px-6 py-3 font-semibold transition hover:border-ink/30 active:scale-95"
+      className="press mt-8 rounded-2xl border-2 border-line bg-card px-7 py-3 font-display text-lg font-bold hover:border-brand/40"
     >
       Back to home
     </button>

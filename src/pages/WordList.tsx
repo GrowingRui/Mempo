@@ -14,8 +14,8 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-semibold whitespace-nowrap transition active:scale-95 ${
-        active ? "border-ink bg-ink text-paper" : "border-line bg-card hover:border-ink/30"
+      className={`press shrink-0 rounded-xl border-2 px-3 py-1 text-sm font-bold whitespace-nowrap [--depth:3px] ${
+        active ? "border-brand bg-brand text-white [--edge:var(--color-brand-edge)]" : "border-line bg-card hover:border-brand/40"
       }`}
     >
       {children}
@@ -92,10 +92,10 @@ export default function WordList({ progress, onBack }: { progress: Progress; onB
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search English, 中文 or español"
         aria-label="Search words"
-        className="mt-4 w-full rounded-full border border-line bg-card px-5 py-3 outline-none placeholder:text-muted focus:border-brand"
+        className="mt-5 w-full rounded-2xl border-2 border-line bg-card px-5 py-3 font-semibold outline-none placeholder:font-medium placeholder:text-muted focus:border-brand"
       />
 
-      <div className="mt-3 flex gap-2" role="group" aria-label="Level">
+      <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Level">
         <Chip active={level === "all"} onClick={() => setLevel("all")}>
           All levels
         </Chip>
@@ -105,13 +105,13 @@ export default function WordList({ progress, onBack }: { progress: Progress; onB
           </Chip>
         ))}
       </div>
-      <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Status">
+      <div className="mt-2.5 flex flex-wrap gap-2" role="group" aria-label="Status">
         <Chip active={status === "all"} onClick={() => setStatus("all")}>
           Any status
         </Chip>
         {STATUSES.map((s) => (
           <Chip key={s} active={status === s} onClick={() => setStatus(s)}>
-            {STATUS_LABEL[s]} <span className="font-normal opacity-60 tabular-nums">{words ? counts[s].toLocaleString() : ""}</span>
+            {STATUS_LABEL[s]} <span className="font-semibold opacity-70 tabular-nums">{words ? counts[s].toLocaleString() : ""}</span>
           </Chip>
         ))}
       </div>
@@ -122,13 +122,13 @@ export default function WordList({ progress, onBack }: { progress: Progress; onB
         <p className="mt-10 text-center text-muted">Loading words…</p>
       ) : (
         <>
-          <p className="mt-4 text-sm text-muted tabular-nums">
+          <p className="mt-5 text-sm font-semibold text-muted tabular-nums">
             {list.length.toLocaleString()} word{list.length === 1 ? "" : "s"}
           </p>
           {list.length === 0 ? (
-            <p className="mt-10 text-center text-muted">No words match.</p>
+            <p className="mt-10 text-center font-semibold text-muted">No words match. Try fewer letters or another filter.</p>
           ) : (
-            <ul className="mt-2 space-y-2">
+            <ul className="mt-2 space-y-3">
               {list.slice(0, shown).map((w) => (
                 <WordRow key={w.id} word={w} card={cards[w.id]} settings={progress.settings} />
               ))}
@@ -138,7 +138,7 @@ export default function WordList({ progress, onBack }: { progress: Progress; onB
             <button
               type="button"
               onClick={() => setShown((n) => n + PAGE * 2)}
-              className="mx-auto mt-4 rounded-full border border-line bg-card px-6 py-3 font-semibold transition hover:border-ink/30 active:scale-95"
+              className="press mx-auto mt-5 rounded-2xl border-2 border-line bg-card px-6 py-3 font-display font-bold hover:border-brand/40"
             >
               Show more ({(list.length - shown).toLocaleString()} left)
             </button>

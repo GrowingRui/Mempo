@@ -12,19 +12,19 @@ export function GlossList({ label, glosses }: { label: string; glosses: Gloss[] 
   if (glosses.length === 0) return null;
   return (
     <section>
-      <h3 className="mb-1.5 text-[11px] font-semibold tracking-[0.14em] text-muted uppercase">{label}</h3>
+      <h3 className="mb-2 inline-block rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-bold text-brand">{label}</h3>
       <ul className="space-y-1.5">
         {glosses.map((g, i) => (
           <li key={i} className="flex items-baseline gap-2">
             {g.pos && (
               <span
-                className="shrink-0 rounded-md bg-ink/[0.06] px-1.5 py-0.5 text-[11px] font-semibold text-muted"
+                className="w-9 shrink-0 rounded-lg border-2 border-line py-px text-center text-[11px] font-bold text-muted"
                 title={POS_LABEL[g.pos] ?? g.pos}
               >
                 {g.pos}
               </span>
             )}
-            <span className="text-[17px] leading-snug">{g.gloss.join("; ")}</span>
+            <span className="text-[17px] leading-snug font-medium">{g.gloss.join("; ")}</span>
           </li>
         ))}
       </ul>
@@ -38,6 +38,8 @@ interface Props {
   onFlip: () => void;
   settings: Settings;
 }
+
+const FACE = "flip-face flex flex-col rounded-[32px] border-2 border-line bg-card p-6 shadow-[0_8px_0_var(--color-line-edge)]";
 
 export default function WordCard({ word, flipped, onFlip, settings }: Props) {
   const example = word.examples[0];
@@ -63,40 +65,34 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
     >
       <div className={`flip-inner h-full w-full ${flipped ? "flipped" : ""}`}>
         {/* Front */}
-        <div
-          aria-hidden={flipped}
-          className="flip-face flex flex-col rounded-[28px] border border-line bg-card p-6 shadow-[0_18px_40px_-18px_rgb(60_40_20/0.35)]"
-        >
+        <div aria-hidden={flipped} className={FACE}>
           <div className="flex items-center justify-between gap-3">
-            <span className="rounded-full bg-brand/10 px-2.5 py-1 text-xs font-bold tracking-wider text-brand">{word.level}</span>
-            <span className="truncate text-xs text-muted">{word.pos.map((p) => POS_LABEL[p] ?? p).join(" · ")}</span>
+            <span className="rounded-full bg-brand px-3 py-1 font-display text-sm font-extrabold text-white">{word.level}</span>
+            <span className="truncate text-sm font-semibold text-muted">{word.pos.map((p) => POS_LABEL[p] ?? p).join(", ")}</span>
           </div>
 
           <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <h2 className="font-display text-[clamp(2.25rem,11vw,3.25rem)] leading-[1.05] font-semibold tracking-tight [overflow-wrap:anywhere]">
+            <h2 className="font-display text-[clamp(2.5rem,12vw,3.5rem)] leading-[1.02] font-extrabold tracking-tight [overflow-wrap:anywhere]">
               {word.word}
             </h2>
-            {word.phonetic && <p className="mt-2 text-[15px] text-muted">/{word.phonetic}/</p>}
-            <SpeakButton id={word.id} text={word.word} className="mt-4" />
+            {word.phonetic && <p className="mt-2 text-base font-medium text-muted">/{word.phonetic}/</p>}
+            <SpeakButton id={word.id} text={word.word} className="mt-5" />
           </div>
 
           {example && (
-            <p className="font-display text-[17px] leading-relaxed text-ink/75 italic">
+            <p className="text-[17px] leading-relaxed text-ink/80">
               <Highlight text={example.text} terms={terms} />
             </p>
           )}
-          <p className="mt-4 text-center text-xs text-muted">Tap to see the meaning</p>
+          <p className="mt-4 text-center text-sm font-semibold text-muted">Tap the card to see the meaning</p>
         </div>
 
         {/* Back */}
-        <div
-          aria-hidden={!flipped}
-          className="flip-face flip-back flex flex-col overflow-y-auto rounded-[28px] border border-line bg-card p-6 shadow-[0_18px_40px_-18px_rgb(60_40_20/0.35)]"
-        >
+        <div aria-hidden={!flipped} className={`${FACE} flip-back overflow-y-auto`}>
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="font-display text-2xl leading-tight font-semibold [overflow-wrap:anywhere]">{word.word}</h2>
-              {word.phonetic && <p className="text-sm text-muted">/{word.phonetic}/</p>}
+              <h2 className="font-display text-3xl leading-tight font-extrabold [overflow-wrap:anywhere]">{word.word}</h2>
+              {word.phonetic && <p className="text-sm font-medium text-muted">/{word.phonetic}/</p>}
             </div>
             <SpeakButton id={word.id} text={word.word} className="shrink-0" />
           </div>
@@ -106,12 +102,12 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
             {settings.showEs && <GlossList label="Español" glosses={word.es} />}
           </div>
 
-          {extra.length > 0 && <p className="mt-5 text-sm text-muted">{extra.join(" ")}</p>}
+          {extra.length > 0 && <p className="mt-5 text-sm font-medium text-muted">{extra.join(" ")}</p>}
 
           {word.examples.length > 0 && (
-            <div className="mt-auto space-y-2 border-t border-line pt-4">
+            <div className="mt-auto space-y-2 pt-5">
               {word.examples.slice(0, 2).map((ex, i) => (
-                <p key={i} className="font-display text-[15px] leading-relaxed text-ink/75 italic">
+                <p key={i} className="rounded-2xl bg-paper px-3.5 py-2.5 text-[15px] leading-relaxed text-ink/80">
                   <Highlight text={ex.text} terms={terms} />
                   {ex.source && (
                     <a
@@ -119,7 +115,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
                       target="_blank"
                       rel="noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="ml-1.5 font-sans text-[11px] text-muted not-italic underline decoration-line underline-offset-2 hover:text-brand"
+                      className="ml-1.5 text-[11px] font-semibold text-muted underline decoration-line decoration-2 underline-offset-2 hover:text-brand"
                     >
                       Tatoeba
                     </a>

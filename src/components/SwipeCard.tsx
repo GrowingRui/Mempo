@@ -107,10 +107,10 @@ export default function SwipeCard({ word, flipped, onFlip, settings, onSwipe }: 
           key={dir}
           aria-hidden
           style={{ opacity: hints[dir] }}
-          className={`pointer-events-none absolute inset-0 rounded-[28px] border-4 ${TONE[answers[dir]]}`}
+          className={`pointer-events-none absolute inset-0 rounded-[32px] border-4 ${TONE[answers[dir]]}`}
         >
           <span
-            className={`absolute rounded-xl border-[3px] bg-card/90 px-3 py-1 font-display text-2xl font-bold tracking-wide uppercase ${TONE[answers[dir]]} ${
+            className={`absolute rounded-2xl border-[3px] bg-card px-3.5 py-1 font-display text-2xl font-extrabold shadow-[0_4px_0_currentColor] ${TONE[answers[dir]]} ${
               dir === "left" ? "top-6 right-6 rotate-12" : dir === "right" ? "top-6 left-6 -rotate-12" : "top-[62%] left-1/2 -translate-x-1/2"
             }`}
           >

@@ -1,20 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Fraunces Variable", Georgia, "Songti SC", serif;
+  --font-display: "Bricolage Grotesque Variable", "Arial Rounded MT Bold", system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-sans: "Figtree Variable", system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
 
-  --color-paper: #fbf6ee;
-  --color-card: #fffdf9;
-  --color-ink: #23201c;
-  --color-muted: #7a7166;
-  --color-line: #e9e1d4;
-  --color-brand: #e8613c;
-  --color-brand-dark: #c94b29;
-  --color-know: #2f9e6e;
-  --color-dontknow: #d9483b;
-  --color-unsure: #f2b544;
-  --color-unsure-dark: #a26a06;
+  /* surfaces */
+  --color-paper: #eef0ff; /* page background (top of the gradient) */
+  --color-paper-2: #f6eeff; /* page background (bottom) */
+  --color-card: #ffffff;
+  --color-ink: #1f1a4d; /* deep indigo text */
+  --color-muted: #6c6896;
+  --color-line: #dcd7fb; /* borders */
+  --color-line-edge: #cbc4f6; /* the "3D" bottom edge under cards and light buttons */
+
+  /* main colour: grape */
+  --color-brand: #6b4ef5;
+  --color-brand-dark: #5638e0;
+  --color-brand-edge: #4529c2;
+  --color-brand-soft: #ece8ff;
+
+  /* answers */
+  --color-know: #1fbf78;
+  --color-know-edge: #13965c;
+  --color-unsure: #ffc233;
+  --color-unsure-edge: #e09e00;
+  --color-unsure-dark: #9a6a00;
+  --color-dontknow: #ff5a5f;
+  --color-dontknow-edge: #d93a40;
+
+  --color-marker: #ffe27a; /* highlighter behind the word in example sentences */
+  --color-cheek: #ff9bb3;
 }
 
 html,
@@ -24,11 +39,45 @@ body,
 }
 
 body {
-  background: var(--color-paper);
+  background: linear-gradient(180deg, var(--color-paper) 0%, var(--color-paper-2) 100%) fixed;
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 3px;
+}
+
+@layer components {
+  /* Chunky 3D key: a solid edge underneath that disappears when pressed.
+     Set the edge colour with [--edge:…]; default is the light card edge. */
+  .press {
+    --edge: var(--color-line-edge);
+    --depth: 5px;
+    box-shadow: 0 var(--depth) 0 var(--edge);
+    transform: translateY(0);
+    transition:
+      transform 0.08s ease-out,
+      box-shadow 0.08s ease-out,
+      background-color 0.15s,
+      border-color 0.15s,
+      color 0.15s;
+  }
+  .press:active:not(:disabled) {
+    transform: translateY(var(--depth));
+    box-shadow: 0 0 0 var(--edge);
+  }
+  .press:disabled {
+    cursor: default;
+  }
+
+  /* Raised surface (cards): same edge, no press. */
+  .raised {
+    box-shadow: 0 6px 0 var(--color-line-edge);
+  }
 }
 
 /* 3D flip card */
@@ -53,8 +102,23 @@ body {
   transform: rotateY(180deg);
 }
 
+/* Mascot blinks now and then. */
+@keyframes blink {
+  0%, 94%, 100% { transform: scaleY(1); }
+  97% { transform: scaleY(0.1); }
+}
+.mascot-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: blink 4.5s infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .flip-inner {
+  .flip-inner,
+  .press {
     transition: none;
+  }
+  .mascot-eye {
+    animation: none;
   }
 }

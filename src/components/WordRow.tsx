@@ -15,11 +15,11 @@ export const STATUS_LABEL: Record<WordStatus, string> = {
 };
 
 const STATUS_CLASS: Record<WordStatus, string> = {
-  new: "bg-ink/[0.06] text-muted",
-  learning: "bg-unsure/20 text-unsure-dark",
-  review: "bg-brand/10 text-brand",
-  mastered: "bg-know/12 text-know",
-  dontknow: "bg-dontknow/10 text-dontknow",
+  new: "bg-paper text-muted",
+  learning: "bg-unsure/25 text-unsure-dark",
+  review: "bg-brand-soft text-brand",
+  mastered: "bg-know/15 text-know-edge",
+  dontknow: "bg-dontknow/12 text-dontknow-edge",
 };
 
 /** A word in a list: tap to show its meanings and example. */
@@ -28,38 +28,38 @@ export default function WordRow({ word, card, settings }: { word: Word; card?: C
   const status = statusOf(card);
   const summary = [settings.showZh && word.zh[0]?.gloss.slice(0, 2).join("；"), settings.showEs && word.es[0]?.gloss.slice(0, 2).join(", ")]
     .filter(Boolean)
-    .join(" · ");
+    .join("  /  ");
   const terms = [word.word, ...(word.forms ?? []), ...(word.variants ?? []), ...word.examples.map((e) => e.form ?? "")];
 
   return (
-    <li className="rounded-2xl border border-line bg-card">
+    <li className="rounded-[20px] border-2 border-line bg-card shadow-[0_4px_0_var(--color-line-edge)]">
       <div className="flex items-center gap-2 py-2 pr-2 pl-4">
         <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="min-w-0 flex-1 py-1 text-left">
           <span className="flex items-baseline gap-2">
-            <span className="truncate font-display text-lg font-semibold">{word.word}</span>
-            <span className="shrink-0 text-[11px] font-bold tracking-wider text-brand">{word.level}</span>
-            <span className={`ml-auto shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_CLASS[status]}`}>
+            <span className="truncate font-display text-xl font-extrabold">{word.word}</span>
+            <span className="shrink-0 rounded-md bg-brand px-1.5 font-display text-[11px] font-extrabold text-white">{word.level}</span>
+            <span className={`ml-auto shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${STATUS_CLASS[status]}`}>
               {STATUS_LABEL[status]}
             </span>
           </span>
-          {!open && summary && <span className="mt-0.5 block truncate text-sm text-muted">{summary}</span>}
+          {!open && summary && <span className="mt-0.5 block truncate text-sm font-medium text-muted">{summary}</span>}
         </button>
         <SpeakButton id={word.id} text={word.word} className="shrink-0" />
       </div>
 
       {open && (
-        <div className="space-y-4 border-t border-line px-4 pt-3 pb-4">
+        <div className="space-y-4 border-t-2 border-line px-4 pt-3 pb-4">
           {word.phonetic && <p className="text-sm text-muted">/{word.phonetic}/</p>}
           {settings.showZh && <GlossList label="中文" glosses={word.zh} />}
           {settings.showEs && <GlossList label="Español" glosses={word.es} />}
           {word.examples[0] && (
-            <p className="font-display text-[15px] leading-relaxed text-ink/75 italic">
+            <p className="rounded-2xl bg-paper px-3.5 py-2.5 text-[15px] leading-relaxed text-ink/80">
               <Highlight text={word.examples[0].text} terms={terms} />
             </p>
           )}
           {card && card.state !== "mastered" && (
-            <p className="text-xs text-muted">
-              Next review: {formatDay(card.due)} · box {card.box} of {MAX_BOX}
+            <p className="text-xs font-semibold text-muted">
+              Next review {formatDay(card.due)}, step {card.box} of {MAX_BOX}
             </p>
           )}
         </div>

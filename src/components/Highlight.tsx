@@ -1,6 +1,6 @@
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** Shows an example sentence with the studied word (or any of its forms) in bold. */
+/** Shows an example sentence with the studied word (or any of its forms) marked like a highlighter pen. */
 export default function Highlight({ text, terms }: { text: string; terms: string[] }) {
   const words = [...new Set(terms.filter(Boolean))].sort((a, b) => b.length - a.length);
   if (words.length === 0) return <>{text}</>;
@@ -10,9 +10,12 @@ export default function Highlight({ text, terms }: { text: string; terms: string
     <>
       {parts.map((part, i) =>
         i % 2 === 1 ? (
-          <strong key={i} className="font-semibold text-ink">
+          <mark
+            key={i}
+            className="rounded-md bg-transparent bg-[linear-gradient(transparent_45%,var(--color-marker)_45%,var(--color-marker)_92%,transparent_92%)] px-0.5 font-bold text-ink [box-decoration-break:clone]"
+          >
             {part}
-          </strong>
+          </mark>
         ) : (
           part
         ),
