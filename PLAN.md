@@ -222,6 +222,10 @@ How it works:
   - Chunky 3D keys: `.press` gives a solid edge underneath that disappears when pressed; set its colour with `[--edge:…]` and its height with `[--depth:…]`. `.press` / `.raised` live in `@layer components` so Tailwind utilities can override them.
   - Mascot **Mempo** (`src/components/Mascot.tsx`): a grape blob with a sprout, moods `happy` / `cheer` / `sad`. It is the logo and favicon, rides along the study progress bar, cheers on the done screen and looks sad in the Start over dialog.
   - No all-caps labels; section titles are sentence case.
+- [x] **Level test** (`src/pages/LevelTest.tsx`, logic in `src/lib/leveltest.ts`): opened from "Not sure? Take a level test" next to "Your level" on Home.
+  - 30 random words, 10 from each of B2 / C1 / C2, shuffled. Pick the meaning in 中文 or Español from 4 options (wrong options come from the same level and part of speech), or tap "I don't know".
+  - Spanish cognates (e.g. *secular* = *secular*) are not asked, because they would be free points.
+  - Result: score per level, a rough count of known words (score × level size), and a suggested level = the first level under 80%. One tap switches the level. The test never changes learning progress.
 
 ### Phase 4: Polish (3–5 days)
 - [ ] Stats + daily streak

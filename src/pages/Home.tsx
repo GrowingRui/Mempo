@@ -143,7 +143,16 @@ export default function Home({ progress, setProgress, go }: Props) {
 
       {/* Level */}
       <section className="mt-7">
-        <h2 className="mb-2.5 font-display text-lg font-bold">Your level</h2>
+        <div className="mb-2.5 flex items-baseline justify-between gap-2">
+          <h2 className="font-display text-lg font-bold">Your level</h2>
+          <button
+            type="button"
+            onClick={() => go({ name: "test" })}
+            className="text-sm font-bold text-brand underline decoration-2 underline-offset-2 hover:text-brand-dark"
+          >
+            Not sure? Take a level test
+          </button>
+        </div>
         <div className="grid grid-cols-3 gap-2.5" role="radiogroup" aria-label="Level">
           {LEVELS.map((lv) => {
             const active = lv === settings.level;
