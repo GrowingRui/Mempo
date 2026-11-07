@@ -230,15 +230,22 @@ How it works:
 ### Phase 4: Polish (3–5 days)
 - [x] Stats + daily streak (done 2026-11-07, waiting for approval)
 - [x] Settings screen (translation display, swipe direction, dark mode, move "Start over" here) (done 2026-11-07, waiting for approval)
-- [ ] PWA: manifest + service worker (`vite-plugin-pwa`) so the app installs on a phone and works offline
-- [ ] Export / import progress as a JSON file (backup)
-- [ ] Mobile layout testing
+- [x] PWA: manifest + service worker (`vite-plugin-pwa`) so the app installs on a phone and works offline (done 2026-11-07, waiting for approval)
+- [x] Export / import progress as a JSON file (backup) (done 2026-11-07, waiting for approval)
+- [x] Mobile layout testing (done 2026-11-07, waiting for approval)
 
 How items 1 and 2 work:
 - **Streak** (`src/lib/stats.ts`): a day counts if at least one card was answered. Not studying yet today doesn't break the streak; it ends at yesterday until midnight. Home's header shows a flame with the streak (grey until you study today); tapping it opens **Stats**.
 - **Stats** (`src/pages/Stats.tsx`): streak and longest streak, words seen / mastered / days studied, a 14-day chart (new words at the bottom, reviews on top; tap a day for its numbers, a hidden table for screen readers) and a bar per level (mastered → reviewing → learning → don't know, rest = not seen) with the counts written underneath. Chart colours are `--color-bar-*` tokens, checked with the dataviz palette validator (light passes; in dark the yellow is a little brighter than its guideline, accepted to keep the app's "Not sure" yellow).
 - **Settings** (`src/pages/Settings.tsx`, the sliders button on Home): theme Light (default) / Dark / Auto, Chinese and Spanish on/off (at least one stays on), swipe direction, and "Start over" (moved from Home; `src/components/ResetDialog.tsx`). Level and daily goal stay on Home.
 - **Dark mode**: `:root.dark` in `src/index.css` gives the same colour names new values; `src/lib/theme.ts` sets the class and follows the device when on Auto; a small script in `index.html` sets it before the first paint. New tokens: `brand-ink` / `know-ink` / `dontknow-ink` for coloured text (lighter in dark), and `deep` (always-dark indigo) for text on yellow, the marker, Mempo's face and the dialog backdrop.
+
+How items 3–5 work:
+- **Installable app**: `vite-plugin-pwa` in "injectManifest" mode with our own service worker, `src/sw.ts`. Install saves the app, fonts, icons and all three word lists (~2.7 MB) so everything works offline, including opening any address (it serves `index.html`). Icons in `public/` are made from `public/favicon.svg` by `npm run icons` (`pwa-assets.config.ts`); the padded ones get the light background.
+- **Pronunciation offline**: MP3s are not saved on install (~51 MB). Each one is saved the first time it plays (cache `mempo-audio-v1`). The service worker always fetches and stores the whole file and then answers the `<audio>` element's byte-range request from it, because partial (206) answers can't be cached. Settings → Offline shows how many are saved and has "Save all for offline" (6 downloads at a time, can be stopped and continued). Without a saved file the device's own voice reads the word, as before.
+- **Updates**: a new version doesn't take over by itself, so a study session is never cut off. A toast at the top says "A new version is ready" with **Update** / Later (`src/components/UpdatePrompt.tsx`); it also says once that the app now works offline. An open app checks for a new version every hour.
+- **Backup** (Settings → Your progress, `src/lib/backup.ts`): "Download backup" saves `mempo-backup-YYYY-MM-DD.json` = `{ app, version, exportedAt, progress }` (progress in the section 2 format). "Restore backup" reads a file, shows what's in it (date, words, days of history) and replaces this browser's progress and settings after a confirmation. Broken entries are skipped (`normalizeProgress` in `src/lib/storage.ts`, which now also cleans what's loaded from localStorage); a file that isn't a backup gives a clear message. `ResetDialog` and the restore dialog share `src/components/ConfirmDialog.tsx`.
+- **Phone layout**: every screen checked at 320 / 360 / 390 / 430 px wide, light and dark, plus short screens. Fixes: Home's header no longer overlaps or truncates the tagline on small phones; tiles, level names and the "Custom" chip fit at 320 px; the study card's minimum height drops on short screens (under 720 px tall), so the answer buttons stay on screen on an iPhone SE in Safari.
 
 ### Phase 5: Deploy to Vercel (half a day)
 - [ ] Push the repo to GitHub

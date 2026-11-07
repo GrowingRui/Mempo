@@ -182,7 +182,7 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
         </span>
       </p>
 
-      <div className="relative mt-4 min-h-[440px] flex-1">
+      <div className="relative mt-4 min-h-[300px] flex-1 [@media(min-height:720px)]:min-h-[440px]">
         {/* the next card peeking out behind */}
         {pos + 1 < queue.length && (
           <div aria-hidden className="absolute inset-0 translate-y-3.5 scale-[0.94] rounded-[32px] border-2 border-line bg-card/70" />

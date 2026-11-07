@@ -78,7 +78,7 @@ let pending: number | undefined;
  */
 
 /** Must match audio_file_name() in scripts/gen-audio.py. */
-function audioUrl(id: string): string {
+export function audioUrl(id: string): string {
   let name = id.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   if (/^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/.test(name)) name += "-w"; // "con.mp3" can't exist on Windows
   return `${import.meta.env.BASE_URL}audio/${name}.mp3`;

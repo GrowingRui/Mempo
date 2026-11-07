@@ -1,6 +1,10 @@
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
+import ConfirmDialog from "../components/ConfirmDialog";
+import OfflineAudio from "../components/OfflineAudio";
 import ResetDialog from "../components/ResetDialog";
 import ScreenHeader from "../components/ScreenHeader";
+import { downloadBackup, parseBackup, type Backup } from "../lib/backup";
+import { studied } from "../lib/stats";
 import type { Progress, Settings as SettingsT, SwipeKnow, Theme } from "../lib/types";
 
 interface Props {
@@ -69,8 +73,21 @@ const THEMES: { value: Theme; label: string }[] = [
 export default function Settings({ progress, setProgress, onBack }: Props) {
   const { settings, cards } = progress;
   const [confirmReset, setConfirmReset] = useState(false);
+  const [pending, setPending] = useState<Backup | null>(null); // backup waiting for "Replace"
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const words = Object.keys(cards).length;
   const update = (patch: Partial<SettingsT>) => setProgress((p) => ({ ...p, settings: { ...p.settings, ...patch } }));
+
+  const pickFile = async (file: File | undefined) => {
+    if (!file) return;
+    setMessage(null);
+    try {
+      setPending(parseBackup(await file.text()));
+    } catch (e) {
+      setMessage({ ok: false, text: e instanceof Error ? e.message : "Couldn’t read this file." });
+    }
+  };
 
   const swipeOption = (side: SwipeKnow) => {
     const left = side === "left" ? "Know" : "Don’t know";
@@ -125,12 +142,53 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
         />
       </Section>
 
-      <Section title="Your progress" hint="Saved in this browser only.">
+      <Section title="Offline" hint="Once loaded, Mempo works without internet. Add it to your home screen to use it like an app.">
+        <OfflineAudio />
+      </Section>
+
+      <Section title="Your progress" hint="Saved in this browser only. Download a backup to keep it safe or to move it to another phone or browser.">
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              downloadBackup(progress);
+              setMessage({ ok: true, text: "Backup downloaded." });
+            }}
+            className="press min-w-0 flex-1 rounded-2xl border-2 border-line bg-card px-2 py-3 font-display text-base font-bold min-[400px]:text-lg"
+          >
+            Download backup
+          </button>
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="press min-w-0 flex-1 rounded-2xl border-2 border-line bg-card px-2 py-3 font-display text-base font-bold min-[400px]:text-lg"
+          >
+            Restore backup
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/json,.json"
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden
+            onChange={(e) => {
+              void pickFile(e.target.files?.[0]);
+              e.target.value = ""; // picking the same file again still fires onChange
+            }}
+          />
+        </div>
+        {message && (
+          <p role="status" className={`mt-2 text-sm font-semibold ${message.ok ? "text-know-ink" : "text-dontknow-ink"}`}>
+            {message.text}
+          </p>
+        )}
+
         <button
           type="button"
           onClick={() => setConfirmReset(true)}
           disabled={words === 0}
-          className="press w-full rounded-2xl border-2 border-dontknow/40 bg-card py-3 font-display text-lg font-bold text-dontknow-ink [--edge:var(--color-dontknow)] disabled:opacity-50"
+          className="press mt-5 w-full rounded-2xl border-2 border-dontknow/40 bg-card py-3 font-display text-lg font-bold text-dontknow-ink [--edge:var(--color-dontknow)] disabled:opacity-50"
         >
           Start over
         </button>
@@ -138,6 +196,25 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
           {words === 0 ? "Nothing to delete yet." : "Deletes all your words and daily history. Your settings stay."}
         </p>
       </Section>
+
+      {pending && (
+        <ConfirmDialog
+          mood="happy"
+          tone="normal"
+          title="Restore this backup?"
+          cancelLabel="Cancel"
+          confirmLabel="Replace my progress"
+          onCancel={() => setPending(null)}
+          onConfirm={() => {
+            setProgress(() => pending.progress);
+            const n = Object.keys(pending.progress.cards).length;
+            setMessage({ ok: true, text: `Backup restored: ${n.toLocaleString()} word${n === 1 ? "" : "s"}.` });
+            setPending(null);
+          }}
+        >
+          <BackupSummary backup={pending} currentWords={words} />
+        </ConfirmDialog>
+      )}
 
       {confirmReset && (
         <ResetDialog
@@ -150,5 +227,26 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
         />
       )}
     </main>
+  );
+}
+
+function BackupSummary({ backup, currentWords }: { backup: Backup; currentWords: number }) {
+  const n = Object.keys(backup.progress.cards).length;
+  const days = Object.values(backup.progress.history).filter(studied).length;
+  const made = backup.exportedAt && new Date(backup.exportedAt);
+  return (
+    <>
+      <p>
+        {made && !Number.isNaN(made.getTime()) && <>Made on {made.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}. </>}
+        It has <b className="text-ink">{n.toLocaleString()} word{n === 1 ? "" : "s"}</b> and {days.toLocaleString()} day{days === 1 ? "" : "s"} of history, plus its
+        settings.
+      </p>
+      <p className="mt-2">
+        {currentWords > 0
+          ? `It replaces what’s in this browser now (${currentWords.toLocaleString()} word${currentWords === 1 ? "" : "s"}).`
+          : "This browser has no progress yet."}
+      </p>
+      {backup.dropped > 0 && <p className="mt-2 text-sm">{backup.dropped.toLocaleString()} broken {backup.dropped === 1 ? "entry" : "entries"} in the file will be skipped.</p>}
+    </>
   );
 }

@@ -23,14 +23,14 @@ const MAX_GOAL = 500;
 const listJoin = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
 const plural = (n: number, word: string) => `${n.toLocaleString()} ${word}${n === 1 ? "" : "s"}`;
 
-function GoalChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+function GoalChip({ active, onClick, children, wide }: { active: boolean; onClick: () => void; children: ReactNode; wide?: boolean }) {
   return (
     <button
       type="button"
       role="radio"
       aria-checked={active}
       onClick={onClick}
-      className={`press min-w-0 flex-1 rounded-2xl border-2 py-2.5 font-display text-lg font-bold tabular-nums ${
+      className={`press min-w-0 ${wide ? "flex-[1.4]" : "flex-1"} rounded-2xl border-2 px-1 py-2.5 font-display text-lg font-bold tabular-nums ${
         active ? "border-brand bg-brand text-white [--edge:var(--color-brand-edge)]" : "border-line bg-card hover:border-brand/40"
       }`}
     >
@@ -41,8 +41,8 @@ function GoalChip({ active, onClick, children }: { active: boolean; onClick: () 
 
 function NavTile({ onClick, n, label, tone }: { onClick: () => void; n: number | undefined; label: string; tone: string }) {
   return (
-    <button type="button" onClick={onClick} className="press rounded-[20px] border-2 border-line bg-card px-3 pt-2.5 pb-3 text-left hover:border-brand/40">
-      <span className={`block font-display text-[26px] leading-tight font-extrabold tabular-nums ${tone}`}>
+    <button type="button" onClick={onClick} className="press min-w-0 rounded-[20px] border-2 border-line bg-card px-2 pt-2.5 pb-3 text-left hover:border-brand/40 min-[360px]:px-3">
+      <span className={`block font-display text-[22px] leading-tight font-extrabold tabular-nums min-[360px]:text-[26px] ${tone}`}>
         {n === undefined ? "…" : n.toLocaleString()}
       </span>
       <span className="flex items-center justify-between gap-1 text-[13px] font-semibold text-muted">
@@ -109,13 +109,13 @@ export default function Home({ progress, setProgress, go }: Props) {
 
   return (
     <main className="flex flex-1 flex-col">
-      <header className="flex items-center gap-3">
-        <Mascot className="size-14 shrink-0" />
+      <header className="flex items-center gap-2.5 min-[360px]:gap-3">
+        <Mascot className="size-11 shrink-0 min-[360px]:size-14" />
         <div className="min-w-0">
-          <h1 className="font-display text-[32px] leading-none font-extrabold tracking-tight">{site.name}</h1>
-          <p className="mt-1 truncate font-semibold text-muted">{site.tagline}</p>
+          <h1 className="font-display text-[26px] leading-none font-extrabold tracking-tight min-[360px]:text-[32px]">{site.name}</h1>
+          <p className="mt-1 text-sm leading-tight font-semibold text-muted min-[360px]:text-base">{site.tagline}</p>
         </div>
-        <div className="ml-auto flex shrink-0 gap-2">
+        <div className="ml-auto flex shrink-0 gap-1.5 min-[360px]:gap-2">
           <button
             type="button"
             onClick={() => go({ name: "stats" })}
@@ -159,7 +159,7 @@ export default function Home({ progress, setProgress, go }: Props) {
       </section>
 
       {/* Other screens */}
-      <nav className="mt-4 grid grid-cols-3 gap-2.5" aria-label="Practice">
+      <nav className="mt-4 grid grid-cols-3 gap-2 min-[360px]:gap-2.5" aria-label="Practice">
         <NavTile onClick={() => go({ name: "study", mode: "review" })} n={parts.allDue} label="Reviews due" tone="text-brand-ink" />
         <NavTile onClick={() => go({ name: "dontknow" })} n={parts.dontKnowTotal} label="Don’t know" tone="text-dontknow" />
         <NavTile onClick={() => go({ name: "words" })} n={index?.counts.total} label="All words" tone="text-ink" />
@@ -177,7 +177,7 @@ export default function Home({ progress, setProgress, go }: Props) {
             Not sure? Take a level test
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-2.5" role="radiogroup" aria-label="Level">
+        <div className="grid grid-cols-3 gap-2 min-[360px]:gap-2.5" role="radiogroup" aria-label="Level">
           {LEVELS.map((lv) => {
             const active = lv === settings.level;
             return (
@@ -187,12 +187,12 @@ export default function Home({ progress, setProgress, go }: Props) {
                 role="radio"
                 aria-checked={active}
                 onClick={() => update({ level: lv })}
-                className={`press rounded-[20px] border-2 px-3 py-2.5 text-left ${
+                className={`press min-w-0 rounded-[20px] border-2 px-2 py-2.5 text-left min-[360px]:px-3 ${
                   active ? "border-brand bg-brand text-white [--edge:var(--color-brand-edge)]" : "border-line bg-card hover:border-brand/40"
                 }`}
               >
                 <span className="block font-display text-2xl font-extrabold">{lv}</span>
-                <span className={`block text-xs leading-tight font-semibold ${active ? "text-white/80" : "text-muted"}`}>{LEVEL_NAME[lv]}</span>
+                <span className={`block text-[11px] leading-tight font-semibold min-[360px]:text-xs ${active ? "text-white/80" : "text-muted"}`}>{LEVEL_NAME[lv]}</span>
                 {index && (
                   <span className={`mt-0.5 block text-xs tabular-nums ${active ? "text-white/70" : "text-muted"}`}>
                     {index.counts[lv].toLocaleString()} words
@@ -207,7 +207,7 @@ export default function Home({ progress, setProgress, go }: Props) {
       {/* Daily goal */}
       <section className="mt-6">
         <h2 className="mb-2.5 font-display text-lg font-bold">New words per day</h2>
-        <div className="flex gap-2" role="radiogroup" aria-label="New words per day">
+        <div className="flex gap-1.5 min-[360px]:gap-2" role="radiogroup" aria-label="New words per day">
           {GOALS.map((g) => (
             <GoalChip
               key={g}
@@ -221,13 +221,14 @@ export default function Home({ progress, setProgress, go }: Props) {
             </GoalChip>
           ))}
           <GoalChip
+            wide
             active={editingGoal || isCustomGoal}
             onClick={() => {
               setGoalDraft(String(settings.dailyNew));
               setEditingGoal(true);
             }}
           >
-            {isCustomGoal && !editingGoal ? settings.dailyNew : <span className="text-base">Custom</span>}
+            {isCustomGoal && !editingGoal ? settings.dailyNew : <span className="text-sm min-[360px]:text-base">Custom</span>}
           </GoalChip>
         </div>
         {editingGoal && (

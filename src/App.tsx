@@ -1,5 +1,6 @@
 import { MotionConfig } from "motion/react";
 import { useEffect, useState } from "react";
+import UpdatePrompt from "./components/UpdatePrompt";
 import type { SessionMode } from "./lib/session";
 import { loadProgress, saveProgress } from "./lib/storage";
 import { applyTheme } from "./lib/theme";
@@ -31,6 +32,7 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
+      <UpdatePrompt />
       <div className="mx-auto flex min-h-dvh max-w-md flex-col px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
         {screen.name === "study" ? (
           <Study key={screen.mode} mode={screen.mode} progress={progress} setProgress={setProgress} onExit={home} />
