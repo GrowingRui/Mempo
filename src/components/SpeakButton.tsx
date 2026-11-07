@@ -1,14 +1,15 @@
-import { canSpeak, speak } from "../lib/speech";
+import { useEffect } from "react";
+import { playWord, preloadWord } from "../lib/speech";
 
-export default function SpeakButton({ text, className = "" }: { text: string; className?: string }) {
-  if (!canSpeak) return null;
+export default function SpeakButton({ id, text, className = "" }: { id: string; text: string; className?: string }) {
+  useEffect(() => preloadWord(id), [id]);
   return (
     <button
       type="button"
       aria-label={`Hear “${text}”`}
       onClick={(e) => {
         e.stopPropagation(); // don't flip the card
-        speak(text);
+        playWord(id, text);
       }}
       onKeyDown={(e) => e.stopPropagation()}
       className={`grid size-11 place-items-center rounded-full bg-brand/10 text-brand transition hover:bg-brand/20 active:scale-90 ${className}`}

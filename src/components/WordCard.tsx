@@ -77,7 +77,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
               {word.word}
             </h2>
             {word.phonetic && <p className="mt-2 text-[15px] text-muted">/{word.phonetic}/</p>}
-            <SpeakButton text={word.word} className="mt-4" />
+            <SpeakButton id={word.id} text={word.word} className="mt-4" />
           </div>
 
           {example && (
@@ -98,7 +98,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
               <h2 className="font-display text-2xl leading-tight font-semibold [overflow-wrap:anywhere]">{word.word}</h2>
               {word.phonetic && <p className="text-sm text-muted">/{word.phonetic}/</p>}
             </div>
-            <SpeakButton text={word.word} className="shrink-0" />
+            <SpeakButton id={word.id} text={word.word} className="shrink-0" />
           </div>
 
           <div className="mt-5 space-y-5">

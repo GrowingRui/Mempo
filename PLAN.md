@@ -59,7 +59,7 @@ BUILD TIME (local PC, run once)            RUNTIME (user's browser)
 - **Swipe and animation:** Motion (Framer Motion) drag gestures
 - **Styling:** Tailwind CSS
 - **Storage:** IndexedDB (via `idb-keyval`) or localStorage. No backend at first.
-- **Pronunciation:** browser `speechSynthesis` (free, no API)
+- **Pronunciation:** pre-made MP3 per word in `public/audio/` (~35 MB), generated once by `scripts/gen-audio.py` with Piper TTS, British voice "cori" (free, runs locally, public-domain training data). Same accent on every device. Falls back to browser `speechSynthesis` if a file is missing. (Browser voices alone were not enough: they depend on the voices installed on the device, e.g. Firefox on a Spanish Windows read English with a Spanish voice.)
 - **Hosting:** Vercel Hobby (free). Connect the GitHub repo and Vercel redeploys automatically on every push.
 - **Optional later:** sync progress between devices with Supabase (free tier).
 
