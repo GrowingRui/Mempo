@@ -26,7 +26,9 @@ export interface Word {
   examples: Example[];
 }
 
-export type CardState = "new" | "learning" | "review" | "mastered";
+export type Answer = "know" | "unsure" | "dontknow";
+
+export type CardState ="new" | "learning" | "review" | "mastered";
 
 export interface CardProgress {
   state: CardState;

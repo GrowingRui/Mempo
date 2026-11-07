@@ -1,5 +1,5 @@
 import { addDays, toDay } from "./date";
-import type { CardProgress, Progress, Word } from "./types";
+import type { Answer, CardProgress, Progress, Word } from "./types";
 
 /** FNV-1a hash: gives every word a fixed pseudo-random place in the study order,
  *  so new words aren't served alphabetically but the order is the same on every visit. */
@@ -27,29 +27,22 @@ export function buildSession(words: Word[], p: Progress, today = toDay()): Word[
     .slice(0, n);
 }
 
-/** Records one answer. Simple first version; Phase 3 replaces it with full Leitner boxes. */
-export function answer(p: Progress, wordId: string, know: boolean, today = toDay()): Progress {
+/**
+ * Records one answer. Simple first version; Phase 3 replaces it with full Leitner boxes.
+ * - know:     box +1, due tomorrow
+ * - unsure:   back to box 1, due tomorrow, but NOT added to the "Don't know" list
+ * - dontknow: back to box 1, due today, added to the "Don't know" list
+ */
+export function answer(p: Progress, wordId: string, result: Answer, today = toDay()): Progress {
   const prev = p.cards[wordId];
   const isNew = !prev;
-  const card: CardProgress = know
-    ? {
-        state: "review",
-        box: Math.min((prev?.box ?? 0) + 1, 6),
-        due: addDays(today, 1),
-        streak: (prev?.streak ?? 0) + 1,
-        lapses: prev?.lapses ?? 0,
-        inDontKnow: prev?.inDontKnow ?? false,
-        lastSeen: today,
-      }
-    : {
-        state: "learning",
-        box: 1,
-        due: today,
-        streak: 0,
-        lapses: (prev?.lapses ?? 0) + (isNew ? 0 : 1),
-        inDontKnow: true,
-        lastSeen: today,
-      };
+  const base = { lapses: prev?.lapses ?? 0, inDontKnow: prev?.inDontKnow ?? false, lastSeen: today };
+  const card: CardProgress =
+    result === "know"
+      ? { ...base, state: "review", box: Math.min((prev?.box ?? 0) + 1, 6), due: addDays(today, 1), streak: (prev?.streak ?? 0) + 1 }
+      : result === "unsure"
+        ? { ...base, state: "learning", box: 1, due: addDays(today, 1), streak: 0 }
+        : { ...base, state: "learning", box: 1, due: today, streak: 0, lapses: base.lapses + (isNew ? 0 : 1), inDontKnow: true };
   const day = p.history[today] ?? { new: 0, reviewed: 0 };
   return {
     ...p,

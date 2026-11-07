@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { site } from "../config/site";
 import { toDay } from "../lib/date";
 import { newWordsLeftToday } from "../lib/session";
@@ -12,6 +12,24 @@ const LEVEL_NAME: Record<Level, string> = {
 };
 
 const GOALS = [10, 20, 30, 50];
+const MIN_GOAL = 1;
+const MAX_GOAL = 500;
+
+function GoalChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={active}
+      onClick={onClick}
+      className={`min-w-0 flex-1 rounded-full border py-2.5 font-semibold tabular-nums transition active:scale-95 ${
+        active ? "border-brand bg-brand text-white" : "border-line bg-card hover:border-ink/30"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
 
 interface Props {
   progress: Progress;
@@ -45,6 +63,12 @@ export default function Home({ progress, setProgress, onStart }: Props) {
   const dontKnow = levelCards.filter((c) => c.inDontKnow).length;
   const total = index?.counts[settings.level] ?? levelIds?.length ?? 0;
   const allSeen = levelIds !== undefined && seen >= levelIds.length;
+
+  const [editingGoal, setEditingGoal] = useState(false);
+  const [goalDraft, setGoalDraft] = useState("");
+  const goalNum = Number(goalDraft);
+  const goalValid = Number.isInteger(goalNum) && goalNum >= MIN_GOAL && goalNum <= MAX_GOAL;
+  const isCustomGoal = !GOALS.includes(settings.dailyNew);
 
   const update = (patch: Partial<Progress["settings"]>) =>
     setProgress((p) => ({ ...p, settings: { ...p.settings, ...patch } }));
@@ -120,24 +144,58 @@ export default function Home({ progress, setProgress, onStart }: Props) {
       <section className="mt-7">
         <h2 className="mb-2.5 text-xs font-semibold tracking-[0.14em] text-muted uppercase">New words per day</h2>
         <div className="flex gap-2" role="radiogroup" aria-label="New words per day">
-          {GOALS.map((g) => {
-            const active = g === settings.dailyNew;
-            return (
-              <button
-                key={g}
-                type="button"
-                role="radio"
-                aria-checked={active}
-                onClick={() => update({ dailyNew: g })}
-                className={`flex-1 rounded-full border py-2.5 font-semibold tabular-nums transition active:scale-95 ${
-                  active ? "border-brand bg-brand text-white" : "border-line bg-card hover:border-ink/30"
-                }`}
-              >
-                {g}
-              </button>
-            );
-          })}
+          {GOALS.map((g) => (
+            <GoalChip key={g} active={!editingGoal && g === settings.dailyNew} onClick={() => { setEditingGoal(false); update({ dailyNew: g }); }}>
+              {g}
+            </GoalChip>
+          ))}
+          <GoalChip
+            active={editingGoal || isCustomGoal}
+            onClick={() => {
+              setGoalDraft(String(settings.dailyNew));
+              setEditingGoal(true);
+            }}
+          >
+            {isCustomGoal && !editingGoal ? settings.dailyNew : "Custom"}
+          </GoalChip>
         </div>
+        {editingGoal && (
+          <form
+            className="mt-3 flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (goalValid) {
+                update({ dailyNew: goalNum });
+                setEditingGoal(false);
+              }
+            }}
+          >
+            <input
+              type="number"
+              inputMode="numeric"
+              min={MIN_GOAL}
+              max={MAX_GOAL}
+              autoFocus
+              value={goalDraft}
+              onChange={(e) => setGoalDraft(e.target.value)}
+              aria-label="Your own number of new words per day"
+              className="w-24 rounded-full border border-line bg-card px-4 py-2.5 text-center font-semibold tabular-nums outline-none focus:border-brand"
+            />
+            <span className="text-sm text-muted">words a day</span>
+            <button
+              type="submit"
+              disabled={!goalValid}
+              className="ml-auto rounded-full bg-ink px-5 py-2.5 font-semibold text-paper transition active:scale-95 disabled:opacity-40"
+            >
+              Save
+            </button>
+          </form>
+        )}
+        {editingGoal && !goalValid && goalDraft !== "" && (
+          <p className="mt-2 text-sm text-dontknow">
+            Choose a number from {MIN_GOAL} to {MAX_GOAL}.
+          </p>
+        )}
       </section>
 
       <div className="mt-auto pt-8">
@@ -159,6 +217,7 @@ export default function Home({ progress, setProgress, onStart }: Props) {
             Today’s goal is done. See you tomorrow!
           </p>
         )}
+        <p className="mt-3 text-center text-xs text-muted">Your progress is saved automatically in this browser.</p>
       </div>
     </main>
   );

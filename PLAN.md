@@ -183,14 +183,16 @@ How it works:
 - [x] Card component: flip front and back, speech button
 - [x] "Know" / "Don't know" buttons
 - [x] Save progress to localStorage
-- [ ] First deploy to Vercel (check that the pipeline works early)
+- [x] First deploy to Vercel (check that the pipeline works early) (done by the user 2026-11-07)
+- [x] Added on request: custom daily goal (1–500 words, "Custom" chip next to 10/20/30/50)
+- [x] Added on request: a third answer, **"Not sure"**, between Know and Don't know
 
 Commands: `npm run dev` (local dev server), `npm run build` (type-check + build to `dist/`), `npm run preview`.
 
 How it works so far:
 - Screens switch with React state (no router yet). `src/lib/session.ts` picks today's new words in a fixed shuffled order (hash of the word id), so they're not alphabetical and the order is the same on every visit.
 - The daily goal counts new words across all levels per calendar day (local time).
-- `answer()` in `session.ts` is a simple placeholder: "know" → box +1, due tomorrow; "don't know" → box 1 and added to the "Don't know" list. Phase 3 replaces it with full Leitner boxes and re-queueing.
+- `answer()` in `session.ts` is a simple placeholder: "know" → box +1, due tomorrow; "not sure" → box 1, due tomorrow, *not* added to the "Don't know" list; "don't know" → box 1 and added to the "Don't know" list. Phase 3 replaces it with full Leitner boxes and re-queueing (decide then whether "not sure" cards also come back later in the same session).
 - Progress is saved under the localStorage key `mempo:progress`, in the format from section 2.
 
 ### Phase 3: Learning logic and swiping (4–6 days)

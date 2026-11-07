@@ -13,6 +13,8 @@
   --color-brand-dark: #c94b29;
   --color-know: #2f9e6e;
   --color-dontknow: #d9483b;
+  --color-unsure: #f2b544;
+  --color-unsure-dark: #a26a06;
 }
 
 html,

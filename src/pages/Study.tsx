@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import WordCard from "../components/WordCard";
 import { answer, buildSession } from "../lib/session";
-import type { Progress, Word } from "../lib/types";
+import type { Answer, Progress, Word } from "../lib/types";
 import { loadWords } from "../lib/words";
 
 interface Props {
@@ -16,7 +16,7 @@ export default function Study({ progress, setProgress, onExit }: Props) {
   const [error, setError] = useState<string>();
   const [pos, setPos] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [tally, setTally] = useState({ know: 0, dontKnow: 0 });
+  const [tally, setTally] = useState<Record<Answer, number>>({ know: 0, unsure: 0, dontknow: 0 });
 
   // Build the session once, from progress as it was when the screen opened.
   const startProgress = useRef(progress);
@@ -28,10 +28,10 @@ export default function Study({ progress, setProgress, onExit }: Props) {
 
   const word = queue?.[pos];
 
-  const respond = (know: boolean) => {
+  const respond = (result: Answer) => {
     if (!word) return;
-    setProgress((p) => answer(p, word.id, know));
-    setTally((t) => (know ? { ...t, know: t.know + 1 } : { ...t, dontKnow: t.dontKnow + 1 }));
+    setProgress((p) => answer(p, word.id, result));
+    setTally((t) => ({ ...t, [result]: t[result] + 1 }));
     setFlipped(false);
     setPos((i) => i + 1);
   };
@@ -66,8 +66,12 @@ export default function Study({ progress, setProgress, onExit }: Props) {
               <div className="text-2xl font-semibold tabular-nums">{tally.know}</div>
               <div className="text-sm">knew</div>
             </div>
+            <div className="rounded-2xl bg-unsure/15 px-5 py-3 text-unsure-dark">
+              <div className="text-2xl font-semibold tabular-nums">{tally.unsure}</div>
+              <div className="text-sm">not sure</div>
+            </div>
             <div className="rounded-2xl bg-dontknow/10 px-5 py-3 text-dontknow">
-              <div className="text-2xl font-semibold tabular-nums">{tally.dontKnow}</div>
+              <div className="text-2xl font-semibold tabular-nums">{tally.dontknow}</div>
               <div className="text-sm">to practise</div>
             </div>
           </div>
@@ -78,12 +82,17 @@ export default function Study({ progress, setProgress, onExit }: Props) {
   }
 
   const knowBtn = (
-    <AnswerButton key="know" tone="know" onClick={() => respond(true)}>
+    <AnswerButton key="know" tone="know" onClick={() => respond("know")}>
       Know
     </AnswerButton>
   );
+  const unsureBtn = (
+    <AnswerButton key="unsure" tone="unsure" onClick={() => respond("unsure")}>
+      Not sure
+    </AnswerButton>
+  );
   const dontBtn = (
-    <AnswerButton key="dont" tone="dontknow" onClick={() => respond(false)}>
+    <AnswerButton key="dont" tone="dontknow" onClick={() => respond("dontknow")}>
       Don’t know
     </AnswerButton>
   );
@@ -114,18 +123,26 @@ export default function Study({ progress, setProgress, onExit }: Props) {
         <WordCard key={word.id} word={word} flipped={flipped} onFlip={() => setFlipped((f) => !f)} settings={settings} />
       </div>
 
-      <div className="mt-5 flex gap-3">{settings.swipeKnow === "left" ? [knowBtn, dontBtn] : [dontBtn, knowBtn]}</div>
+      <div className="mt-5 flex gap-2.5">
+        {settings.swipeKnow === "left" ? [knowBtn, unsureBtn, dontBtn] : [dontBtn, unsureBtn, knowBtn]}
+      </div>
     </main>
   );
 }
 
-function AnswerButton({ tone, onClick, children }: { tone: "know" | "dontknow"; onClick: () => void; children: ReactNode }) {
-  const cls =
-    tone === "know"
-      ? "bg-know text-white shadow-[0_10px_22px_-12px_var(--color-know)]"
-      : "bg-dontknow text-white shadow-[0_10px_22px_-12px_var(--color-dontknow)]";
+const TONE_CLASS: Record<Answer, string> = {
+  know: "bg-know text-white shadow-[0_10px_22px_-12px_var(--color-know)]",
+  unsure: "bg-unsure text-ink shadow-[0_10px_22px_-12px_var(--color-unsure)]",
+  dontknow: "bg-dontknow text-white shadow-[0_10px_22px_-12px_var(--color-dontknow)]",
+};
+
+function AnswerButton({ tone, onClick, children }: { tone: Answer; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} className={`flex-1 rounded-full py-4 text-lg font-semibold transition active:scale-[0.97] ${cls}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-1 rounded-full px-2 py-4 text-base font-semibold whitespace-nowrap transition active:scale-[0.97] ${TONE_CLASS[tone]}`}
+    >
       {children}
     </button>
   );
