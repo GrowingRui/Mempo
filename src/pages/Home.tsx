@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { Screen } from "../App";
 import Flame from "../components/Flame";
+import { InstallBanner } from "../components/Install";
 import Mascot from "../components/Mascot";
 import { site } from "../config/site";
 import { toDay } from "../lib/date";
@@ -289,6 +290,7 @@ export default function Home({ progress, setProgress, go }: Props) {
             </p>
           </div>
         )}
+        <InstallBanner />
         <p className="mt-4 text-center text-xs font-semibold text-muted">Your progress is saved in this browser.</p>
       </div>
     </main>

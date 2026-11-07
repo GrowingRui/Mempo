@@ -247,6 +247,13 @@ How items 3–5 work:
 - **Backup** (Settings → Your progress, `src/lib/backup.ts`): "Download backup" saves `mempo-backup-YYYY-MM-DD.json` = `{ app, version, exportedAt, progress }` (progress in the section 2 format). "Restore backup" reads a file, shows what's in it (date, words, days of history) and replaces this browser's progress and settings after a confirmation. Broken entries are skipped (`normalizeProgress` in `src/lib/storage.ts`, which now also cleans what's loaded from localStorage); a file that isn't a backup gives a clear message. `ResetDialog` and the restore dialog share `src/components/ConfirmDialog.tsx`.
 - **Phone layout**: every screen checked at 320 / 360 / 390 / 430 px wide, light and dark, plus short screens. Fixes: Home's header no longer overlaps or truncates the tagline on small phones; tiles, level names and the "Custom" chip fit at 320 px; the study card's minimum height drops on short screens (under 720 px tall), so the answer buttons stay on screen on an iPhone SE in Safari.
 
+### After Phase 4 (added on request, 2026-11-07)
+- [x] **"Install app" button** (`src/lib/install.ts`, `src/components/Install.tsx`), waiting for approval:
+  - Home: a small "Get the app" card under Start, with **Install** and × (× hides it for good in this browser, key `mempo:install-dismissed`). Settings → Offline: an "Install the app" row that always explains the situation.
+  - Chrome / Edge / Samsung Internet: the button opens the browser's own install dialog (`beforeinstallprompt`, caught in `main.tsx` before React renders). iPhone / iPad: a sheet with Share → Add to Home Screen. Android without the event (Firefox): menu → Install. Safari on a Mac: File → Add to Dock.
+  - Hidden when running as the installed app ("You're using the installed app") and right after installing. Desktop Firefox can't install, so Settings says which browsers can.
+- [x] **README.md** for the GitHub repo: what Mempo is, how to use it, installing on each device, offline use, backups, developer commands, credits. Screenshots in `docs/`.
+
 ### Phase 5: Deploy to Vercel (half a day)
 - [ ] Push the repo to GitHub
 - [ ] vercel.com → "Add New Project" → import the repo → framework preset **Vite** → Deploy

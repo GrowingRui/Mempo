@@ -1,5 +1,6 @@
 import { useRef, useState, type ReactNode } from "react";
 import ConfirmDialog from "../components/ConfirmDialog";
+import { InstallRow } from "../components/Install";
 import OfflineAudio from "../components/OfflineAudio";
 import ResetDialog from "../components/ResetDialog";
 import ScreenHeader from "../components/ScreenHeader";
@@ -142,7 +143,8 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
         />
       </Section>
 
-      <Section title="Offline" hint="Once loaded, Mempo works without internet. Add it to your home screen to use it like an app.">
+      <Section title="Offline" hint="Once loaded, Mempo works without internet.">
+        <InstallRow />
         <OfflineAudio />
       </Section>
 
