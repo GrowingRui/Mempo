@@ -2,7 +2,9 @@ import { useEffect } from "react";
 import { playWord, preloadWord } from "../lib/speech";
 
 export default function SpeakButton({ id, text, className = "" }: { id: string; text: string; className?: string }) {
-  useEffect(() => preloadWord(id), [id]);
+  useEffect(() => {
+    preloadWord(id);
+  }, [id]);
   return (
     <button
       type="button"

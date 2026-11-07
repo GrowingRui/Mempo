@@ -6,6 +6,14 @@ export function toDay(d: Date = new Date()): string {
   return `${y}-${m}-${day}`;
 }
 
+/** "today", "tomorrow", or e.g. "Tue 10 Nov". */
+export function formatDay(day: string, today = toDay()): string {
+  if (day <= today) return "today";
+  if (day === addDays(today, 1)) return "tomorrow";
+  const [y, m, d] = day.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+}
+
 export function addDays(day: string, n: number): string {
   const [y, m, d] = day.split("-").map(Number);
   return toDay(new Date(y, m - 1, d + n));

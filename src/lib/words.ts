@@ -1,4 +1,4 @@
-import type { Level, Word } from "./types";
+import { LEVELS, type Level, type Word } from "./types";
 
 const cache = new Map<Level, Promise<Word[]>>();
 
@@ -13,6 +13,11 @@ export function loadWords(level: Level): Promise<Word[]> {
     cache.set(level, p);
   }
   return p;
+}
+
+/** Every word from B2, C1 and C2 (reviews and the word list span all levels). */
+export function loadAllWords(): Promise<Word[]> {
+  return Promise.all(LEVELS.map(loadWords)).then((lists) => lists.flat());
 }
 
 export interface LevelIndex {

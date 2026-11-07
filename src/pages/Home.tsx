@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { site } from "../config/site";
 import { toDay } from "../lib/date";
-import { newWordsLeftToday } from "../lib/session";
+import type { Screen } from "../App";
+import { newWordsLeftToday, sessionParts } from "../lib/session";
 import { LEVELS, type Level, type Progress } from "../lib/types";
 import { loadIndex, loadWords, type LevelIndex } from "../lib/words";
 
@@ -31,13 +32,31 @@ function GoalChip({ active, onClick, children }: { active: boolean; onClick: () 
   );
 }
 
+function NavTile({ onClick, n, label, tone }: { onClick: () => void; n: number | undefined; label: string; tone: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-2xl border border-line bg-card px-3 py-3 text-left transition hover:border-ink/30 active:scale-[0.97]"
+    >
+      <span className={`block text-xl font-semibold tabular-nums ${tone}`}>{n === undefined ? "…" : n.toLocaleString()}</span>
+      <span className="flex items-center justify-between text-xs text-muted">
+        {label}
+        <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </span>
+    </button>
+  );
+}
+
 interface Props {
   progress: Progress;
   setProgress: (fn: (p: Progress) => Progress) => void;
-  onStart: () => void;
+  go: (s: Screen) => void;
 }
 
-export default function Home({ progress, setProgress, onStart }: Props) {
+export default function Home({ progress, setProgress, go }: Props) {
   const { settings, cards } = progress;
   const [index, setIndex] = useState<LevelIndex>();
   const [levelIds, setLevelIds] = useState<string[]>();
@@ -60,9 +79,18 @@ export default function Home({ progress, setProgress, onStart }: Props) {
 
   const levelCards = levelIds?.map((id) => cards[id]).filter(Boolean) ?? [];
   const seen = levelCards.length;
-  const dontKnow = levelCards.filter((c) => c.inDontKnow).length;
   const total = index?.counts[settings.level] ?? levelIds?.length ?? 0;
   const allSeen = levelIds !== undefined && seen >= levelIds.length;
+
+  // Today's session: due reviews → "Don't know" words → new words (reviews come from every level).
+  const parts = sessionParts(progress, today);
+  const newCount = levelIds ? Math.min(left, levelIds.length - seen) : left;
+  const sessionSize = parts.reviews.length + parts.dontKnow.length + newCount;
+  const breakdown = [
+    parts.reviews.length && `${parts.reviews.length} review${parts.reviews.length === 1 ? "" : "s"}`,
+    parts.dontKnow.length && `${parts.dontKnow.length} don’t know`,
+    newCount && `${newCount} new`,
+  ].filter(Boolean);
 
   const [editingGoal, setEditingGoal] = useState(false);
   const [goalDraft, setGoalDraft] = useState("");
@@ -95,20 +123,18 @@ export default function Home({ progress, setProgress, onStart }: Props) {
         <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-ink/[0.07]">
           <div className="h-full rounded-full bg-brand transition-[width] duration-500" style={{ width: `${goalPct}%` }} />
         </div>
-        <dl className="mt-5 grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-2xl bg-paper px-4 py-3">
-            <dt className="text-muted">Seen in {settings.level}</dt>
-            <dd className="mt-0.5 text-lg font-semibold tabular-nums">
-              {levelIds ? seen.toLocaleString() : "…"}
-              <span className="text-sm font-normal text-muted"> / {total.toLocaleString()}</span>
-            </dd>
-          </div>
-          <div className="rounded-2xl bg-paper px-4 py-3">
-            <dt className="text-muted">Don’t know</dt>
-            <dd className="mt-0.5 text-lg font-semibold text-dontknow tabular-nums">{levelIds ? dontKnow : "…"}</dd>
-          </div>
-        </dl>
+        <p className="mt-4 text-sm text-muted">
+          Seen in {settings.level}:{" "}
+          <span className="font-semibold text-ink tabular-nums">{levelIds ? seen.toLocaleString() : "…"}</span> / {total.toLocaleString()}
+        </p>
       </section>
+
+      {/* Other screens */}
+      <nav className="mt-4 grid grid-cols-3 gap-2.5" aria-label="Practice">
+        <NavTile onClick={() => go({ name: "study", mode: "review" })} n={parts.allDue} label="Reviews due" tone="text-brand" />
+        <NavTile onClick={() => go({ name: "dontknow" })} n={parts.dontKnowTotal} label="Don’t know" tone="text-dontknow" />
+        <NavTile onClick={() => go({ name: "words" })} n={index?.counts.total} label="All words" tone="text-ink" />
+      </nav>
 
       {/* Level */}
       <section className="mt-7">
@@ -199,22 +225,19 @@ export default function Home({ progress, setProgress, onStart }: Props) {
       </section>
 
       <div className="mt-auto pt-8">
-        {allSeen ? (
-          <p className="rounded-2xl bg-know/10 px-5 py-4 text-center font-semibold text-know">
-            You’ve seen every {settings.level} word. Try another level!
-          </p>
-        ) : left > 0 ? (
+        {sessionSize > 0 ? (
           <button
             type="button"
-            onClick={onStart}
+            onClick={() => go({ name: "study", mode: "today" })}
             disabled={!levelIds}
-            className="w-full rounded-full bg-brand py-4 text-lg font-semibold text-white shadow-[0_10px_24px_-10px_var(--color-brand)] transition hover:bg-brand-dark active:scale-[0.98] disabled:opacity-60"
+            className="w-full rounded-full bg-brand py-3.5 text-white shadow-[0_10px_24px_-10px_var(--color-brand)] transition hover:bg-brand-dark active:scale-[0.98] disabled:opacity-60"
           >
-            {doneToday === 0 ? "Start" : "Continue"} · {left} new word{left === 1 ? "" : "s"}
+            <span className="block text-lg font-semibold">{doneToday === 0 && !progress.history[today]?.reviewed ? "Start" : "Continue"}</span>
+            <span className="block text-sm text-white/80">{breakdown.join(" · ")}</span>
           </button>
         ) : (
           <p className="rounded-2xl bg-know/10 px-5 py-4 text-center font-semibold text-know">
-            Today’s goal is done. See you tomorrow!
+            {allSeen && left > 0 ? `You’ve seen every ${settings.level} word. Try another level!` : "All done for today. See you tomorrow!"}
           </p>
         )}
         <p className="mt-3 text-center text-xs text-muted">Your progress is saved automatically in this browser.</p>

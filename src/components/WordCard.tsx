@@ -2,13 +2,13 @@ import type { Gloss, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import SpeakButton from "./SpeakButton";
 
-const POS_LABEL: Record<string, string> = {
+export const POS_LABEL: Record<string, string> = {
   n: "noun", v: "verb", adj: "adjective", adv: "adverb", prep: "preposition",
   conj: "conjunction", pron: "pronoun", interj: "interjection", num: "number",
   det: "determiner", phr: "phrase", abbr: "abbreviation",
 };
 
-function GlossList({ label, glosses }: { label: string; glosses: Gloss[] }) {
+export function GlossList({ label, glosses }: { label: string; glosses: Gloss[] }) {
   if (glosses.length === 0) return null;
   return (
     <section>

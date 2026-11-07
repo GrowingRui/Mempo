@@ -56,7 +56,7 @@ BUILD TIME (local PC, run once)            RUNTIME (user's browser)
 ```
 
 - **Frontend:** React + Vite + TypeScript
-- **Swipe and animation:** Motion (Framer Motion) drag gestures
+- **Swipe and animation:** Motion (`motion` package, formerly Framer Motion) drag gestures
 - **Styling:** Tailwind CSS
 - **Storage:** IndexedDB (via `idb-keyval`) or localStorage. No backend at first.
 - **Pronunciation:** pre-made MP3 per word in `public/audio/` (~35 MB), generated once by `scripts/gen-audio.py` with Piper TTS, British voice "cori" (free, runs locally, public-domain training data). Same accent on every device. Falls back to browser `speechSynthesis` if a file is missing. (Browser voices alone were not enough: they depend on the voices installed on the device, e.g. Firefox on a Spanish Windows read English with a Spanish voice.)
@@ -175,7 +175,7 @@ How it works:
 - **Hand fixes** (`scripts/manual.ts`): ~390 translations the sources missed or got wrong, plus 35 hand-written examples (no `source`). Re-check the report after each run.
 - Known limits: Spanish from Wiktionary is sometimes off for less common words; `manual.ts` is the place to correct them as you notice them while studying. A few list entries look like errors in the source list (unscathing, bereftly, evokingly, vol); they are kept and translated as best as possible.
 
-### Phase 2: Basic working app (MVP) (in progress, started 2026-11-07)
+### Phase 2: Basic working app (MVP) ✅ (done 2026-11-07)
 - [x] Vite + React + TS + Tailwind project setup (Vite 8, React 19, Tailwind 4, TypeScript 7)
 - [x] `git init` and connect to the `GrowingRui/Mempo` GitHub repo (remote `origin` set; first push pending)
 - [x] `src/config/site.ts` holds the app name, tagline and URLs in one place, so the app can be renamed later by editing one file
@@ -192,16 +192,27 @@ Commands: `npm run dev` (local dev server), `npm run build` (type-check + build 
 How it works so far:
 - Screens switch with React state (no router yet). `src/lib/session.ts` picks today's new words in a fixed shuffled order (hash of the word id), so they're not alphabetical and the order is the same on every visit.
 - The daily goal counts new words across all levels per calendar day (local time).
-- `answer()` in `session.ts` is a simple placeholder: "know" → box +1, due tomorrow; "not sure" → box 1, due tomorrow, *not* added to the "Don't know" list; "don't know" → box 1 and added to the "Don't know" list. Phase 3 replaces it with full Leitner boxes and re-queueing (decide then whether "not sure" cards also come back later in the same session).
+- `answer()` started as a simple placeholder; Phase 3 replaced it with full Leitner boxes (`src/lib/srs.ts`).
 - Progress is saved under the localStorage key `mempo:progress`, in the format from section 2.
 
-### Phase 3: Learning logic and swiping (4–6 days)
-- [ ] Spaced repetition (Leitner boxes, due dates)
-- [ ] Session queue: due reviews → don't-know words → new words; failed cards are put back into the queue
-- [ ] "Don't know" list logic (join and leave)
-- [ ] Swipe gestures with Motion (drag, colour hint, fly off, snap back)
-- [ ] Keyboard arrows for desktop
-- [ ] Review, Don't know list and Word list screens
+### Phase 3: Learning logic and swiping ✅ (done 2026-11-07, waiting for approval)
+- [x] Spaced repetition (Leitner boxes, due dates): `src/lib/srs.ts`
+- [x] Session queue: due reviews → don't-know words → new words; failed cards are put back into the queue (`src/lib/session.ts`)
+- [x] "Don't know" list logic (join and leave)
+- [x] Swipe gestures with Motion (drag, colour hint, fly off, snap back): `src/components/SwipeCard.tsx`
+- [x] Keyboard arrows for desktop
+- [x] Review, Don't know list and Word list screens
+
+How it works:
+- **Boxes:** "know" moves a card up one box; boxes 1–6 mean 1 / 3 / 7 / 14 / 30 / 60 days. "Know" in box 6 makes it `mastered` (no more reviews). A new word you already know starts in **box 2** (due in 3 days), so known words don't come back the next day.
+- **Not sure:** down one box, due tomorrow; not added to the "Don't know" list. **Don't know:** box 1, due tomorrow, added to the list. A *lapse* is counted when a card in box 2+ is answered "don't know".
+- **Only the first answer of the day moves a card up.** Seeing a card again the same day (it came back in the session, or the list was practised twice) never pushes it further out; a wrong answer always counts.
+- **Leaving the "Don't know" list:** 2 "know" answers on 2 different days in a row. Getting it right later on the same day you missed it doesn't count.
+- **Inside a session:** a "don't know" card comes back 3–5 cards later, a "not sure" card 6–9 cards later (or at the end), until it's answered "know".
+- **Reviews and the "Don't know" list cover all levels**; new words come from the chosen level. Home shows due reviews, list size and a breakdown on the Start button.
+- **Swiping:** left / right follow the "know" side setting (default left = know), **up = not sure**. Release past 110 px or flick fast to answer; otherwise the card springs back. Tapping flips; a drag never flips. Keys: ← → ↑, Space / Enter flips, Esc leaves.
+- **Review** opens the study screen with due cards only (shows the next review date if none). **Don't know** lists the words (most recently missed first) with a "Practise these" button. **Word list** searches English, Chinese and Spanish (accents ignored), filters by level and status, and opens a word to show its meanings and next review.
+- Progress saved by Phase 2 still loads; the new rules apply from the next answer.
 
 ### Phase 4: Polish (3–5 days)
 - [ ] Stats + daily streak

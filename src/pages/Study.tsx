@@ -1,40 +1,85 @@
+import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import WordCard from "../components/WordCard";
-import { answer, buildSession } from "../lib/session";
+import { CloseButton } from "../components/ScreenHeader";
+import SwipeCard, { answerDir, dirAnswers, type SwipeDir } from "../components/SwipeCard";
+import { formatDay } from "../lib/date";
+import { buildSession, requeue, type SessionMode } from "../lib/session";
+import { answer, nextReview } from "../lib/srs";
 import type { Answer, Progress, Word } from "../lib/types";
-import { loadWords } from "../lib/words";
+import { loadAllWords } from "../lib/words";
 
 interface Props {
+  mode: SessionMode;
   progress: Progress;
   setProgress: (fn: (p: Progress) => Progress) => void;
   onExit: () => void;
 }
 
-export default function Study({ progress, setProgress, onExit }: Props) {
+/** One turn in the queue. The same word can appear more than once (it comes back after a miss), so each turn has its own key. */
+interface Turn {
+  word: Word;
+  key: number;
+}
+
+const EMPTY: Record<SessionMode, string> = {
+  today: "Nothing left to study today.",
+  review: "No reviews due right now.",
+  dontknow: "Your “Don’t know” list is empty. Nice!",
+};
+
+export default function Study({ mode, progress, setProgress, onExit }: Props) {
   const { settings } = progress;
-  const [queue, setQueue] = useState<Word[]>();
+  const [queue, setQueue] = useState<Turn[]>();
   const [error, setError] = useState<string>();
   const [pos, setPos] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [tally, setTally] = useState<Record<Answer, number>>({ know: 0, unsure: 0, dontknow: 0 });
+  const [exitDir, setExitDir] = useState<SwipeDir>("left");
+  const [firstAnswer, setFirstAnswer] = useState<Record<string, Answer>>({});
+  const nextKey = useRef(0);
 
   // Build the session once, from progress as it was when the screen opened.
   const startProgress = useRef(progress);
   useEffect(() => {
-    loadWords(settings.level)
-      .then((ws) => setQueue(buildSession(ws, startProgress.current)))
+    loadAllWords()
+      .then((ws) => setQueue(buildSession(ws, startProgress.current, mode).map((word) => ({ word, key: nextKey.current++ }))))
       .catch((e: Error) => setError(e.message));
-  }, [settings.level]);
+  }, [mode]);
 
-  const word = queue?.[pos];
+  const turn = queue?.[pos];
 
-  const respond = (result: Answer) => {
-    if (!word) return;
-    setProgress((p) => answer(p, word.id, result));
-    setTally((t) => ({ ...t, [result]: t[result] + 1 }));
+  const respond = (result: Answer, dir?: SwipeDir) => {
+    if (!queue || !turn) return;
+    const id = turn.word.id;
+    setExitDir(dir ?? answerDir(settings, result));
+    setProgress((p) => answer(p, id, result));
+    setFirstAnswer((f) => (id in f ? f : { ...f, [id]: result }));
+    setQueue(requeue(queue, pos, { word: turn.word, key: nextKey.current++ }, result));
+    setPos(pos + 1);
     setFlipped(false);
-    setPos((i) => i + 1);
   };
+
+  // Keyboard: arrows answer (same directions as swiping), Space / Enter flips.
+  const respondRef = useRef(respond);
+  respondRef.current = respond;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.target instanceof HTMLElement && e.target.closest("input, textarea, select")) return;
+      const dirs: Record<string, SwipeDir> = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up" };
+      const dir = dirs[e.key];
+      if (dir) {
+        e.preventDefault();
+        respondRef.current(dirAnswers(settings)[dir], dir);
+      } else if ((e.key === " " || e.key === "Enter") && !(e.target instanceof HTMLElement && e.target.closest("button, a"))) {
+        e.preventDefault();
+        setFlipped((f) => !f);
+      } else if (e.key === "Escape") {
+        onExit();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [settings, onExit]);
 
   if (error) {
     return (
@@ -53,80 +98,103 @@ export default function Study({ progress, setProgress, onExit }: Props) {
     );
   }
 
-  if (!word) {
+  const unique = new Set(queue.map((t) => t.word.id)).size;
+
+  if (!turn) {
+    const next = nextReview(progress);
+    const tally = { know: 0, unsure: 0, dontknow: 0 };
+    for (const a of Object.values(firstAnswer)) tally[a]++;
     return (
       <Centered>
-        <p className="font-display text-4xl font-semibold">Nice work!</p>
-        <p className="mt-2 text-muted">
-          {queue.length === 0 ? "No new words left for today." : `You went through ${queue.length} new word${queue.length === 1 ? "" : "s"}.`}
-        </p>
-        {queue.length > 0 && (
-          <div className="mt-6 flex gap-3">
-            <div className="rounded-2xl bg-know/10 px-5 py-3 text-know">
-              <div className="text-2xl font-semibold tabular-nums">{tally.know}</div>
-              <div className="text-sm">knew</div>
+        {queue.length === 0 ? (
+          <p className="font-display text-3xl font-semibold">{EMPTY[mode]}</p>
+        ) : (
+          <>
+            <p className="font-display text-4xl font-semibold">Nice work!</p>
+            <p className="mt-2 text-muted">
+              You went through {unique} word{unique === 1 ? "" : "s"}.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <Tally tone="bg-know/10 text-know" n={tally.know} label="knew" />
+              <Tally tone="bg-unsure/15 text-unsure-dark" n={tally.unsure} label="not sure" />
+              <Tally tone="bg-dontknow/10 text-dontknow" n={tally.dontknow} label="didn’t know" />
             </div>
-            <div className="rounded-2xl bg-unsure/15 px-5 py-3 text-unsure-dark">
-              <div className="text-2xl font-semibold tabular-nums">{tally.unsure}</div>
-              <div className="text-sm">not sure</div>
-            </div>
-            <div className="rounded-2xl bg-dontknow/10 px-5 py-3 text-dontknow">
-              <div className="text-2xl font-semibold tabular-nums">{tally.dontknow}</div>
-              <div className="text-sm">to practise</div>
-            </div>
-          </div>
+            {tally.know < unique && <p className="mt-4 max-w-xs text-sm text-muted">Every word came back until you knew it.</p>}
+          </>
+        )}
+        {next && (
+          <p className="mt-6 text-sm text-muted">
+            Next review: <span className="font-semibold text-ink">{formatDay(next.day)}</span> · {next.count} word{next.count === 1 ? "" : "s"}
+          </p>
         )}
         <BackButton onClick={onExit} />
       </Centered>
     );
   }
 
-  const knowBtn = (
-    <AnswerButton key="know" tone="know" onClick={() => respond("know")}>
-      Know
-    </AnswerButton>
-  );
-  const unsureBtn = (
-    <AnswerButton key="unsure" tone="unsure" onClick={() => respond("unsure")}>
-      Not sure
-    </AnswerButton>
-  );
-  const dontBtn = (
-    <AnswerButton key="dont" tone="dontknow" onClick={() => respond("dontknow")}>
-      Don’t know
+  const remaining = new Set(queue.slice(pos).map((t) => t.word.id)).size;
+  const answers = dirAnswers(settings);
+  const prevCard = startProgress.current.cards[turn.word.id];
+  const kind = mode === "dontknow" || prevCard?.inDontKnow ? "Don’t know" : prevCard ? "Review" : "New word";
+  const again = queue.slice(0, pos).some((t) => t.word.id === turn.word.id);
+
+  const btn = (a: Answer) => (
+    <AnswerButton key={a} tone={a} onClick={() => respond(a)}>
+      {a === "know" ? "Know" : a === "unsure" ? "Not sure" : "Don’t know"}
     </AnswerButton>
   );
 
   return (
     <main className="flex flex-1 flex-col">
-      <header className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={onExit}
-          aria-label="Back to home"
-          className="grid size-10 shrink-0 place-items-center rounded-full text-muted transition hover:bg-ink/5 hover:text-ink"
-        >
-          <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
-        </button>
+      <header className="flex items-center gap-3">
+        <CloseButton onClick={onExit} />
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-ink/[0.07]">
-          <div className="h-full rounded-full bg-brand transition-[width] duration-300" style={{ width: `${(pos / queue.length) * 100}%` }} />
+          <div
+            className="h-full rounded-full bg-brand transition-[width] duration-300"
+            style={{ width: `${((unique - remaining) / unique) * 100}%` }}
+          />
         </div>
-        <span className="w-14 text-right text-sm text-muted tabular-nums">
-          {pos + 1} / {queue.length}
-        </span>
+        <span className="w-14 text-right text-sm text-muted tabular-nums">{remaining} left</span>
       </header>
 
-      <div className="relative mt-5 min-h-[440px] flex-1">
-        {/* key: a fresh card for each word, so the next word never animates in showing its back */}
-        <WordCard key={word.id} word={word} flipped={flipped} onFlip={() => setFlipped((f) => !f)} settings={settings} />
+      <p className="mt-3 text-center text-xs font-semibold tracking-[0.14em] text-muted uppercase">
+        {kind}
+        {again && <span className="text-dontknow"> · again</span>}
+      </p>
+
+      <div className="relative mt-3 min-h-[440px] flex-1">
+        {/* the next card peeking out behind */}
+        {pos + 1 < queue.length && (
+          <div aria-hidden className="absolute inset-0 translate-y-3 scale-[0.95] rounded-[28px] border border-line bg-card opacity-80" />
+        )}
+        <AnimatePresence custom={exitDir} initial={false}>
+          <SwipeCard
+            key={turn.key}
+            word={turn.word}
+            flipped={flipped}
+            onFlip={() => setFlipped((f) => !f)}
+            settings={settings}
+            onSwipe={(dir) => respond(answers[dir], dir)}
+          />
+        </AnimatePresence>
       </div>
 
-      <div className="mt-5 flex gap-2.5">
-        {settings.swipeKnow === "left" ? [knowBtn, unsureBtn, dontBtn] : [dontBtn, unsureBtn, knowBtn]}
+      <div className="mt-6 flex gap-2.5">
+        {settings.swipeKnow === "left" ? [btn("know"), btn("unsure"), btn("dontknow")] : [btn("dontknow"), btn("unsure"), btn("know")]}
       </div>
+      <p className="mt-3 text-center text-xs text-muted">
+        Swipe or use the arrow keys: ← {answers.left === "know" ? "Know" : "Don’t know"} · ↑ Not sure · {answers.right === "know" ? "Know" : "Don’t know"} →
+      </p>
     </main>
+  );
+}
+
+function Tally({ tone, n, label }: { tone: string; n: number; label: string }) {
+  return (
+    <div className={`rounded-2xl px-5 py-3 ${tone}`}>
+      <div className="text-2xl font-semibold tabular-nums">{n}</div>
+      <div className="text-sm">{label}</div>
+    </div>
   );
 }
 
