@@ -109,7 +109,7 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
         <div className="mt-6 flex flex-col items-center text-center">
           <Mascot mood="cheer" className="size-24" />
           <p className="mt-3 font-semibold text-muted">We suggest you learn</p>
-          <p className="font-display text-7xl leading-none font-extrabold text-brand">{rec}</p>
+          <p className="font-display text-7xl leading-none font-extrabold text-brand-ink">{rec}</p>
           <p className="mt-3 font-medium text-muted">
             {right} of {questions.length} right
             {known !== undefined && (
@@ -144,7 +144,7 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
 
         <div className="mt-auto flex flex-col gap-3 pt-8">
           {isCurrent ? (
-            <p className="rounded-3xl border-2 border-know/30 bg-know/10 px-4 py-3 text-center font-display text-lg font-bold text-know-edge">
+            <p className="rounded-3xl border-2 border-know/30 bg-know/10 px-4 py-3 text-center font-display text-lg font-bold text-know-ink">
               {rec} is already your level. Nice!
             </p>
           ) : (
@@ -242,7 +242,7 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
         onClick={() => choose(null)}
         disabled={answered}
         className={`press mt-4 rounded-2xl border-2 py-3 font-display text-lg font-bold disabled:cursor-default ${
-          answered && picked === null ? "border-unsure bg-unsure text-ink [--edge:var(--color-unsure-edge)]" : "border-unsure/50 bg-card text-unsure-dark"
+          answered && picked === null ? "border-unsure bg-unsure text-deep [--edge:var(--color-unsure-edge)]" : "border-unsure/50 bg-card text-unsure-dark"
         } ${answered && picked !== null ? "opacity-50" : ""}`}
       >
         I don’t know

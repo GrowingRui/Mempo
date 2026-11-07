@@ -17,9 +17,9 @@ export const STATUS_LABEL: Record<WordStatus, string> = {
 const STATUS_CLASS: Record<WordStatus, string> = {
   new: "bg-paper text-muted",
   learning: "bg-unsure/25 text-unsure-dark",
-  review: "bg-brand-soft text-brand",
-  mastered: "bg-know/15 text-know-edge",
-  dontknow: "bg-dontknow/12 text-dontknow-edge",
+  review: "bg-brand-soft text-brand-ink",
+  mastered: "bg-know/15 text-know-ink",
+  dontknow: "bg-dontknow/12 text-dontknow-ink",
 };
 
 /** A word in a list: tap to show its meanings and example. */

@@ -228,11 +228,17 @@ How it works:
   - Result: score per level, a rough count of known words (score × level size), and a suggested level = the first level under 80%. One tap switches the level. The test never changes learning progress.
 
 ### Phase 4: Polish (3–5 days)
-- [ ] Stats + daily streak
-- [ ] Settings screen (translation display, swipe direction, dark mode, move "Start over" here)
+- [x] Stats + daily streak (done 2026-11-07, waiting for approval)
+- [x] Settings screen (translation display, swipe direction, dark mode, move "Start over" here) (done 2026-11-07, waiting for approval)
 - [ ] PWA: manifest + service worker (`vite-plugin-pwa`) so the app installs on a phone and works offline
 - [ ] Export / import progress as a JSON file (backup)
 - [ ] Mobile layout testing
+
+How items 1 and 2 work:
+- **Streak** (`src/lib/stats.ts`): a day counts if at least one card was answered. Not studying yet today doesn't break the streak; it ends at yesterday until midnight. Home's header shows a flame with the streak (grey until you study today); tapping it opens **Stats**.
+- **Stats** (`src/pages/Stats.tsx`): streak and longest streak, words seen / mastered / days studied, a 14-day chart (new words at the bottom, reviews on top; tap a day for its numbers, a hidden table for screen readers) and a bar per level (mastered → reviewing → learning → don't know, rest = not seen) with the counts written underneath. Chart colours are `--color-bar-*` tokens, checked with the dataviz palette validator (light passes; in dark the yellow is a little brighter than its guideline, accepted to keep the app's "Not sure" yellow).
+- **Settings** (`src/pages/Settings.tsx`, the sliders button on Home): theme Light (default) / Dark / Auto, Chinese and Spanish on/off (at least one stays on), swipe direction, and "Start over" (moved from Home; `src/components/ResetDialog.tsx`). Level and daily goal stay on Home.
+- **Dark mode**: `:root.dark` in `src/index.css` gives the same colour names new values; `src/lib/theme.ts` sets the class and follows the device when on Auto; a small script in `index.html` sets it before the first paint. New tokens: `brand-ink` / `know-ink` / `dontknow-ink` for coloured text (lighter in dark), and `deep` (always-dark indigo) for text on yellow, the marker, Mempo's face and the dialog backdrop.
 
 ### Phase 5: Deploy to Vercel (half a day)
 - [ ] Push the repo to GitHub

@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showZh: true,
   showEs: true,
   swipeKnow: "left",
+  theme: "light",
 };
 
 export function emptyProgress(): Progress {

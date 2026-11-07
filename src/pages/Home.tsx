@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { Screen } from "../App";
+import Flame from "../components/Flame";
 import Mascot from "../components/Mascot";
 import { site } from "../config/site";
 import { toDay } from "../lib/date";
 import { newWordsLeftToday, sessionParts } from "../lib/session";
+import { streakOf } from "../lib/stats";
 import { LEVELS, type Level, type Progress } from "../lib/types";
 import { loadIndex, loadWords, type LevelIndex } from "../lib/words";
 
@@ -63,7 +65,6 @@ export default function Home({ progress, setProgress, go }: Props) {
   const { settings, cards } = progress;
   const [index, setIndex] = useState<LevelIndex>();
   const [levelIds, setLevelIds] = useState<string[]>();
-  const [confirmReset, setConfirmReset] = useState(false);
 
   useEffect(() => {
     loadIndex().then(setIndex).catch(() => {});
@@ -95,7 +96,7 @@ export default function Home({ progress, setProgress, go }: Props) {
     newCount ? `${newCount} new` : "",
   ].filter(Boolean);
   const started = doneToday > 0 || (progress.history[today]?.reviewed ?? 0) > 0;
-  const hasProgress = Object.keys(cards).length > 0;
+  const streak = streakOf(progress.history, today);
 
   const [editingGoal, setEditingGoal] = useState(false);
   const [goalDraft, setGoalDraft] = useState("");
@@ -110,16 +111,39 @@ export default function Home({ progress, setProgress, go }: Props) {
     <main className="flex flex-1 flex-col">
       <header className="flex items-center gap-3">
         <Mascot className="size-14 shrink-0" />
-        <div>
+        <div className="min-w-0">
           <h1 className="font-display text-[32px] leading-none font-extrabold tracking-tight">{site.name}</h1>
-          <p className="mt-1 font-semibold text-muted">{site.tagline}</p>
+          <p className="mt-1 truncate font-semibold text-muted">{site.tagline}</p>
+        </div>
+        <div className="ml-auto flex shrink-0 gap-2">
+          <button
+            type="button"
+            onClick={() => go({ name: "stats" })}
+            aria-label={`Stats. Streak: ${streak.current} ${streak.current === 1 ? "day" : "days"}`}
+            className="press flex h-11 items-center gap-1 rounded-2xl border-2 border-line bg-card pr-3 pl-2 [--depth:4px] hover:border-brand/40"
+          >
+            <Flame lit={streak.doneToday} className="size-6" />
+            <span className="font-display text-lg font-extrabold tabular-nums">{streak.current}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => go({ name: "settings" })}
+            aria-label="Settings"
+            className="press grid size-11 place-items-center rounded-2xl border-2 border-line bg-card [--depth:4px] hover:border-brand/40"
+          >
+            <svg viewBox="0 0 24 24" className="size-[22px]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+              <circle cx="15" cy="7" r="2.2" />
+              <circle cx="9" cy="17" r="2.2" />
+            </svg>
+          </button>
         </div>
       </header>
 
       {/* Today */}
       <section aria-label="Today" className="raised mt-7 rounded-[28px] border-2 border-line bg-card p-5">
         <p className="flex items-baseline gap-2">
-          <span className="font-display text-6xl leading-none font-extrabold text-brand tabular-nums">{doneToday}</span>
+          <span className="font-display text-6xl leading-none font-extrabold text-brand-ink tabular-nums">{doneToday}</span>
           <span className="font-display text-xl font-bold text-ink">of {settings.dailyNew} new words today</span>
         </p>
         <div className="mt-4 h-5 overflow-hidden rounded-full bg-brand-soft p-1">
@@ -136,7 +160,7 @@ export default function Home({ progress, setProgress, go }: Props) {
 
       {/* Other screens */}
       <nav className="mt-4 grid grid-cols-3 gap-2.5" aria-label="Practice">
-        <NavTile onClick={() => go({ name: "study", mode: "review" })} n={parts.allDue} label="Reviews due" tone="text-brand" />
+        <NavTile onClick={() => go({ name: "study", mode: "review" })} n={parts.allDue} label="Reviews due" tone="text-brand-ink" />
         <NavTile onClick={() => go({ name: "dontknow" })} n={parts.dontKnowTotal} label="Don’t know" tone="text-dontknow" />
         <NavTile onClick={() => go({ name: "words" })} n={index?.counts.total} label="All words" tone="text-ink" />
       </nav>
@@ -148,7 +172,7 @@ export default function Home({ progress, setProgress, go }: Props) {
           <button
             type="button"
             onClick={() => go({ name: "test" })}
-            className="text-sm font-bold text-brand underline decoration-2 underline-offset-2 hover:text-brand-dark"
+            className="text-sm font-bold text-brand-ink underline decoration-2 underline-offset-2 hover:text-ink"
           >
             Not sure? Take a level test
           </button>
@@ -232,7 +256,7 @@ export default function Home({ progress, setProgress, go }: Props) {
             <button
               type="submit"
               disabled={!goalValid}
-              className="press ml-auto rounded-2xl bg-ink px-5 py-2.5 font-bold text-white [--edge:#000] disabled:opacity-40"
+              className="press ml-auto rounded-2xl bg-brand px-5 py-2.5 font-bold text-white [--edge:var(--color-brand-edge)] disabled:opacity-40"
             >
               Save
             </button>
@@ -259,85 +283,14 @@ export default function Home({ progress, setProgress, go }: Props) {
         ) : (
           <div className="flex items-center gap-3 rounded-3xl border-2 border-know/30 bg-know/10 px-4 py-3">
             <Mascot mood="cheer" className="size-12 shrink-0" />
-            <p className="font-display text-lg leading-snug font-bold text-know-edge">
+            <p className="font-display text-lg leading-snug font-bold text-know-ink">
               {allSeen && left > 0 ? `You’ve seen every ${settings.level} word. Try another level!` : "All done for today. See you tomorrow!"}
             </p>
           </div>
         )}
-        <p className="mt-4 text-center text-xs font-semibold text-muted">
-          Your progress is saved in this browser.
-          {hasProgress && (
-            <>
-              {" "}
-              <button type="button" onClick={() => setConfirmReset(true)} className="underline decoration-2 underline-offset-2 hover:text-dontknow">
-                Start over
-              </button>
-            </>
-          )}
-        </p>
+        <p className="mt-4 text-center text-xs font-semibold text-muted">Your progress is saved in this browser.</p>
       </div>
-
-      {confirmReset && (
-        <ResetDialog
-          words={Object.keys(cards).length}
-          onCancel={() => setConfirmReset(false)}
-          onConfirm={() => {
-            setProgress((p) => ({ settings: p.settings, cards: {}, history: {} }));
-            setConfirmReset(false);
-          }}
-        />
-      )}
     </main>
   );
 }
 
-function ResetDialog({ words, onCancel, onConfirm }: { words: number; onCancel: () => void; onConfirm: () => void }) {
-  const cancelRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    cancelRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onCancel]);
-
-  return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-ink/45 p-5" onClick={onCancel}>
-      <div
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="reset-title"
-        aria-describedby="reset-desc"
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm rounded-[28px] border-2 border-line bg-card p-6 text-center shadow-[0_8px_0_var(--color-line-edge)]"
-      >
-        <Mascot mood="sad" className="mx-auto size-20" />
-        <h2 id="reset-title" className="mt-3 font-display text-2xl font-extrabold">
-          Start over from zero?
-        </h2>
-        <p id="reset-desc" className="mt-2 text-muted">
-          This deletes your progress on {plural(words, "word")} in this browser: reviews, your “Don’t know” list and daily history. Your
-          level and daily goal stay. This can’t be undone.
-        </p>
-        <div className="mt-6 flex flex-col gap-3">
-          <button
-            ref={cancelRef}
-            type="button"
-            onClick={onCancel}
-            className="press rounded-2xl bg-brand py-3 font-display text-lg font-bold text-white [--edge:var(--color-brand-edge)]"
-          >
-            Keep my progress
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="press rounded-2xl border-2 border-dontknow/40 bg-card py-3 font-display text-lg font-bold text-dontknow [--edge:var(--color-dontknow)]"
-          >
-            Delete everything
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}

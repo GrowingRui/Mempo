@@ -30,6 +30,55 @@
 
   --color-marker: #ffe27a; /* highlighter behind the word in example sentences */
   --color-cheek: #ff9bb3;
+
+  /* Text versions of the colours above. Same as the fills in light mode, lighter in dark mode
+     so they stay readable on dark cards. */
+  --color-brand-ink: #6b4ef5;
+  --color-know-ink: #13965c;
+  --color-dontknow-ink: #d93a40;
+  /* Always-dark indigo, for text on yellow (Not sure, the marker) and Mempo's face, in both themes. */
+  --color-deep: #1f1a4d;
+
+  /* Chart fills (checked for colour-blind separation with the dataviz validator). */
+  --color-bar-new: #6b4ef5;
+  --color-bar-reviewed: #b3a3ff;
+  --color-bar-mastered: #13965c;
+  --color-bar-review: #6b4ef5;
+  --color-bar-learning: #e09e00;
+  --color-bar-dontknow: #ff5a5f;
+}
+
+/* Dark mode: the same names, new values. Set by the "dark" class on <html> (src/lib/theme.ts,
+   plus a tiny script in index.html so the page doesn't flash light first). */
+:root.dark {
+  color-scheme: dark;
+  --color-paper: #15122e;
+  --color-paper-2: #1c1639;
+  --color-card: #262050;
+  --color-ink: #efedff;
+  --color-muted: #a9a4d8;
+  --color-line: #3b3472;
+  --color-line-edge: #0c0a22;
+
+  --color-brand-dark: #5a3ee6;
+  --color-brand-edge: #34209a;
+  --color-brand-soft: #352c74;
+
+  --color-know-edge: #0e7a4a;
+  --color-unsure-edge: #b88000;
+  --color-unsure-dark: #ffcf5c;
+  --color-dontknow-edge: #b52a30;
+
+  --color-brand-ink: #b3a3ff;
+  --color-know-ink: #45d996;
+  --color-dontknow-ink: #ff8589;
+
+  --color-bar-new: #8a72ff;
+  --color-bar-reviewed: #5b46c9;
+  --color-bar-mastered: #17a868;
+  --color-bar-review: #7a62f7;
+  --color-bar-learning: #d99a00;
+  --color-bar-dontknow: #f0555a;
 }
 
 html,

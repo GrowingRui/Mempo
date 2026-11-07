@@ -27,21 +27,21 @@ export default function Mascot({ mood = "happy", className = "size-12" }: { mood
         <g>
           <g className="mascot-eye">
             <ellipse cx="24" cy="34" rx="4.6" ry="5.4" fill="#fff" />
-            <circle cx={mood === "sad" ? 23.5 : 25} cy={mood === "sad" ? 36 : 35} r="2.6" fill="var(--color-ink)" />
+            <circle cx={mood === "sad" ? 23.5 : 25} cy={mood === "sad" ? 36 : 35} r="2.6" fill="var(--color-deep)" />
           </g>
           <g className="mascot-eye">
             <ellipse cx="40" cy="34" rx="4.6" ry="5.4" fill="#fff" />
-            <circle cx={mood === "sad" ? 40.5 : 41} cy={mood === "sad" ? 36 : 35} r="2.6" fill="var(--color-ink)" />
+            <circle cx={mood === "sad" ? 40.5 : 41} cy={mood === "sad" ? 36 : 35} r="2.6" fill="var(--color-deep)" />
           </g>
         </g>
       )}
       {/* mouth */}
       {mood === "cheer" ? (
-        <path d="M26 42h12q0 8-6 8t-6-8Z" fill="var(--color-ink)" />
+        <path d="M26 42h12q0 8-6 8t-6-8Z" fill="var(--color-deep)" />
       ) : mood === "sad" ? (
-        <path d="M28 47q4-4 8 0" stroke="var(--color-ink)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+        <path d="M28 47q4-4 8 0" stroke="var(--color-deep)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
       ) : (
-        <path d="M28 43q4 4.5 8 0" stroke="var(--color-ink)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+        <path d="M28 43q4 4.5 8 0" stroke="var(--color-deep)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
       )}
     </svg>
   );

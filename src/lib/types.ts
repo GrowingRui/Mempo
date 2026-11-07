@@ -42,12 +42,16 @@ export interface CardProgress {
 
 export type SwipeKnow = "left" | "right";
 
+/** "system" follows the phone or computer setting. */
+export type Theme = "system" | "light" | "dark";
+
 export interface Settings {
   level: Level;
   dailyNew: number;
   showZh: boolean;
   showEs: boolean;
   swipeKnow: SwipeKnow;
+  theme: Theme;
 }
 
 export interface DayHistory {

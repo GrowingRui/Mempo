@@ -122,7 +122,7 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
             <p className="mt-2 text-lg font-semibold text-muted">You went through {plural(unique, "word")}.</p>
             <div className="mt-6 grid w-full grid-cols-3 gap-2.5">
               <Tally tone="bg-know text-white [--edge:var(--color-know-edge)]" n={tally.know} label="knew" />
-              <Tally tone="bg-unsure text-ink [--edge:var(--color-unsure-edge)]" n={tally.unsure} label="not sure" />
+              <Tally tone="bg-unsure text-deep [--edge:var(--color-unsure-edge)]" n={tally.unsure} label="not sure" />
               <Tally tone="bg-dontknow text-white [--edge:var(--color-dontknow-edge)]" n={tally.dontknow} label="didn’t know" />
             </div>
             {tally.know < unique && <p className="mt-5 max-w-xs font-medium text-muted">Every word came back until you knew it.</p>}
@@ -222,7 +222,7 @@ function Tally({ tone, n, label }: { tone: string; n: number; label: string }) {
 
 const TONE_CLASS: Record<Answer, string> = {
   know: "bg-know text-white [--edge:var(--color-know-edge)]",
-  unsure: "bg-unsure text-ink [--edge:var(--color-unsure-edge)]",
+  unsure: "bg-unsure text-deep [--edge:var(--color-unsure-edge)]",
   dontknow: "bg-dontknow text-white [--edge:var(--color-dontknow-edge)]",
 };
 

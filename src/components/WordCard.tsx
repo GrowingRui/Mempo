@@ -12,7 +12,7 @@ export function GlossList({ label, glosses }: { label: string; glosses: Gloss[] 
   if (glosses.length === 0) return null;
   return (
     <section>
-      <h3 className="mb-2 inline-block rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-bold text-brand">{label}</h3>
+      <h3 className="mb-2 inline-block rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-bold text-brand-ink">{label}</h3>
       <ul className="space-y-1.5">
         {glosses.map((g, i) => (
           <li key={i} className="flex items-baseline gap-2">
@@ -115,7 +115,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
                       target="_blank"
                       rel="noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="ml-1.5 text-[11px] font-semibold text-muted underline decoration-line decoration-2 underline-offset-2 hover:text-brand"
+                      className="ml-1.5 text-[11px] font-semibold text-muted underline decoration-line decoration-2 underline-offset-2 hover:text-brand-ink"
                     >
                       Tatoeba
                     </a>

@@ -2,14 +2,17 @@ import { MotionConfig } from "motion/react";
 import { useEffect, useState } from "react";
 import type { SessionMode } from "./lib/session";
 import { loadProgress, saveProgress } from "./lib/storage";
+import { applyTheme } from "./lib/theme";
 import type { Progress } from "./lib/types";
 import DontKnow from "./pages/DontKnow";
 import Home from "./pages/Home";
 import LevelTest from "./pages/LevelTest";
+import Settings from "./pages/Settings";
+import Stats from "./pages/Stats";
 import Study from "./pages/Study";
 import WordList from "./pages/WordList";
 
-export type Screen = { name: "home" } | { name: "study"; mode: SessionMode } | { name: "dontknow" } | { name: "words" } | { name: "test" };
+export type Screen = { name: "home" } | { name: "study"; mode: SessionMode } | { name: "dontknow" } | { name: "words" } | { name: "test" } | { name: "stats" } | { name: "settings" };
 
 export default function App() {
   const [progress, setProgress] = useState<Progress>(loadProgress);
@@ -18,6 +21,7 @@ export default function App() {
   useEffect(() => {
     saveProgress(progress);
   }, [progress]);
+  useEffect(() => applyTheme(progress.settings.theme), [progress.settings.theme]);
   // (braces matter: scrollTo returns a Promise in newer browsers, and React treats an effect's return value as its cleanup)
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -34,6 +38,10 @@ export default function App() {
           <DontKnow progress={progress} onPractise={() => setScreen({ name: "study", mode: "dontknow" })} onBack={home} />
         ) : screen.name === "test" ? (
           <LevelTest progress={progress} setProgress={setProgress} onExit={home} />
+        ) : screen.name === "stats" ? (
+          <Stats progress={progress} onBack={home} />
+        ) : screen.name === "settings" ? (
+          <Settings progress={progress} setProgress={setProgress} onBack={home} />
         ) : screen.name === "words" ? (
           <WordList progress={progress} onBack={home} />
         ) : (
