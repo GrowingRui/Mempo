@@ -110,7 +110,7 @@ Each file is an array of words, one per line. `public/data/index.json` holds the
 3. N new words (N = the daily goal)
 
 **Swipe "don't know":**
-- The card goes back into the current session, about 3–5 cards later. It keeps coming back until it is answered "know".
+- The card goes back into the current session, about 10–15 cards later (changed from 3–5 on request, 2026-11-07). It keeps coming back until it is answered "know".
 - The card is added to the **"Don't know" list** and its review box resets to 1.
 
 **Swipe "know":**
@@ -208,7 +208,7 @@ How it works:
 - **Not sure:** down one box, due tomorrow; not added to the "Don't know" list. **Don't know:** box 1, due tomorrow, added to the list. A *lapse* is counted when a card in box 2+ is answered "don't know".
 - **Only the first answer of the day moves a card up.** Seeing a card again the same day (it came back in the session, or the list was practised twice) never pushes it further out; a wrong answer always counts.
 - **Leaving the "Don't know" list:** 2 "know" answers on 2 different days in a row. Getting it right later on the same day you missed it doesn't count.
-- **Inside a session:** a "don't know" card comes back 3–5 cards later, a "not sure" card 6–9 cards later (or at the end), until it's answered "know".
+- **Inside a session:** a "don't know" card comes back 10–15 cards later, a "not sure" card 15–20 cards later (or at the end), until it's answered "know".
 - **Reviews and the "Don't know" list cover all levels**; new words come from the chosen level. Home shows due reviews, list size and a breakdown on the Start button.
 - **Swiping:** left / right follow the "know" side setting (default left = know), **up = not sure**. Release past 110 px or flick fast to answer; otherwise the card springs back. Tapping flips; a drag never flips. Keys: ← → ↑, Space / Enter flips, Esc leaves.
 - **Review** opens the study screen with due cards only (shows the next review date if none). **Don't know** lists the words (most recently missed first) with a "Practise these" button. **Word list** searches English, Chinese and Spanish (accents ignored), filters by level and status, and opens a word to show its meanings and next review.
@@ -278,7 +278,7 @@ Pick any of these up whenever we want; each still needs approval before work sta
 - [x] Vitest added (free, open source). `npm test` runs everything once, `npm run test:watch` reruns on every change. Config: `vitest.config.ts` (kept apart from `vite.config.ts`, so no PWA/Tailwind plugins load).
 - [x] 75 tests in `src/lib/*.test.ts` (shared builders in `src/lib/test-helpers.ts`). They aren't part of the website build.
   - `srs.test.ts`: boxes and intervals, mastered, "not sure" / "don't know", lapses, only the first answer of the day moves a card up, leaving the "Don't know" list after 2 "know" days, history counts, `isDue`, `statusOf`, `nextReview`
-  - `session.test.ts`: daily goal left, session order (reviews → don't know → new), new words only from the chosen level and in a stable order, review / dontknow modes, `requeue` gaps (3–5 and 6–9 cards)
+  - `session.test.ts`: daily goal left, session order (reviews → don't know → new), new words only from the chosen level and in a stable order, review / dontknow modes, `requeue` gaps (10–15 and 15–20 cards)
   - `stats.test.ts`: streak (today not done yet, gaps, longest, across year end), 14-day chart, per-level breakdown
   - `storage.test.ts`: cleaning saved/restored progress, backup file reading and its error messages, date helpers
 - Checked that the tests catch real mistakes: changing the 60-day interval or the "2 days to leave Don't know" rule makes 4 tests fail.
@@ -300,6 +300,16 @@ Pick any of these up whenever we want; each still needs approval before work sta
 - [ ] Daily reminder notification (works for installed web apps, iOS 16.4+ too)
 - [ ] Sync across devices (Phase 6), or first a simpler "move to another device" QR code built on the backup file
 - [ ] Privacy-friendly usage stats (e.g. Vercel Analytics, free) to see if people come back
+
+**D. App in more languages** (noted 2026-11-07, not started)
+The app's own texts (buttons, hints, messages) in English, 中文, Español and Deutsch. Separate from the word meanings on the cards.
+- [ ] Interface translation (about 1 day):
+  - Move every English text (~250–350, ~15 screens) into one table with the four versions; no paid service or big library
+  - Plurals ("1 word / 5 words") and dates per language with the browser's built-in `Intl` rules
+  - **Language picker in Settings. The default stays English, as now** (decided by the user 2026-11-07: don't switch automatically from the phone's language)
+  - Check layouts at phone size for each language: German words are long ("Weiß ich nicht") and may overflow buttons; Chinese uses the phone's own font (not in the app's fonts)
+  - Translation check: the user can review Chinese and Spanish; German ideally by a native speaker
+- [ ] German meanings on the cards (about half a day to a day more): the cards now show only Chinese / Spanish (and English definitions), so a German UI without German meanings would feel half done. Same free source and pipeline as Spanish (Wiktionary translation tables via kaikki.org), then a quality check
 
 **Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
 

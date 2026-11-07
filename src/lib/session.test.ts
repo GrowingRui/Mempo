@@ -141,16 +141,16 @@ describe("daily review cap", () => {
 
 describe("requeue", () => {
   afterEach(() => vi.restoreAllMocks());
-  const queue = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"];
+  const queue = Array.from({ length: 30 }, (_, i) => `c${i}`);
 
   it("'know' leaves the queue as it is", () => {
     expect(requeue(queue, 0, "a", "know")).toBe(queue);
   });
 
   it.each([
-    [0, 3],
-    [0.999, 5],
-  ])("'don't know' comes back 3-5 cards later (random %f → gap %i)", (r, gap) => {
+    [0, 10],
+    [0.999, 15],
+  ])("'don't know' comes back 10-15 cards later (random %f → gap %i)", (r, gap) => {
     vi.spyOn(Math, "random").mockReturnValue(r);
     const q = requeue(queue, 0, "a", "dontknow");
     expect(q).toHaveLength(queue.length + 1);
@@ -158,9 +158,9 @@ describe("requeue", () => {
   });
 
   it.each([
-    [0, 6],
-    [0.999, 9],
-  ])("'not sure' comes back 6-9 cards later (random %f → gap %i)", (r, gap) => {
+    [0, 15],
+    [0.999, 20],
+  ])("'not sure' comes back 15-20 cards later (random %f → gap %i)", (r, gap) => {
     vi.spyOn(Math, "random").mockReturnValue(r);
     const q = requeue(queue, 0, "a", "unsure");
     expect(q.indexOf("a", 1)).toBe(1 + gap);

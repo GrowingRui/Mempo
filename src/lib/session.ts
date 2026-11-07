@@ -83,8 +83,8 @@ export function buildSession(words: Word[], p: Progress, mode: SessionMode, toda
 
 /** How many cards later a missed card comes back in the same session. */
 const RETRY_GAP: Record<Exclude<Answer, "know">, [number, number]> = {
-  dontknow: [3, 5],
-  unsure: [6, 9],
+  dontknow: [10, 15],
+  unsure: [15, 20],
 };
 
 /**
