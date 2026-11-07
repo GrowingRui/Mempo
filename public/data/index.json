@@ -1,0 +1,40 @@
+{
+ "generatedAt": "2026-11-07T10:27:19.516Z",
+ "counts": {
+  "B2": 2672,
+  "C1": 1847,
+  "C2": 1609,
+  "total": 6128
+ },
+ "files": {
+  "B2": "b2.json",
+  "C1": "c1.json",
+  "C2": "c2.json"
+ },
+ "sources": [
+  {
+   "what": "Word lists (B2/C1/C2)",
+   "name": "minddory.com English vocabulary lists",
+   "url": "https://minddory.com/english-vocabulary-list/",
+   "licence": "Personal use"
+  },
+  {
+   "what": "Chinese translations, part of speech, phonetics",
+   "name": "ECDICT",
+   "url": "https://github.com/skywind3000/ECDICT",
+   "licence": "MIT"
+  },
+  {
+   "what": "Spanish translations",
+   "name": "English Wiktionary via kaikki.org",
+   "url": "https://kaikki.org/",
+   "licence": "CC BY-SA 4.0"
+  },
+  {
+   "what": "Example sentences (with a source link)",
+   "name": "Tatoeba",
+   "url": "https://tatoeba.org/",
+   "licence": "CC BY 2.0 FR"
+  }
+ ]
+}

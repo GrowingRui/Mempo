@@ -1,0 +1,506 @@
+# Phase 0 report
+
+Generated 2026-11-07T10:23:00.566Z
+
+## Counts
+
+| Level | Scraped | After clean-up |
+|---|---|---|
+| B2 | 2719 | 2672 |
+| C1 | 2170 | 1847 |
+| C2 | 2272 | 1609 |
+| **Total** | **7161** | **6128** |
+
+- Inflected forms merged into their base word: 858
+- Looked inflected but kept as their own card (own meaning in ECDICT): 83
+- Entries with spelling variants: 132
+- Words listed in more than one level: 14
+- Words with no example sentence: 219 (Phase 1 fills these from Tatoeba)
+
+## Spelling variants (132)
+
+agonise / agonize, authorise / authorize, categorisation / categorization, cooperate / co-operate, cooperation / co-operation, cooperative / co-operative, crystallise / crystallize, dehumanise / dehumanize, disorganised / disorganized, familiarise / familiarize, generalisation / generalization, generalise / generalize, globalization / globalisation, health care / healthcare, heart-warming / heartwarming, hospitalise / hospitalize, humanise / humanize, idolise / idolize, industrialise / industrialize, italicise / italicize, jeopardise / jeopardize, last minute / last-minute, mechanise / mechanize, modernisation / modernization, modernise / modernize, mould / mold, net surfer / netsurfer, organiser / organizer, overemphasise / overemphasize, overestimate / over-estimate, penalise / penalize, popularise / popularize, publicise / publicize, realisation / realization, reorganise / reorganize, revolutionise / revolutionize, socialise / socialize, sympathise / sympathize, unauthorised / unauthorized, utilise / utilize, well-organised / well-organized, worn out / worn-out / wornout, analysed / analyzed, analysing / analyzing, appall / appal, categorised / categorized, categorises / categorizes, categorising / categorizing, characterization / characterisation, co-ordinate / coordinate, co-ordinates / coordinates, co-ordination / coordination, co-ordinator / coordinator, contextualise / contextualize, digitalization / digitalisation, digitalize / digitalise, emphasised / emphasized, emphasising / emphasizing, favorably / favourably, finalise / finalize, harbor / harbour, lackluster / lacklustre, maneuver / manoeuvre, maximisation / maximization, maximise / maximize, neutralization / neutralisation, neutralize / neutralise, normalisation / normalization, normalise / normalize, personalization / personalisation, personalize / personalise, philosophise / philosophize, recognizable / recognisable, recognizably / recognisably, scrutinize / scrutinise, somber / sombre, somberly / sombrely, stabilize / stabilise, uncontextualised / uncontextualized, ad lib / ad-lib, ardor / ardour, armory / armoury, carbonize / carbonise, centralized / centralised, co-operatively / cooperatively, computerize / computerise, crystallization / crystallisation, decentralize / decentralise, dramatisation / dramatization, dramatise / dramatize, economize / economise, externalisation / externalization, externalise / externalize, hypothesise / hypothesize, internalise / internalize, liberalisation / liberalization, liberalise / liberalize, materialization / materialisation, materialize / materialise, meager / meagre, minimalisation / minimalization, minimalise / minimalize, minimised / minimized, minimises / minimizes, minimising / minimizing, misdemeanor / misdemeanour, non-conformist / nonconformist, non-conformity / nonconformity, paralyze / paralyse, paralyzingly / paralysingly, patronize / patronise, patronizing / patronising, patronizingly / patronisingly, prioritisation / prioritization, prioritise / prioritize, rationalisation / rationalization, rationalise / rationalize, self-aggrandizement / self-aggrandisement, stabilisation / stabilization, stylise / stylize, subsidise / subsidize, summarisation / summarization, summarised / summarized, summarises / summarizes, summarising / summarizing, symbolise / symbolize, tantalize / tantalise, tantalizingly / tantalisingly, tranquilize / tranquilise, utilisation / utilization, visualisation / visualization, visualise / visualize
+
+## Words listed in more than one level (14)
+
+overestimate (B2) + over-estimate (C1)
+cooperate (B2) + co-operate (C2)
+cooperation (B2) + co-operation (C2)
+cooperative (B2) + co-operative (C2)
+crystallise (B2) + crystallize/crystallise (C2)
+familiarise (B2) + familiarize/familiarise (C2)
+globalization (B2) + globalisation (C2)
+mould (B2) + mold/mould (C2)
+neutralization (C1) + neutralisation (C2)
+neutralize (C1) + neutralise (C2)
+neutralization (C1) + neutralization (C2)
+neutralize (C1) + neutralize (C2)
+stabilize (C1) + stabilise (C2)
+stabilize (C1) + stabilize/stabilise (C2)
+
+## Kept as separate cards (83)
+
+These look like inflections of another listed word, but ECDICT gives them their own meaning.
+
+addicted (B2) ← addict (B2), astonished (B2) ← astonish (B2), astonishing (B2) ← astonish (B2), bidding (B2) ← bid (B2), bustling (B2) ← bustle (B2), catering (B2) ← cater (C1), coaching (B2) ← coach (B2), concerning (B2) ← concern (B2), corresponding (B2) ← correspond (B2), devoted (B2) ← devote (B2), distressing (B2) ← distress (C1), exhausting (B2) ← exhaust (B2), guts (B2) ← gut (C1), haunting (B2) ← haunt (B2), humiliating (B2) ← humiliate (B2), infected (B2) ← infect (B2), manufacturing (B2) ← manufacture (B2), nerves (B2) ← nerve (B2), relieved (B2) ← relieve (B2), savings (B2) ← saving (B2), scheduled (B2) ← schedule (B2), shoplifting (B2) ← shoplift (B2), soaked (B2) ← soak (B2), soaking (B2) ← soak (B2), starving (B2) ← starve (B2), statistics (B2) ← statistic (B2), testing (B2) ← test (B2), thrilled (B2) ← thrill (B2), thrilling (B2) ← thrill (B2), willing (B2) ← will (B2), winding (B2) ← wind (B2), acoustics (C1) ← acoustic (C1), adjoining (C1) ← adjoin (C1), anchored (C1) ← anchor (B2), appalling (C1) ← appall (C1), appealing (C1) ← appeal (B2), battered (C1) ← batter (C1), brainwashing (C1) ← brainwash (C1), chiselled (C1) ← chisel (C1), co-ordinates (C1) ← co-ordinate (C1), compelling (C1) ← compel (C1), computerised (C1) ← computerize (C2), computing (C1) ← compute (B2), craving (C1) ← crave (C1), daunting (C1) ← daunt (C1), degrading (C1) ← degrade (C1), engrossing (C1) ← engross (C1), enterprising (C1) ← enterprise (B2), exhilarating (C1) ← exhilarate (C1), flawed (C1) ← flaw (B2), gushing (C1) ← gush (C1), inclined (C1) ← incline (C2), odds (C1) ← odd (B2), overalls (C1) ← overall (B2), premises (C1) ← premise (C1), privileged (C1) ← privilege (B2), proceedings (C1) ← proceeding (C1), provisions (C1) ← provision (B2), refreshing (C1) ← refresh (B2), renowned (C1) ← renown (C1), shambles (C1) ← shamble (C2), staggering (C1) ← stagger (B2), startling (C1) ← startle (B2), strapping (C1) ← strap (C1), tangled (C1) ← tangle (C1), unsettling (C1) ← unsettle (C1), acrobatics (C2) ← acrobatic (C2), aided (C2) ← aide (C1), aiding (C2) ← aide (C1), alternating (C2) ← alternate (B2), biased (C2) ← bias (B2), cloistered (C2) ← cloister (C2), disparaging (C2) ← disparage (C2), dynamics (C2) ← dynamic (B2), etching (C2) ← etch (C2), ethics (C2) ← ethic (B2), exalted (C2) ← exalt (B2), incapacitated (C2) ← incapacitate (C2), ingratiating (C2) ← ingratiate (C2), leavening (C2) ← leaven (C2), menacing (C2) ← menace (C2), patronizing (C2) ← patronize (C2), resounding (C2) ← resound (C2)
+
+## Merged inflections (858)
+
+- **access** (B2): accessed, accesses, accessing
+- **accommodate** (B2): accommodated, accommodates, accommodating
+- **accumulate** (B2): accumulated, accumulates, accumulating
+- **acquisition** (B2): acquisitions
+- **adjustment** (B2): adjustments
+- **advocate** (B2): advocated, advocates, advocating
+- **allocate** (B2): allocated, allocates, allocating
+- **alter** (B2): altered, altering, alters
+- **ambiguity** (B2): ambiguities
+- **amendment** (B2): amendments
+- **analogy** (B2): analogies
+- **anticipate** (B2): anticipated, anticipates, anticipating
+- **approximate** (B2): approximated, approximates, approximating
+- **assemble** (B2): assembled, assembles, assembling
+- **assembly** (B2): assemblies
+- **assess** (B2): assessed, assesses, assessing
+- **assessment** (B2): assessments
+- **assumption** (B2): assumptions
+- **assurance** (B2): assurances
+- **assure** (B2): assured, assures, assuring
+- **attainment** (B2): attainments
+- **attribute** (B2): attributed, attributes, attributing
+- **backward** (B2): backwards
+- **benefit** (B2): benefited, benefiting, benefits
+- **bias** (B2): biases, biasing
+- **capability** (B2): capabilities
+- **cease** (B2): ceased, ceases, ceasing
+- **challenge** (B2): challenged, challenges
+- **circumstance** (B2): circumstances
+- **clarify** (B2): clarified, clarifies, clarifying
+- **classic** (B2): classics
+- **clause** (B2): clauses
+- **coincide** (B2): coincided, coincides, coinciding
+- **coincidence** (B2): coincidences
+- **collapse** (B2): collapsed, collapses, collapsing
+- **colleague** (B2): colleagues
+- **comment** (B2): commented, commenting, comments
+- **commission** (B2): commissioned, commissioning, commissions
+- **community** (B2): communities
+- **compensate** (B2): compensated, compensates, compensating
+- **compensation** (B2): compensations
+- **compile** (B2): compiled, compiles, compiling
+- **complexity** (B2): complexities
+- **component** (B2): components
+- **compromise** (B2): compromised
+- **compute** (B2): computed
+- **conceive** (B2): conceived, conceives, conceiving
+- **conduct** (B2): conducted, conducting, conducts
+- **conference** (B2): conferences, conferencing
+- **confine** (B2): confined, confines, confining
+- **consent** (B2): consented, consenting, consents
+- **constant** (B2): constants
+- **consult** (B2): consulted, consulting, consults
+- **consultant** (B2): consultants
+- **contemporary** (B2): contemporaries
+- **contract** (B2): contracted, contracting, contracts
+- **contradict** (B2): contradicted, contradicting, contradicts
+- **contradiction** (B2): contradictions
+- **controversy** (B2): controversies
+- **convention** (B2): conventions
+- **conversion** (B2): conversions
+- **convert** (B2): converted, converting, converts
+- **cooperate** (B2): co-operated, co-operates, cooperated, cooperates, cooperating
+- **core** (B2): cored, cores, coring
+- **corporate** (B2): corporates
+- **corporation** (B2): corporations
+- **correspond** (B2): corresponded, corresponds
+- **creation** (B2): creations
+- **cripple** (B2): crippling
+- **criterion** (B2): criteria
+- **decade** (B2): decades
+- **decline** (B2): declined, declines, declining
+- **deduce** (B2): deduced, deduces, deducing
+- **deduction** (B2): deductions
+- **detect** (B2): detected, detecting, detects
+- **devote** (B2): devotes, devoting
+- **dimension** (B2): dimensions
+- **discriminate** (B2): discriminated, discriminates, discriminating
+- **displace** (B2): displaced, displaces, displacing
+- **distortion** (B2): distortions
+- **distributor** (B2): distributors
+- **domestic** (B2): domestics
+- **dominate** (B2): dominated, dominates, dominating
+- **eastward** (B2): eastwards
+- **economist** (B2): economists
+- **edit** (B2): edited, editing, edits
+- **editorial** (B2): editorials
+- **encounter** (B2): encountered, encountering, encounters
+- **energy** (B2): energies
+- **enforce** (B2): enforced, enforces, enforcing
+- **enhance** (B2): enhanced, enhances, enhancing
+- **entity** (B2): entities
+- **environment** (B2): environments
+- **equation** (B2): equations
+- **equip** (B2): equipped, equipping, equips
+- **erode** (B2): eroded, erodes, eroding
+- **estate** (B2): estates
+- **evaluate** (B2): evaluated, evaluates, evaluating
+- **evaluation** (B2): evaluations
+- **evolve** (B2): evolved, evolves, evolving
+- **exceed** (B2): exceeded, exceeding, exceeds
+- **exclude** (B2): excluded, excludes, excluding
+- **exclusion** (B2): exclusions
+- **exhibit** (B2): exhibited, exhibiting, exhibits
+- **exploit** (B2): exploited, exploiting, exploits
+- **export** (B2): exported, exporting, exports
+- **exposure** (B2): exposures
+- **extract** (B2): extracted, extracting, extracts
+- **facilitate** (B2): facilitated, facilitates, facilitating
+- **factor** (B2): factored, factoring, factors
+- **feature** (B2): featured, features, featuring
+- **file** (B2): filed, files, filing
+- **founder** (B2): founders
+- **framework** (B2): frameworks
+- **guarantee** (B2): guaranteed, guaranteeing, guarantees
+- **guideline** (B2): guidelines
+- **identify** (B2): identified, identifies, identifying
+- **ideology** (B2): ideologies
+- **illustrate** (B2): illustrated, illustrates, illustrating
+- **illustration** (B2): illustrations
+- **immigrant** (B2): immigrants
+- **implement** (B2): implemented, implementing, implements
+- **implication** (B2): implications
+- **imply** (B2): implied, implies, implying
+- **impose** (B2): imposed, imposes, imposing
+- **incentive** (B2): incentives
+- **incorporate** (B2): incorporated, incorporates, incorporating
+- **index** (B2): indexed, indexes, indexing
+- **indication** (B2): indications
+- **individual** (B2): individuals
+- **infer** (B2): inferred, inferring, infers
+- **inference** (B2): inferences
+- **infrastructure** (B2): infrastructures
+- **initiative** (B2): initiatives
+- **innovation** (B2): innovations
+- **input** (B2): inputs
+- **insert** (B2): inserted, inserting, inserts
+- **inspect** (B2): inspected, inspecting, inspects
+- **inspector** (B2): inspectors
+- **institution** (B2): institutions
+- **instruct** (B2): instructed, instructing, instructs
+- **integrate** (B2): integrated, integrates, integrating
+- **interpret** (B2): interpreted, interpreting, interprets
+- **interpretation** (B2): interpretations
+- **intervene** (B2): intervened, intervenes, intervening
+- **investigate** (B2): investigated, investigates, investigating
+- **investigator** (B2): investigators
+- **investment** (B2): investments
+- **investor** (B2): investors
+- **invoke** (B2): invoked, invokes, invoking
+- **justify** (B2): justified, justifies, justifying
+- **label** (B2): labeled, labeling, labelled, labelling, labels
+- **lecturer** (B2): lecturers
+- **legislate** (B2): legislated, legislates, legislating
+- **legislator** (B2): legislators
+- **liberal** (B2): liberals
+- **list** (B2): listing
+- **manipulate** (B2): manipulated, manipulates, manipulating
+- **manual** (B2): manuals
+- **margin** (B2): margins
+- **mature** (B2): matured, matures, maturing
+- **migrate** (B2): migrated, migrates, migrating
+- **migration** (B2): migrations
+- **minister** (B2): ministered, ministering
+- **mode** (B2): modes
+- **modification** (B2): modifications
+- **norm** (B2): norms
+- **northward** (B2): northwards
+- **offset** (B2): offsets, offsetting
+- **orient** (B2): oriented, orienting, orients
+- **outcome** (B2): outcomes
+- **output** (B2): outputs
+- **overestimate** (B2): overestimated, overestimates, overestimating
+- **overlap** (B2): overlapped, overlapping, overlaps
+- **panel** (B2): panelled, panelling, panels
+- **parallel** (B2): paralleled, parallelled, parallelling, parallels
+- **partnership** (B2): partnerships
+- **perceive** (B2): perceived, perceives, perceiving
+- **percentage** (B2): percentages
+- **perception** (B2): perceptions
+- **persist** (B2): persisted, persisting, persists
+- **perspective** (B2): perspectives
+- **phase** (B2): phased, phases, phasing
+- **portion** (B2): portions
+- **pose** (B2): posed, poses, posing
+- **precede** (B2): preceded, precedes, preceding
+- **preliminary** (B2): preliminaries
+- **presume** (B2): presumed, presumes, presuming
+- **priority** (B2): priorities
+- **procedure** (B2): procedures
+- **professional** (B2): professionals
+- **prohibit** (B2): prohibited, prohibiting, prohibits
+- **project** (B2): projected, projecting
+- **projection** (B2): projections
+- **prospect** (B2): prospects
+- **protocol** (B2): protocols
+- **publication** (B2): publications
+- **purchase** (B2): purchased, purchases, purchasing
+- **pursuit** (B2): pursuits
+- **quotation** (B2): quotations
+- **quote** (B2): quoted, quotes, quoting
+- **radical** (B2): radicals
+- **reaction** (B2): reactions
+- **regime** (B2): regimes
+- **regulate** (B2): regulated, regulates, regulating
+- **reinforce** (B2): reinforced, reinforces, reinforcing
+- **reinforcement** (B2): reinforcements
+- **rejection** (B2): rejections
+- **research** (B2): researched, researches, researching
+- **resident** (B2): residents
+- **restrain** (B2): restrained, restraining, restrains
+- **restriction** (B2): restrictions
+- **revelation** (B2): revelations
+- **revenue** (B2): revenues
+- **reverse** (B2): reversed, reverses, reversing
+- **revolution** (B2): revolutions
+- **revolutionary** (B2): revolutionaries
+- **revolutionise** (B2): revolutionised, revolutionises, revolutionising, revolutionized, revolutionizes, revolutionizing
+- **route** (B2): routed, routes, routing
+- **schedule** (B2): schedules, scheduling
+- **scheme** (B2): schemed, schemes, scheming
+- **screen** (B2): screening
+- **sector** (B2): sectors
+- **select** (B2): selected, selecting, selects
+- **signify** (B2): signified, signifies, signifying
+- **simulate** (B2): simulated, simulates, simulating
+- **skyward** (B2): skywards
+- **southward** (B2): southwards
+- **specify** (B2): specified, specifies, specifying
+- **stress** (B2): stresses, stressing
+- **submit** (B2): submits, submitted, submitting
+- **substitute** (B2): substituted, substitutes, substituting
+- **successor** (B2): successors
+- **supplement** (B2): supplemented, supplementing, supplements
+- **suspend** (B2): suspended, suspending, suspends
+- **sustain** (B2): sustained, sustaining, sustains
+- **tan** (B2): tanned
+- **theme** (B2): themes
+- **theorist** (B2): theorists
+- **thesis** (B2): theses
+- **trade** (B2): trading
+- **transition** (B2): transitions
+- **transmission** (B2): transmissions
+- **transmit** (B2): transmits, transmitted, transmitting
+- **transport** (B2): transported, transporting, transports
+- **underestimate** (B2): underestimated, underestimates, underestimating
+- **undertake** (B2): undertaken, undertakes, undertaking, undertook
+- **utilise** (B2): utilised, utilises, utilising, utilized, utilizes, utilizing
+- **utility** (B2): utilities
+- **variation** (B2): variations
+- **version** (B2): versions
+- **violate** (B2): violated, violates, violating
+- **violation** (B2): violations
+- **withdraw** (B2): withdrawn
+- **abstraction** (C1): abstractions
+- **adaptation** (C1): adaptations
+- **administrate** (C1): administrates
+- **administrator** (C1): administrators
+- **aggregate** (C1): aggregated, aggregates, aggregating
+- **allocation** (C1): allocations
+- **amend** (C1): amended, amending, amends
+- **beneficiary** (C1): beneficiaries
+- **citation** (C1): citations
+- **cite** (C1): cited, cites, citing
+- **co-ordinate** (C1): co-ordinated, co-ordinating, coordinated, coordinating
+- **co-ordinator** (C1): co-ordinators, coordinators
+- **commence** (C1): commenced, commences, commencing
+- **commentary** (C1): commentaries
+- **commentator** (C1): commentators
+- **commissioner** (C1): commissioners
+- **comprise** (C1): comprised, comprises, comprising
+- **computation** (C1): computations
+- **conceptualise** (C1): conceptualised, conceptualises, conceptualising
+- **confer** (C1): conferred, conferring, confers
+- **conform** (C1): conformed, conforming, conforms
+- **constituency** (C1): constituencies
+- **constituent** (C1): constituents
+- **constrain** (C1): constrained, constraining, constrains
+- **constraint** (C1): constraints
+- **consultation** (C1): consultations
+- **contextualise** (C1): contextualised, contextualising, contextualized, contextualizing
+- **contractor** (C1): contractors
+- **contributor** (C1): contributors
+- **convene** (C1): convened, convenes, convening
+- **creditor** (C1): creditors
+- **demonstrator** (C1): demonstrators
+- **denial** (C1): denials
+- **deregister** (C1): deregistered, deregistering, deregisters
+- **derivation** (C1): derivations
+- **derivative** (C1): derivatives
+- **deviate** (C1): deviated, deviates, deviating
+- **differentiate** (C1): differentiated, differentiates, differentiating
+- **disestablish** (C1): disestablished, disestablishes, disestablishing
+- **dispose** (C1): disposed, disposes, disposing
+- **distort** (C1): distorted, distorting, distorts
+- **domain** (C1): domains
+- **domesticate** (C1): domesticated, domesticating
+- **dramatist** (C1): dramatists
+- **equate** (C1): equated, equates, equating
+- **estimation** (C1): estimations
+- **exporter** (C1): exporters
+- **finalise** (C1): finalised, finalises, finalising, finalized, finalizes, finalizing
+- **financier** (C1): financiers
+- **formulate** (C1): formulated, formulating
+- **formulation** (C1): formulations
+- **funder** (C1): funders
+- **hierarchy** (C1): hierarchies
+- **implicate** (C1): implicated, implicates, implicating
+- **inclination** (C1): inclinations
+- **inconsistency** (C1): inconsistencies
+- **indicator** (C1): indicators
+- **individualist** (C1): individualists
+- **inhibit** (C1): inhibited, inhibiting, inhibits
+- **initiate** (C1): initiated, initiates, initiating
+- **innovate** (C1): innovated, innovates, innovating
+- **insecurity** (C1): insecurities
+- **institutionalise** (C1): institutionalised, institutionalises, institutionalising, institutionalized, institutionalizes, institutionalizing
+- **intensify** (C1): intensified, intensifies, intensifying
+- **intervention** (C1): interventions
+- **isolate** (C1): isolated, isolates, isolating
+- **itemise** (C1): itemised, itemises, itemising
+- **justification** (C1): justifications
+- **linkage** (C1): linkages
+- **manipulation** (C1): manipulations
+- **maximise** (C1): maximised, maximises, maximising, maximized, maximizes, maximizing
+- **mechanism** (C1): mechanisms
+- **methodology** (C1): methodologies
+- **ministry** (C1): ministries
+- **misinterpret** (C1): misinterpreted, misinterpreting, misinterprets
+- **misinterpretation** (C1): misinterpretations
+- **negate** (C1): negated, negates, negating
+- **neutralize** (C1): neutralised, neutralises, neutralising, neutralized, neutralizes, neutralizing
+- **normalise** (C1): normalised, normalises, normalising, normalized, normalizes, normalizing
+- **occupant** (C1): occupants
+- **occurrence** (C1): occurrences
+- **paradigm** (C1): paradigms
+- **periodical** (C1): periodicals
+- **philosophise** (C1): philosophised, philosophises, philosophising, philosophized, philosophizes, philosophizing
+- **posture** (C1): posturing
+- **purchaser** (C1): purchasers
+- **ratio** (C1): ratios
+- **re-evaluate** (C1): re-evaluated, re-evaluates, re-evaluating
+- **reactionary** (C1): reactionaries
+- **reactor** (C1): reactors
+- **reassess** (C1): reassessed, reassessing
+- **reconstruct** (C1): reconstructed, reconstructing, reconstructs
+- **recreate** (C1): recreated, recreates, recreating
+- **redefine** (C1): redefined, redefines, redefining
+- **redistribute** (C1): redistributed, redistributes, redistributing
+- **refine** (C1): refined, refines, refining
+- **refocus** (C1): refocused, refocuses, refocusing, refocussed, refocusses, refocussing
+- **reformulate** (C1): reformulated, reformulating
+- **reformulation** (C1): reformulations
+- **regulator** (C1): regulators
+- **reinterpret** (C1): reinterpreted, reinterpreting, reinterprets
+- **reinterpretation** (C1): reinterpretations
+- **reinvest** (C1): reinvested, reinvesting, reinvests
+- **relocate** (C1): relocated, relocates, relocating
+- **removal** (C1): removals
+- **reoccur** (C1): reoccurred, reoccurring, reoccurs
+- **reside** (C1): resided, resides, residing
+- **respondent** (C1): respondents
+- **restraint** (C1): restraints
+- **restructure** (C1): restructured, restructures, restructuring
+- **scenario** (C1): scenarios
+- **selector** (C1): selectors
+- **specification** (C1): specifications
+- **stabilize** (C1): stabilised, stabilises, stabilising, stabilized, stabilizes, stabilizing
+- **stimulus** (C1): stimuli
+- **strategist** (C1): strategists
+- **submission** (C1): submissions
+- **subordinate** (C1): subordinates
+- **succession** (C1): successions
+- **terminate** (C1): terminated, terminates, terminating
+- **transit** (C1): transited, transiting, transits
+- **untangle** (C1): untangled
+- **validate** (C1): validated, validating
+- **variable** (C1): variables
+- **variant** (C1): variants
+- **alteration** (C2): alterations
+- **append** (C2): appended, appending, appends
+- **appendix** (C2): appendices, appendixes
+- **approximation** (C2): approximations
+- **automate** (C2): automated, automates, automating
+- **challenger** (C2): challengers
+- **commodity** (C2): commodities
+- **compilation** (C2): compilations
+- **conformist** (C2): conformists
+- **denotation** (C2): denotations
+- **denote** (C2): denoted, denotes, denoting
+- **depress** (C2): depresses
+- **detector** (C2): detectors
+- **deviation** (C2): deviations
+- **diminish** (C2): diminished, diminishes, diminishing
+- **diversify** (C2): diversified, diversifies, diversifying
+- **dramatisation** (C2): dramatisations, dramatizations
+- **dramatise** (C2): dramatised, dramatises, dramatising, dramatized, dramatizes, dramatizing
+- **evolutionist** (C2): evolutionists
+- **externalise** (C2): externalised, externalises, externalising, externalized, externalizes, externalizing
+- **facilitator** (C2): facilitators
+- **federation** (C2): federations
+- **fluctuate** (C2): fluctuated, fluctuates, fluctuating
+- **fluctuation** (C2): fluctuations
+- **hypothesis** (C2): hypotheses
+- **hypothesise** (C2): hypothesised, hypothesises, hypothesising, hypothesized, hypothesizes, hypothesizing
+- **inaccuracy** (C2): inaccuracies
+- **inadequacy** (C2): inadequacies
+- **incline** (C2): inclines, inclining
+- **induce** (C2): induced, induces, inducing
+- **inhibition** (C2): inhibitions
+- **initiation** (C2): initiations
+- **initiator** (C2): initiators
+- **internalise** (C2): internalised, internalises, internalising, internalized, internalizes, internalizing
+- **levy** (C2): levies
+- **liberalise** (C2): liberalised, liberalises, liberalising, liberalized, liberalizes, liberalizing
+- **liberator** (C2): liberators
+- **logician** (C2): logicians
+- **mediate** (C2): mediated, mediates, mediating
+- **migrant** (C2): migrants
+- **minimalise** (C2): minimalised, minimalises, minimalising, minimalized, minimalizes, minimalizing
+- **minimalist** (C2): minimalists
+- **non-conformist** (C2): non-conformists, nonconformists
+- **occupier** (C2): occupiers
+- **orientate** (C2): orientated, orientates, orientating
+- **parameter** (C2): parameters
+- **practitioner** (C2): practitioners
+- **predominate** (C2): predominated, predominates, predominating
+- **presumption** (C2): presumptions
+- **prioritise** (C2): prioritised, prioritises, prioritising, prioritized, prioritizes, prioritizing
+- **promoter** (C2): promoters
+- **rationalisation** (C2): rationalisations, rationalizations
+- **rationalise** (C2): rationalised, rationalises, rationalising, rationalized, rationalizes
+- **readjust** (C2): readjusted, readjusting, readjusts
+- **readjustment** (C2): readjustments
+- **reassign** (C2): reassigned, reassigning, reassigns
+- **redraft** (C2): redrafted, redrafting, redrafts
+- **refinement** (C2): refinements
+- **reschedule** (C2): rescheduled, reschedules, rescheduling
+- **retainer** (C2): retainers
+- **reversal** (C2): reversals
+- **revolutionist** (C2): revolutionists
+- **rigidity** (C2): rigidities
+- **statistician** (C2): statisticians
+- **stylise** (C2): stylised, stylises, stylising, stylized, stylizes, stylizing
+- **subsidise** (C2): subsidised, subsidises, subsidising, subsidized, subsidizes, subsidizing
+- **subsidy** (C2): subsidies
+- **summarisation** (C2): summarisations, summarizations
+- **symbolise** (C2): symbolised, symbolises, symbolising, symbolized, symbolizes, symbolizing
+- **termination** (C2): terminations
+- **transporter** (C2): transporters
+- **underlie** (C2): underlay, underlies
+- **unnerve** (C2): unnerving
+- **utiliser** (C2): utilisers
+- **visualise** (C2): visualised, visualising, visualized, visualizing
+
+## No example sentence (219)
+
+aboriginal (B2), antiaircraft (B2), anticancer (B2), athletics (B2), bad-tempered (B2), bomber (B2), bombing (B2), bourbon (B2), brother-in-law (B2), bulimia (B2), bum (B2), carbon footprint (B2), carbon monoxide (B2), cast (B2), daughter-in-law (B2), de facto (B2), dumb (B2), dwarf (B2), exclamation mark (B2), execution (B2), explosive (B2), father-in-law (B2), fed up (B2), fire brigade (B2), firearm (B2), freak (B2), gook (B2), grain (B2), grown-up (B2), guerrilla (B2), gunshot (B2), hi-tech (B2), high-tech (B2), holocaust (B2), hook (B2), inch (B2), inverted commas (B2), kneel (B2), lame (B2), layabout (B2), level (B2), long-distance (B2), long-term (B2), massacre (B2), mechanise (B2), missile (B2), mortify (B2), mother-in-law (B2), narrowly (B2), non-smoking (B2), overthrow (B2), overturn (B2), plug (B2), polar bear (B2), pop (B2), programing (B2), punch (B2), rape (B2), ravage (B2), remaining (B2), retard (B2), rhythmic (B2), rub (B2), saving (B2), screw (B2), self-confidence (B2), self-confident (B2), semi-final (B2), sexual (B2), sexy (B2), short-term (B2), shrink (B2), sister-in-law (B2), so-called (B2), son-in-law (B2), spray (B2), stroke (B2), subcontinent (B2), suck (B2), tender (B2), track (B2), tramp (B2), upside down (B2), weakly (B2), well-balanced (B2), well-built (B2), well-organised (B2), well-paid (B2), willing (B2), wind (B2), x-ray (B2), appall (C1), atrocity (C1), characterization (C1), combat (C1), cost-effective (C1), creep (C1), cultured (C1), damply (C1), decision-making (C1), digitalization (C1), digitalize (C1), exhibitionist (C1), experimental (C1), favorably (C1), focuses (C1), focusing (C1), focussing (C1), gape (C1), genocide (C1), grounds (C1), gypsy (C1), hack (C1), harbor (C1), high-profile (C1), immigrates (C1), injuring (C1), labors (C1), lackluster (C1), large-scale (C1), line-up (C1), long-standing (C1), long-time (C1), maneuver (C1), mark-up (C1), non-profit (C1), non-traditional (C1), personalization (C1), personalize (C1), post-war (C1), raunchily (C1), re-evaluate (C1), re-evaluation (C1), recognizable (C1), recognizably (C1), remorselessly (C1), removes (C1), rifle (C1), scrutinize (C1), securities (C1), self-conscious (C1), self-worth (C1), set-up (C1), sexually (C1), slack (C1), somber (C1), somberly (C1), thought-provoking (C1), under-resourced (C1), unscathing (C1), vol (C1), well-being (C1), abandons (C2), abstracts (C2), acknowledgements (C2), ad lib (C2), all-encompassing (C2), ardor (C2), armory (C2), bauble (C2), bereftly (C2), biased (C2), bona fide (C2), brandish (C2), carbonize (C2), centralized (C2), computerize (C2), corpse (C2), crystallization (C2), decentralize (C2), derelict (C2), diatribe (C2), discretely (C2), dole out (C2), dwarfism (C2), economize (C2), eke out (C2), enduringly (C2), ephemera (C2), euphorically (C2), evokingly (C2), identically (C2), intension (C2), jarring (C2), kinetically (C2), lascivious (C2), materialization (C2), materialize (C2), meager (C2), misdemeanor (C2), mull over (C2), muscle-bound (C2), notoriety (C2), ordain (C2), paralyze (C2), paralyzingly (C2), patronize (C2), patronizing (C2), patronizingly (C2), portent (C2), protrude (C2), punitively (C2), ravish (C2), retrospective (C2), salivary (C2), secularly (C2), self-aggrandizement (C2), side-step (C2), spatially (C2), spherically (C2), standing (C2), tactically (C2), tantalize (C2), tantalizingly (C2), targeted (C2), taste-maker (C2), tranquilize (C2), vandalize (C2), vis-a-vis (C2)

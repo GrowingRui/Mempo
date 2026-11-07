@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.vercel/
+.env*
+!.env.example
+
+# Build-time data pipeline: large downloads and cached pages (re-creatable)
+data/dict/
+data/cache/
