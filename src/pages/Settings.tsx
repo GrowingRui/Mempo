@@ -113,7 +113,7 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
         <Segmented label="Theme" value={settings.theme} options={THEMES} onChange={(theme) => update({ theme })} />
       </Section>
 
-      <Section title="Translations" hint="Shown on the back of the card and in the word lists.">
+      <Section title="Meanings" hint="Shown on the back of the card and in the word lists.">
         <div className="raised divide-y-2 divide-line rounded-[20px] border-2 border-line bg-card">
           <Toggle
             label="中文"
@@ -130,7 +130,10 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
             onChange={(showEs) => update({ showEs })}
           />
         </div>
-        {!(settings.showZh && settings.showEs) && <p className="mt-2 text-xs font-semibold text-muted">At least one language stays on.</p>}
+        {!(settings.showZh && settings.showEs) && <p className="mt-2 text-xs font-semibold text-muted">Chinese or Spanish: at least one stays on.</p>}
+        <div className="raised mt-3 rounded-[20px] border-2 border-line bg-card">
+          <Toggle label="English" sub="Definitions in English" checked={settings.showEn} onChange={(showEn) => update({ showEn })} />
+        </div>
       </Section>
 
       <Section title="Swiping" hint="Swipe up is always “Not sure”. The buttons follow the same order.">

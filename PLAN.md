@@ -284,16 +284,16 @@ Pick any of these up whenever we want; each still needs approval before work sta
 - Checked that the tests catch real mistakes: changing the 60-day interval or the "2 days to leave Don't know" rule makes 4 tests fail.
 - Run `npm test` before pushing changes to the learning logic.
 
-**B. Learning improvements** (started 2026-11-07, waiting for approval)
+**B. Learning improvements** ✅ (done 2026-11-07)
 - [x] **Active recall mode** (chosen by the user): "Recall" button on Home, its own screen (`src/pages/Recall.tsx`, logic in `src/lib/recall.ts`). Three exercises, 15 words a round, only words you've studied, weakest first ("Don't know" → due → low boxes → the rest):
   - **Meaning → word:** see 中文 / Español, pick the English word from 4 (wrong choices share the level and part of speech, never the same meaning)
   - **Listen → word:** hear the audio, pick the written word
   - **Spell it:** see the meaning, a gap-fill example and the first letter, type the word. Forms and spelling variants count; one typo shows "Almost!" but counts as wrong
   - A Spanish meaning that spells out the answer (secular = secular, aluminio = aluminium) is hidden when Chinese is shown too
   - It doesn't move cards between boxes. At the end, missed words can be added to "Don't know" with one tap
-- [ ] English definitions on the card back (added at build time from Wiktionary, free). App side done (`en` field, "English" toggle in Settings → Meanings); data comes from `data/dict/kaikki-en-defs.jsonl` (new step in `npm run data:fetch-dicts`), filled in by `npm run data:enrich`
+- [x] English definitions on the card back, after 中文 / Español, with an "English" toggle in Settings → Meanings. Up to 2 definitions for up to 2 parts of speech; 99% of words have them. Wording from English Wiktionary (`data/dict/kaikki-en-defs.jsonl`, a new step in `npm run data:fetch-dicts`), put in WordNet's "most common meaning first" order (ECDICT's English column), slang and old senses left out. Inflected cards ("achieving") use the base word. Hand-written definitions for poor cases: `en` in `scripts/manual.ts`. Word files grew from 2.1 MB to 3.2 MB (much less gzipped)
 - [x] "Report a translation" link on the back of the card. No server: it opens a pre-filled GitHub issue on the public repo with what's shown now, the suggestion, and a line ready to paste into `scripts/manual.ts` (`src/lib/report.ts`)
-- [ ] Notes for sensitive / offensive words (see decision 5 below): `scripts/sensitive.ts` (hand-written, shown on the card with an "Offensive" tag on the front). The enrich report lists words whose Wiktionary senses are labelled offensive/vulgar/derogatory
+- [x] Notes for sensitive / offensive words (decision 5): 26 hand-written notes in `scripts/sensitive.ts`. **Offensive** (gook, retard, cripple, gypsy): red "Offensive" tag on the front of the card and a red note on the back. **Use with care** (22, e.g. queer, dumb, fat, bloody, damn, screw, alien, rape): normal words with a rude or hurtful use, yellow note on the back only. Notes also show in the word list. The enrich report lists the other words Wiktionary flags (mostly false alarms such as one rare slang sense of "plumber")
 - [x] Daily review cap: Settings → "Reviews per day" (50 / **100** / 200 / no limit). Today's session takes the most overdue reviews first; the rest wait for the next days. "Reviews due" on Home still lets you do them all
 
 **C. Keeping users coming back**

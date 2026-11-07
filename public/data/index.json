@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-07T10:27:19.516Z",
+ "generatedAt": "2026-11-07T19:35:07.999Z",
  "counts": {
   "B2": 2672,
   "C1": 1847,
@@ -25,7 +25,7 @@
    "licence": "MIT"
   },
   {
-   "what": "Spanish translations",
+   "what": "Spanish translations and English definitions",
    "name": "English Wiktionary via kaikki.org",
    "url": "https://kaikki.org/",
    "licence": "CC BY-SA 4.0"

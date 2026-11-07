@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Gloss, Settings, Word } from "../lib/types";
+import type { Gloss, Sensitive, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import ReportDialog from "./ReportDialog";
 import SpeakButton from "./SpeakButton";
@@ -61,15 +61,18 @@ export function SensitiveBadge() {
   );
 }
 
-/** The hand-written note for an offensive or sensitive word. */
-export function SensitiveNote({ note, className = "" }: { note: string; className?: string }) {
+/** The hand-written note for an offensive word (red) or a word with a rude or hurtful use (yellow). */
+export function SensitiveNote({ sensitive, className = "" }: { sensitive: Sensitive; className?: string }) {
+  const offensive = sensitive.level === "offensive";
   return (
-    <aside className={`rounded-2xl border-2 border-dontknow/30 bg-dontknow/8 px-3.5 py-3 ${className}`}>
-      <p className="flex items-center gap-1.5 text-sm font-extrabold text-dontknow-ink">
+    <aside
+      className={`rounded-2xl border-2 px-3.5 py-3 ${offensive ? "border-dontknow/30 bg-dontknow/8" : "border-unsure/45 bg-unsure/12"} ${className}`}
+    >
+      <p className={`flex items-center gap-1.5 text-sm font-extrabold ${offensive ? "text-dontknow-ink" : "text-unsure-dark"}`}>
         <WarnIcon className="size-4" />
-        Careful: offensive word
+        {offensive ? "Offensive word" : "Use with care"}
       </p>
-      <p className="mt-1 text-[15px] leading-snug font-medium text-ink/85">{note}</p>
+      <p className="mt-1 text-[15px] leading-snug font-medium text-ink/85">{sensitive.note}</p>
     </aside>
   );
 }
@@ -112,7 +115,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
           <div className="flex items-center justify-between gap-3">
             <span className="flex items-center gap-1.5">
               <span className="rounded-full bg-brand px-3 py-1 font-display text-sm font-extrabold text-white">{word.level}</span>
-              {word.note && <SensitiveBadge />}
+              {word.sensitive?.level === "offensive" && <SensitiveBadge />}
             </span>
             <span className="truncate text-sm font-semibold text-muted">{word.pos.map((p) => POS_LABEL[p] ?? p).join(", ")}</span>
           </div>
@@ -143,12 +146,12 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
             <SpeakButton id={word.id} text={word.word} className="shrink-0" />
           </div>
 
-          {word.note && <SensitiveNote note={word.note} className="mt-4" />}
+          {word.sensitive && <SensitiveNote sensitive={word.sensitive} className="mt-4" />}
 
           <div className="mt-5 space-y-5">
-            {settings.showEn && word.en && <GlossList label="English" glosses={word.en} lang="en" />}
             {settings.showZh && <GlossList label="中文" glosses={word.zh} lang="zh" />}
             {settings.showEs && <GlossList label="Español" glosses={word.es} lang="es" />}
+            {settings.showEn && word.en && <GlossList label="English" glosses={word.en} lang="en" />}
           </div>
 
           {extra.length > 0 && <p className="mt-5 text-sm font-medium text-muted">{extra.join(" ")}</p>}

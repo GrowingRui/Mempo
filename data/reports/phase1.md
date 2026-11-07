@@ -1,6 +1,6 @@
 # Phase 1 report
 
-Generated 2026-11-07T10:27:19.520Z
+Generated 2026-11-07T19:35:08.004Z
 
 ## Coverage
 
@@ -9,14 +9,17 @@ Generated 2026-11-07T10:27:19.520Z
 | Chinese translation | 6128 / 6128 | 100.0% |
 | Spanish translation | 6128 / 6128 | 100.0% |
 | At least one example | 6128 / 6128 | 100.0% |
+| English definition | 6066 / 6128 | 99.0% |
+
+- Notes for sensitive words (scripts/sensitive.ts): 26 (4 offensive, the rest "use with care")
 
 - Examples added for the 219 cards that had none: 184 from Tatoeba, 35 hand-written (scripts/manual.ts)
 - Translations taken from the base word (inflected cards such as "focuses"): 390
-- Spanish found through an "alternative spelling of" link: 54
+- Spanish found through an "alternative spelling of" link: 53
 - Spanish found from the Spanish side of Wiktionary ("ocultar: to hide, conceal"): 504
 - Spanish adverbs built as adjective + -mente: 37 (listed below; check them)
-- Hand-written entries used from scripts/manual.ts: 391
-- Output: b2.json 943 KB, c1.json 623 KB, c2.json 530 KB
+- Hand-written entries used from scripts/manual.ts: 398
+- Output: b2.json 1472 KB, c1.json 941 KB, c2.json 788 KB
 
 ## No Chinese translation (0)
 
@@ -108,6 +111,175 @@ Add these to scripts/manual.ts.
 
 None.
 
+## Senses labelled offensive, with no note yet (80)
+
+Wiktionary labels at least one sense of these offensive, vulgar or derogatory. Most are false
+alarms (a rare slang sense); write a note in scripts/sensitive.ts for the ones a learner should be warned about.
+
+bacteria (B2): derogatory
+
+bureaucracy (B2): derogatory
+
+chief (B2): offensive
+
+chimney (B2): vulgar
+
+clam (B2): derogatory, vulgar
+
+cope (B2): derogatory
+
+crew (B2): derogatory
+
+dairy (B2): vulgar
+
+drain (B2): vulgar
+
+gardener (B2): derogatory
+
+handout (B2): derogatory
+
+heap (B2): offensive
+
+lick (B2): vulgar
+
+lush (B2): derogatory
+
+madam (B2): derogatory
+
+manufacture (B2): derogatory
+
+nut (B2): vulgar
+
+pandemic (B2): derogatory
+
+pee (B2): vulgar
+
+petty (B2): derogatory
+
+plumber (B2): derogatory
+
+pointless (B2): derogatory
+
+posh (B2): offensive
+
+prawn (B2): derogatory
+
+professional (B2): pejorative
+
+punk (B2): derogatory
+
+rag (B2): derogatory, vulgar
+
+rainbow (B2): derogatory
+
+ramp (B2): derogatory
+
+rear (B2): vulgar
+
+refugee (B2): derogatory
+
+rim (B2): vulgar
+
+shed (B2): derogatory
+
+shrink (B2): derogatory
+
+slash (B2): vulgar
+
+sloppy (B2): derogatory
+
+snowball (B2): vulgar
+
+squash (B2): derogatory
+
+stroke (B2): vulgar
+
+tag (B2): vulgar
+
+tribe (B2): derogatory
+
+tub (B2): derogatory
+
+unnatural (B2): derogatory
+
+urban (B2): offensive
+
+user (B2): derogatory
+
+usher (B2): derogatory
+
+zebra (B2): derogatory, ethnic, slur
+
+attorney (C1): derogatory
+
+buffoon (C1): derogatory
+
+creamy (C1): vulgar
+
+cult (C1): derogatory
+
+dissect (C1): derogatory
+
+elitist (C1): derogatory
+
+fossil (C1): derogatory
+
+grapefruit (C1): vulgar
+
+hack (C1): derogatory
+
+intake (C1): derogatory
+
+irrelevant (C1): derogatory
+
+munch (C1): derogatory
+
+parasite (C1): derogatory
+
+propaganda (C1): derogatory
+
+rod (C1): vulgar
+
+showy (C1): derogatory
+
+slob (C1): derogatory, vulgar
+
+specimen (C1): derogatory
+
+anarchic (C2): derogatory
+
+blubber (C2): derogatory, offensive
+
+buzzard (C2): derogatory
+
+contraption (C2): derogatory
+
+corpse (C2): derogatory
+
+cultish (C2): derogatory
+
+derelict (C2): derogatory
+
+maggot (C2): derogatory, vulgar
+
+manipulative (C2): derogatory
+
+muscle-bound (C2): derogatory
+
+parochial (C2): derogatory
+
+philistine (C2): derogatory
+
+polemical (C2): derogatory
+
+prissy (C2): derogatory
+
+rhetoric (C2): derogatory
+
+## No English definition (62)
+
+antiaircraft (B2), archeologist (B2), ax (B2), belongings (B2), catalog (B2), coziness (B2), cozy (B2), cybercafe (B2), diarrhoea (B2), dna (B2), enquire (B2), furore (B2), glamourous (B2), inverted commas (B2), madame (B2), mediaeval (B2), millimeter (B2), mustache (B2), olympia (B2), olympiad (B2), ph (B2), programing (B2), pyjamas (B2), shakespearean (B2), showbiz (B2), sulphur (B2), undreamed (B2), vigor (B2), whisky (B2), woodcarving (B2), x-ray (B2), apt to (C1), categorises (C1), categorising (C1), co-ordinates (C1), counsellor (C1), deregulates (C1), interpretive (C1), labored (C1), labors (C1), pertain to (C1), possessor (C1), repellant (C1), unscathing (C1), verandah (C1), acknowledgements (C2), bereftly (C2), deviantly (C2), distill (C2), evokingly (C2), flatout (C2), glory in (C2), liberations (C2), minimised (C2), minimises (C2), sulphuric (C2), summarised (C2), summarises (C2), summarising (C2), tensest (C2), vis-a-vis (C2), whir (C2)
+
 ## Still no example sentence (0)
 
 None.
@@ -120,6 +292,6 @@ cherished → cherish, funding → fund, nerves → nerve, proven → prove, rem
 
 cheerfully → alegremente, animadamente, unashamedly → desvergonzadamente, unthinkably → impensablemente, affectively → afectivamente, demonstratively → demostrativamente, detrimentally → perjudicialmente, detrimentalmente, disproportionately → desproporcionadamente, dutifully → obedientemente, ecstatically → extáticamente, gruesomely → espantosamente, impishly → traviesamente, pícaramente, inconstantly → inconstantemente, insecurely → inseguramente, insubordinately → insubordinadamente, remorselessly → despiadadamente, somberly → sombríamente, startlingly → sorprendentemente, alarmantemente, succulently → suculentamente, unsustainably → insosteniblemente, unwaveringly → firmemente, inquebrantablemente, amorphously → amorfamente, calamitously → desastrosamente, calamitosamente, deficiently → deficientemente, disparagingly → despectivamente, descalificativamente, diversely → diversamente, genomically → genómicamente, histrionically → histriónicamente, indulgently → indulgentemente, infernally → infernalmente, opulently → opulentamente, paralyzingly → paralizantemente, patronizingly → condescendientemente, punitively → punitivamente, spatially → espacialmente, spuriously → espuriamente, vestigially → vestigialmente, wistfully → nostálgicamente, melancólicamente
 
-## Spanish through an alternative spelling (54)
+## Spanish through an alternative spelling (53)
 
-antiaircraft → anti-aircraft, archeologist → archaeologist, ax → axe, bacteria → bacterium, bio → biography, browser → web browser, catalog → catalogue, cozy → cosy, cybercafe → cybercafé, diarrhoea → diarrhea, dorm → dormitory, enquire → inquire, furore → furor, jeweller → jeweler, madame → madam, mediaeval → medieval, millimeter → millimetre, mustache → moustache, neighbouring → neighboring, ph → penthouse, polio → poliomyelitis, programing → programming, pyjamas → pajamas, showbiz → showbusiness, sulphur → sulfur, typhoid → typhoid fever, vigor → vigour, whisky → whiskey, auto → automatic, categorised → categorize, categorises → categorize, chauffer → chauffeur, co-ordinates → coordinate, conceptualise → conceptualize, counsellor → counselor, focussed → focused, immortalize → immortalise, institutionalise → institutionalize, itemisation → itemization, labors → labour, repellant → repellent, verandah → veranda, acknowledgements → acknowledgment, cay → quay, distill → distil, indiscrete → indiscreet, licences → license, minimises → minimize, prise → prize, sulphuric → sulfuric, summarises → summarize, summing → something, vis-a-vis → vis-à-vis, whir → whirr
+antiaircraft → anti-aircraft, archeologist → archaeologist, ax → axe, bio → biography, browser → web browser, catalog → catalogue, cozy → cosy, cybercafe → cybercafé, diarrhoea → diarrhea, dorm → dormitory, enquire → inquire, furore → furor, jeweller → jeweler, madame → madam, mediaeval → medieval, millimeter → millimetre, mustache → moustache, neighbouring → neighboring, ph → penthouse, polio → poliomyelitis, programing → programming, pyjamas → pajamas, showbiz → showbusiness, sulphur → sulfur, typhoid → typhoid fever, vigor → vigour, whisky → whiskey, auto → automatic, categorised → categorize, categorises → categorize, chauffer → chauffeur, co-ordinates → coordinate, conceptualise → conceptualize, counsellor → counselor, focussed → focused, immortalize → immortalise, institutionalise → institutionalize, itemisation → itemization, labors → labour, repellant → repellent, verandah → veranda, acknowledgements → acknowledgment, cay → quay, distill → distil, indiscrete → indiscreet, licences → license, minimises → minimize, prise → prize, sulphuric → sulfuric, summarises → summarize, summing → something, vis-a-vis → vis-à-vis, whir → whirr

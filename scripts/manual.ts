@@ -12,6 +12,8 @@ export type Glosses = Partial<Record<string, string[]>>;
 export interface ManualEntry {
   zh?: Glosses;
   es?: Glosses;
+  /** English definitions, when Wiktionary's first senses are rare or misleading. */
+  en?: Glosses;
 }
 
 export const MANUAL: Record<string, ManualEntry> = {
@@ -173,7 +175,10 @@ export const MANUAL: Record<string, ManualEntry> = {
   'examinee': { es: { n: ['examinando', 'candidato'] } },
   'first-language': { es: { n: ['lengua materna', 'primera lengua'] } },
   'giveaway': { es: { n: ['regalo', 'obsequio', 'indicio revelador'] } },
-  'gook': { es: { n: ['mugre', 'porquería', 'insulto racista contra asiáticos'] } },
+  'gook': {
+    es: { n: ['mugre', 'porquería', 'insulto racista contra asiáticos'] },
+    en: { n: ['A sticky, dirty or slimy substance (informal; also "gunk")', 'A very offensive racist word for a person from East or Southeast Asia'] },
+  },
   'habitant': { es: { n: ['habitante'] } },
   'haunting': { es: { adj: ['inolvidable', 'evocador', 'obsesionante'] } },
   'hi-tech': { es: { adj: ['de alta tecnología'] } },
@@ -422,6 +427,21 @@ export const MANUAL: Record<string, ManualEntry> = {
   'unscheduled': { es: { adj: ['imprevisto', 'no programado', 'fuera de horario'] } },
   'unsurpassed': { es: { adj: ['insuperable', 'sin igual'] } },
   'wordage': { es: { n: ['número de palabras', 'palabrería', 'redacción'] } },
+
+  // ---------------------------------------------------------------- English definitions (added 2026-11-07)
+  // Wiktionary's first senses were rare or misleading for these.
+  'anticipate': { en: { v: ['To expect something to happen and be ready for it', 'To do or think of something before someone else does'] } },
+  'bacteria': { en: { n: ['Very small living things with one cell, found everywhere; some cause disease (the plural of "bacterium")'] } },
+  'cripple': {
+    en: {
+      v: ['To damage something badly so that it can no longer work well', 'To injure someone so that they cannot walk or move normally'],
+      n: ['An offensive, old-fashioned word for a disabled person'],
+    },
+  },
+  'gypsy': { en: { n: ['An old and often offensive word for a member of the Roma people', 'A person who moves from place to place and doesn\'t live in one home'] } },
+  'retard': { en: { v: ['To slow down the development or progress of something (formal)'], n: ['A very offensive word for a person with an intellectual disability, or for a stupid person'] } },
+  'tinker': { en: { v: ['To make small changes to something to repair or improve it'], n: ['A person who travelled from place to place mending pots and pans (old-fashioned)'] } },
+  'tramp': { en: { n: ['A person with no home or job who travels from place to place (old-fashioned)', 'A long walk, especially a tiring one'], v: ['To walk with slow, heavy steps', 'To walk a long way'] } },
 };
 
 /** Example sentences for cards with no example from minddory or Tatoeba. Written by hand, no source. */

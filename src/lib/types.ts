@@ -12,6 +12,12 @@ export interface Example {
   form?: string;
 }
 
+/** offensive: the word is a slur or insult (tag on the front of the card). careful: a normal word with a rude or hurtful use. */
+export interface Sensitive {
+  level: "offensive" | "careful";
+  note: string;
+}
+
 export interface Word {
   id: string;
   word: string;
@@ -22,8 +28,8 @@ export interface Word {
   es: Gloss[];
   /** English definitions, grouped like the translations. */
   en?: Gloss[];
-  /** Note for an offensive or sensitive word: what it means, why it hurts, what to say instead. */
-  note?: string;
+  /** Warning for an offensive or sensitive word: what it means, why it hurts, what to say instead. */
+  sensitive?: Sensitive;
   variants?: string[];
   forms?: string[];
   lemma?: string;

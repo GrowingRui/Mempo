@@ -10,14 +10,16 @@
 //   Chinese, part of speech, phonetics: ECDICT (MIT)
 //   Spanish: English Wiktionary via kaikki.org (CC BY-SA): the translation tables of the English
 //            entry, else Spanish entries whose English gloss is the word
+//   English definitions: English Wiktionary via kaikki.org (CC BY-SA), the first senses of the entry
 //   Missing examples: Tatoeba (CC BY 2.0 FR), only for cards with no example at all
-//   Hand fixes: scripts/manual.ts
+//   Hand fixes: scripts/manual.ts; notes for sensitive words: scripts/sensitive.ts
 
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
 import { loadEcdict, type EcdictEntry } from './lib/ecdict.ts';
 import { MANUAL, MANUAL_EXAMPLES, type Glosses } from './manual.ts';
+import { SENSITIVE, type SensitiveNote } from './sensitive.ts';
 import type { Example, RawWord } from './scrape.ts';
 
 type Level = 'B2' | 'C1' | 'C2';
@@ -37,6 +39,10 @@ export interface Word {
   pos: string[];
   zh: Sense[];
   es: Sense[];
+  /** English definitions (the first senses, for learners). */
+  en?: Sense[];
+  /** Hand-written warning for offensive or sensitive words (scripts/sensitive.ts). */
+  sensitive?: SensitiveNote;
   variants?: string[];
   forms?: string[];
   /** Set when the translations came from the base word, e.g. "focuses" -> "focus". */
@@ -49,6 +55,7 @@ const KAIKKI_FILE = 'data/dict/kaikki-es.jsonl';
 const REVERSE_FILE = 'data/dict/kaikki-es-reverse.jsonl';
 const ES_FREQ_FILE = 'data/dict/es-freq.txt';
 const TATOEBA_FILE = 'data/dict/tatoeba-eng.tsv';
+const DEFS_FILE = 'data/dict/kaikki-en-defs.jsonl';
 const OUT_DIR = 'public/data';
 const REPORT_FILE = 'data/reports/phase1.md';
 
@@ -56,6 +63,9 @@ const MAX_POS = 3; // sense groups per language
 const MAX_ZH = 4; // glosses per group
 const MAX_ES = 4;
 const MAX_NEW_EXAMPLES = 2;
+const MAX_EN_POS = 2; // English definition groups
+const MAX_EN = 2; // definitions per group
+const MAX_DEF_LEN = 150;
 
 // ---------------------------------------------------------------- helpers
 
@@ -415,6 +425,121 @@ async function addTatoebaExamples(needy: Needy[]) {
 
 // ---------------------------------------------------------------- main
 
+// ---------------------------------------------------------------- English definitions (kaikki)
+
+interface DefRec {
+  word: string;
+  pos: string;
+  senses: { gloss: string; tags?: string[] }[];
+}
+
+/** Usage labels that mark a sense as offensive; such words are listed in the report for scripts/sensitive.ts. */
+const OFFENSIVE_TAGS = new Set(['offensive', 'slur', 'ethnic', 'derogatory', 'vulgar', 'pejorative']);
+/** Senses a learner rarely needs; skipped unless nothing else is left. */
+const OLD_TAGS = new Set(['obsolete', 'archaic', 'dated', 'rare']);
+
+async function loadDefs(wanted: Set<string>): Promise<Map<string, DefRec[]>> {
+  if (!fs.existsSync(DEFS_FILE)) throw new Error(`${DEFS_FILE} not found. Run: npm run data:fetch-dicts`);
+  const map = new Map<string, DefRec[]>();
+  const rl = readline.createInterface({ input: fs.createReadStream(DEFS_FILE), crlfDelay: Infinity });
+  for await (const line of rl) {
+    if (!line) continue;
+    const r: DefRec = JSON.parse(line);
+    if (!wanted.has(r.word) || KAIKKI_POS[r.pos] === undefined) continue;
+    if (!map.has(r.word)) map.set(r.word, []);
+    map.get(r.word)!.push(r);
+  }
+  return map;
+}
+
+/** Shortens a definition at a word boundary and drops a trailing full stop. */
+function cleanDef(s: string): string {
+  let t = s.replace(/\s+/g, ' ').trim().replace(/\.$/, '');
+  if (t.length > MAX_DEF_LEN) t = t.slice(0, t.lastIndexOf(' ', MAX_DEF_LEN)).replace(/[,;:(]$/, '') + '…';
+  return t;
+}
+
+/** Senses left out of the definitions (unless the word is in scripts/sensitive.ts, or nothing else is left). */
+const SLANG_TAGS = new Set([...OFFENSIVE_TAGS, 'slang', 'humorous', 'euphemistic']);
+
+const STOP = new Set('the and for with that this from which who whom what are was were has have had not but any all its into onto than then such some one ones being been very more most also other their them they something someone someplace somebody used use using act way'.split(' '));
+
+/** Content words of a definition, roughly stemmed, for comparing two definitions. */
+function contentWords(s: string): Set<string> {
+  const words = s.toLowerCase().match(/[a-z]+/g) ?? [];
+  return new Set(words.filter((w) => w.length > 2 && !STOP.has(w)).map((w) => w.replace(/(ing|ed|es|s)$/, '')));
+}
+
+/** WordNet senses (ECDICT's English "definition" column) per part of speech, most common first. */
+function wordnetSenses(definition: string): Map<string, string[]> {
+  const map = new Map<string, string[]>();
+  const POS: Record<string, string> = { n: 'n', v: 'v', a: 'adj', s: 'adj', adj: 'adj', r: 'adv', adv: 'adv' };
+  for (const line of definition.split('\n')) {
+    const m = line.trim().match(/^(n|v|a|s|r|adj|adv)\.?\s+(.+)$/);
+    if (!m) continue;
+    const pos = POS[m[1]];
+    map.set(pos, [...(map.get(pos) ?? []), m[2]]);
+  }
+  return map;
+}
+
+/**
+ * Puts the Wiktionary definitions in WordNet's order. Wiktionary words them more simply but lists
+ * them by history ("focus": optics first); WordNet lists the most common meaning first ("the
+ * concentration of attention"). For each WordNet sense, the Wiktionary definition sharing the most
+ * words with it moves up; the rest keep Wiktionary's order.
+ */
+function byWordnet(defs: string[], wn: string[] | undefined): string[] {
+  if (!wn?.length) return defs;
+  const words = defs.map(contentWords);
+  const picked: number[] = [];
+  for (const w of wn.slice(0, 3)) {
+    const target = contentWords(w);
+    let best = -1;
+    let bestScore = 0;
+    words.forEach((ws, i) => {
+      if (picked.includes(i)) return;
+      const score = [...ws].filter((x) => target.has(x)).length;
+      if (score > bestScore) [best, bestScore] = [i, score];
+    });
+    if (best >= 0) picked.push(best);
+  }
+  return [...picked, ...defs.map((_, i) => i).filter((i) => !picked.includes(i))].map((i) => defs[i]);
+}
+
+/**
+ * English definitions from the first spelling that has any, grouped by part of speech in the
+ * card's part-of-speech order. Also returns the offensive labels found on any sense.
+ */
+function englishFor(keys: string[], defs: Map<string, DefRec[]>, posOrder: string[], wordnet: string, keepSlang: boolean): { senses: Sense[]; offensive: string[] } {
+  const wn = wordnetSenses(wordnet);
+  for (const k of keys) {
+    const recs = defs.get(k);
+    if (!recs?.length) continue;
+    const offensive = uniq(recs.flatMap((r) => r.senses.flatMap((s) => (s.tags ?? []).filter((t) => OFFENSIVE_TAGS.has(t)))));
+    const groups = new Map<string, string[]>();
+    for (const r of recs) {
+      const pos = KAIKKI_POS[r.pos];
+      const tagged = (s: DefRec['senses'][number], set: Set<string>) => (s.tags ?? []).some((t) => set.has(t));
+      let senses = r.senses.filter((s) => !tagged(s, OLD_TAGS));
+      if (!keepSlang) senses = senses.filter((s) => !tagged(s, SLANG_TAGS));
+      for (const s of senses.length ? senses : r.senses) {
+        const list = groups.get(pos) ?? [];
+        const def = cleanDef(s.gloss);
+        if (def && !list.includes(def)) list.push(def);
+        groups.set(pos, list);
+      }
+    }
+    const rank = (pos: string) => (posOrder.includes(pos) ? posOrder.indexOf(pos) : posOrder.length);
+    const senses = [...groups.entries()]
+      .sort((a, b) => rank(a[0]) - rank(b[0])) // stable: Wiktionary's order otherwise
+      .slice(0, MAX_EN_POS)
+      .map(([pos, gloss]) => ({ pos, gloss: byWordnet(gloss, wn.get(pos)).slice(0, MAX_EN) }));
+    return { senses, offensive };
+  }
+  return { senses: [], offensive: [] };
+}
+
 async function main() {
   if (!fs.existsSync(RAW_FILE)) throw new Error(`${RAW_FILE} not found. Run: npm run data:scrape`);
   const raw: { words: RawWord[] } = JSON.parse(fs.readFileSync(RAW_FILE, 'utf8'));
@@ -433,6 +558,10 @@ async function main() {
   const kaikki = await loadKaikki();
   const reverse = await loadReverse();
   loadEsFreq();
+  console.log('Loading Wiktionary (kaikki) English definitions...');
+  const lemmaKeys = [...dict.values()].map((e) => e.exchange['0']?.toLowerCase()).filter((l): l is string => !!l);
+  const defs = await loadDefs(new Set([...wanted, ...americanSpellings([...wanted]), ...lemmaKeys]));
+  const flagged: { word: Word; tags: string[] }[] = [];
   let viaReverse = 0;
   const viaMente: string[] = [];
 
@@ -510,9 +639,30 @@ async function main() {
       if (es.via) viaAlt.push({ word: w, alt: es.via });
     }
     w.pos = uniq([...w.zh, ...w.es].map((s) => s.pos).filter(Boolean));
-    words.push(w);
+    const keepSlang = !!SENSITIVE[r.id];
+    const lemmaEntry = lemmaKey ? dict.get(lemmaKey) : undefined;
+    let en = englishFor([...keys, ...americanSpellings(keys)], defs, w.pos, entry?.definition || lemmaEntry?.definition || '', keepSlang);
+    // Inflected cards ("achieving", "focuses"): the base word's definitions when the card's own entry
+    // has nothing, or nothing for the card's main part of speech ("achieving" only has the noun "an achievement").
+    if (lemmaKey && lemmaKey !== r.word.toLowerCase() && !en.senses.some((s) => s.pos === w.pos[0])) {
+      const base = englishFor([lemmaKey], defs, w.pos, lemmaEntry?.definition ?? '', keepSlang);
+      if (base.senses.some((s) => s.pos === w.pos[0]) || !en.senses.length) en = { ...base, offensive: en.offensive };
+    }
+    if (en.offensive.length) flagged.push({ word: w, tags: en.offensive });
+    if (MANUAL[r.id]?.en) en = { ...en, senses: fromManual(MANUAL[r.id]!.en!) };
+    // Same key order as before for the old fields; en and sensitive go right after es.
+    const { variants, forms, lemma: lm, examples, ...head } = w;
+    words.push({
+      ...head,
+      ...(en.senses.length ? { en: en.senses } : {}),
+      ...(SENSITIVE[r.id] ? { sensitive: SENSITIVE[r.id] } : {}),
+      ...(variants ? { variants } : {}),
+      ...(forms ? { forms } : {}),
+      ...(lm ? { lemma: lm } : {}),
+      examples,
+    });
   }
-  for (const id of [...Object.keys(MANUAL), ...Object.keys(MANUAL_EXAMPLES)]) {
+  for (const id of [...Object.keys(MANUAL), ...Object.keys(MANUAL_EXAMPLES), ...Object.keys(SENSITIVE)]) {
     if (!words.some((w) => w.id === id)) console.warn(`manual.ts: unknown id "${id}"`);
   }
 
@@ -565,7 +715,7 @@ async function main() {
         sources: [
           { what: 'Word lists (B2/C1/C2)', name: 'minddory.com English vocabulary lists', url: 'https://minddory.com/english-vocabulary-list/', licence: 'Personal use' },
           { what: 'Chinese translations, part of speech, phonetics', name: 'ECDICT', url: 'https://github.com/skywind3000/ECDICT', licence: 'MIT' },
-          { what: 'Spanish translations', name: 'English Wiktionary via kaikki.org', url: 'https://kaikki.org/', licence: 'CC BY-SA 4.0' },
+          { what: 'Spanish translations and English definitions', name: 'English Wiktionary via kaikki.org', url: 'https://kaikki.org/', licence: 'CC BY-SA 4.0' },
           { what: 'Example sentences (with a source link)', name: 'Tatoeba', url: 'https://tatoeba.org/', licence: 'CC BY 2.0 FR' },
           { what: 'Pronunciation audio (generated by scripts/gen-audio.py)', name: 'Piper TTS, voice "cori" (en_GB, trained on LibriVox recordings)', url: 'https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_GB/cori/high', licence: 'Public domain (voice dataset)' },
         ],
@@ -580,6 +730,9 @@ async function main() {
   const noZh = words.filter((w) => !w.zh.length);
   const noEs = words.filter((w) => !w.es.length);
   const noEx = words.filter((w) => !w.examples.length);
+  const noEn = words.filter((w) => !w.en?.length);
+  const withNote = words.filter((w) => w.sensitive);
+  const flaggedNoNote = flagged.filter((f) => !SENSITIVE[f.word.id]);
   const fromLemma = words.filter((w) => w.lemma && !MANUAL[w.id]);
   const list = (ws: Word[]) => ws.map((w) => `${w.word} (${w.level})`).join(', ') || 'None.';
   const pct = (n: number) => `${((100 * n) / words.length).toFixed(1)}%`;
@@ -595,6 +748,9 @@ Generated ${new Date().toISOString()}
 | Chinese translation | ${words.length - noZh.length} / ${words.length} | ${pct(words.length - noZh.length)} |
 | Spanish translation | ${words.length - noEs.length} / ${words.length} | ${pct(words.length - noEs.length)} |
 | At least one example | ${words.length - noEx.length} / ${words.length} | ${pct(words.length - noEx.length)} |
+| English definition | ${words.length - noEn.length} / ${words.length} | ${pct(words.length - noEn.length)} |
+
+- Notes for sensitive words (scripts/sensitive.ts): ${withNote.length} (${withNote.filter((w) => w.sensitive!.level === 'offensive').length} offensive, the rest "use with care")
 
 - Examples added for the ${needyBefore} cards that had none: ${needyBefore - noEx.length - handExamples} from Tatoeba, ${handExamples} hand-written (scripts/manual.ts)
 - Translations taken from the base word (inflected cards such as "focuses"): ${fromLemma.length}
@@ -621,6 +777,17 @@ ${weakZh.map((w) => `${w.word} (${w.level}): ${w.zh.flatMap((s) => s.gloss).join
 Add these to scripts/manual.ts.
 
 ${list(noEs)}
+
+## Senses labelled offensive, with no note yet (${flaggedNoNote.length})
+
+Wiktionary labels at least one sense of these offensive, vulgar or derogatory. Most are false
+alarms (a rare slang sense); write a note in scripts/sensitive.ts for the ones a learner should be warned about.
+
+${flaggedNoNote.map((f) => `${f.word.word} (${f.word.level}): ${f.tags.join(', ')}`).join('\n\n') || 'None.'}
+
+## No English definition (${noEn.length})
+
+${list(noEn)}
 
 ## Still no example sentence (${noEx.length})
 

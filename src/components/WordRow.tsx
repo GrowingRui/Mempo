@@ -50,10 +50,10 @@ export default function WordRow({ word, card, settings }: { word: Word; card?: C
       {open && (
         <div className="space-y-4 border-t-2 border-line px-4 pt-3 pb-4">
           {word.phonetic && <p className="text-sm text-muted">/{word.phonetic}/</p>}
-          {word.note && <SensitiveNote note={word.note} />}
-          {settings.showEn && word.en && <GlossList label="English" glosses={word.en} lang="en" />}
+          {word.sensitive && <SensitiveNote sensitive={word.sensitive} />}
           {settings.showZh && <GlossList label="中文" glosses={word.zh} lang="zh" />}
           {settings.showEs && <GlossList label="Español" glosses={word.es} lang="es" />}
+          {settings.showEn && word.en && <GlossList label="English" glosses={word.en} lang="en" />}
           {word.examples[0] && (
             <p className="rounded-2xl bg-paper px-3.5 py-2.5 text-[15px] leading-relaxed text-ink/80">
               <Highlight text={word.examples[0].text} terms={terms} />

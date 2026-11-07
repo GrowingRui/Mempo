@@ -140,3 +140,21 @@ await build('kaikki-es-reverse.jsonl', (tmp) =>
     if (glosses.length) return { word: e.word, pos: e.pos, glosses };
   }),
 );
+
+// English definitions for the back of the card, plus usage labels (offensive, slur, vulgar …) that
+// mark sensitive words. Only lower-case entries with at least one real sense (not "plural of …").
+// Each line: {"word":"access","pos":"noun","senses":[{"gloss":"A way or means of approaching …","tags":["countable"]}]}
+const DEF_TAGS = /^(offensive|derogatory|ethnic|slur|vulgar|pejorative|slang|informal|formal|dated|archaic|obsolete|rare|humorous|euphemistic|figuratively|literary|countable|uncountable|transitive|intransitive|British|US|UK)$/;
+await build('kaikki-en-defs.jsonl', (tmp) =>
+  kaikkiSlice(tmp, 'https://kaikki.org/dictionary/English/kaikki.org-dictionary-English.jsonl.gz', 1_000_000, (e) => {
+    if (!e.word || e.word !== e.word.toLowerCase() || e.word.split(' ').length > 4) return;
+    const senses = (e.senses ?? [])
+      .filter((s: any) => s.glosses?.length && !s.form_of && !s.alt_of && !(s.tags ?? []).some((t: string) => /form-of|alt-of/.test(t)))
+      .slice(0, 6)
+      .map((s: any) => {
+        const tags = uniq<string>([...(s.tags ?? []), ...(s.raw_tags ?? [])]).filter((t) => DEF_TAGS.test(t));
+        return { gloss: s.glosses[s.glosses.length - 1], ...(tags.length ? { tags } : {}) };
+      });
+    if (senses.length) return { word: e.word, pos: e.pos, senses };
+  }),
+);
