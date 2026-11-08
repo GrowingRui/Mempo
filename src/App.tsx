@@ -2,6 +2,7 @@ import { MotionConfig } from "motion/react";
 import { useEffect, useState } from "react";
 import UpdatePrompt from "./components/UpdatePrompt";
 import type { SessionMode } from "./lib/session";
+import { syncReminder, studyInfo } from "./lib/reminder";
 import { loadProgress, saveProgress } from "./lib/storage";
 import { applyTheme } from "./lib/theme";
 import type { Progress } from "./lib/types";
@@ -23,6 +24,11 @@ export default function App() {
   useEffect(() => {
     saveProgress(progress);
   }, [progress]);
+  // Tells the reminder server about the first study of the day, so no reminder comes on a day already done.
+  const info = studyInfo(progress.history);
+  useEffect(() => {
+    void syncReminder({ lastStudied: info.lastStudied, streak: info.streak });
+  }, [info.lastStudied, info.streak]);
   useEffect(() => applyTheme(progress.settings.theme), [progress.settings.theme]);
   // (braces matter: scrollTo returns a Promise in newer browsers, and React treats an effect's return value as its cleanup)
   useEffect(() => {

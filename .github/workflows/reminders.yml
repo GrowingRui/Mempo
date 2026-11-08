@@ -1,0 +1,25 @@
+# Sends the daily study reminders: every 15 minutes it asks /api/reminders to push the ones that are due.
+# Needs the repository secret CRON_SECRET (Settings → Secrets and variables → Actions), the same value as on Vercel.
+# GitHub may start a scheduled run a few minutes late; the server still sends reminders up to 3 hours late.
+# Note: GitHub pauses scheduled workflows in a repo with no commits for 60 days (it emails first).
+name: Daily reminders
+
+on:
+  schedule:
+    - cron: "2,17,32,47 * * * *" # off the hour, when GitHub is less busy
+  workflow_dispatch: # "Run workflow" button, for testing
+
+permissions: {}
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Send due reminders
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 60 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            https://mempo.vercel.app/api/reminders

@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 // Tests are plain logic tests (no browser): src/**/*.test.ts
 export default defineConfig({
   test: {
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "api/**/*.test.ts"],
     environment: "node",
   },
 });

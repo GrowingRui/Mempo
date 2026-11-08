@@ -34,3 +34,33 @@ registerRoute(
 self.addEventListener("message", (e) => {
   if (e.data?.type === "SKIP_WAITING") void self.skipWaiting();
 });
+
+// Daily reminder (sent by api/reminders.ts). Tapping it opens Mempo, or brings an open window to the front.
+self.addEventListener("push", (e) => {
+  let data: { title?: string; body?: string } = {};
+  try {
+    data = e.data?.json() ?? {};
+  } catch {
+    // not JSON: use the defaults
+  }
+  e.waitUntil(
+    self.registration.showNotification(data.title || "Time for your words ✨", {
+      body: data.body || "A few minutes today makes them stick.",
+      icon: "/pwa-192x192.png",
+      tag: "daily-reminder", // a new one replaces yesterday's if it's still there
+      data: { url: "/" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  e.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      const open = windows.find((w) => new URL(w.url).origin === self.location.origin);
+      if (open) return void (await open.focus());
+      await self.clients.openWindow("/");
+    })(),
+  );
+});

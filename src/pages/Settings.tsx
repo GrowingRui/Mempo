@@ -2,6 +2,7 @@ import { useRef, useState, type ReactNode } from "react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { InstallRow } from "../components/Install";
 import OfflineAudio from "../components/OfflineAudio";
+import ReminderRow from "../components/Reminder";
 import ResetDialog from "../components/ResetDialog";
 import ScreenHeader from "../components/ScreenHeader";
 import { downloadBackup, parseBackup, type Backup } from "../lib/backup";
@@ -155,6 +156,10 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
           options={REVIEW_CAPS.map((n) => ({ value: String(n), label: n ? n : "No limit" }))}
           onChange={(v) => update({ maxReviews: Number(v) })}
         />
+      </Section>
+
+      <Section title="Daily reminder">
+        <ReminderRow history={progress.history} />
       </Section>
 
       <Section title="Offline" hint="Once loaded, Mempo works without internet.">

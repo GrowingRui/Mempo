@@ -109,5 +109,6 @@ To keep it safe or move it, use **Settings → Your progress**:
 - **Theme**: Light, Dark or Auto (follows your device).
 - **Translations**: show Chinese, Spanish or both.
 - **Swiping**: "Know" on the left (default) or on the right.
+- **Daily reminder**: a notification at the time you pick (06:00 to 23:00), only on days you haven't studied yet. If your streak is still alive, it reminds you of it. Turn it on separately on each device. On iPhone and iPad (iOS 16.4 or later), install the app first and turn it on from the installed app. To send it, Mempo's server keeps only this device's notification address, the time, your time zone and the last day you studied; turning the reminder off deletes them.
 - **Offline**: install the app and save pronunciations.
 - **Your progress**: backup, restore, start over.
