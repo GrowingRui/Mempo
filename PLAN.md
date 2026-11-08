@@ -317,15 +317,23 @@ Pick any of these up whenever we want; each still needs approval before work sta
   - **Report:** open `https://mempo.vercel.app/api/stats?key=<STATS_KEY>` (bookmark it; `&format=json` for raw numbers). Devices ever, active in 7 / 30 days, how many new devices came back **the next day / within a week / in weeks 2–4** (only windows that are over), and a 30-day table (opened, studied, new, returning). The key is `STATS_KEY` in Vercel env vars, or `CRON_SECRET` if that isn't set
   - The service worker no longer answers `/api/…` page visits with the app, so the report opens in a browser where Mempo is installed
 
-**D. App in more languages** (noted 2026-11-07, not started)
-The app's own texts (buttons, hints, messages) in English, 中文, Español and Deutsch. Separate from the word meanings on the cards.
-- [ ] Interface translation (about 1 day):
-  - Move every English text (~250–350, ~15 screens) into one table with the four versions; no paid service or big library
+**D. App in more languages** (noted 2026-11-07; scope decided 2026-11-08, not started)
+The app's own texts (buttons, hints, messages) in other languages. Separate from the word meanings on the cards, which don't change.
+Some users need the interface (Settings especially) in their own language. **Decided by the user 2026-11-08: Chinese and Spanish first, German later.**
+- [ ] **Step 1: 中文 + Español interface** (about 1 day):
+  - **Language picker at the top of Settings**: English · 中文 · Español, each written in its own language, with a 🌐 icon so it can be found even in a language you can't read. **The default stays English** (decided by the user 2026-11-07: don't switch automatically from the phone's language)
+  - The picker switches the **whole app**, not just Settings (a translated Settings page followed by an English Home screen would feel broken)
+  - Move every English text (~300, ~15 screens) into one table with one version per language; no paid service or big library. Built so that adding a language later only means adding its column
   - Plurals ("1 word / 5 words") and dates per language with the browser's built-in `Intl` rules
-  - **Language picker in Settings. The default stays English, as now** (decided by the user 2026-11-07: don't switch automatically from the phone's language)
-  - Check layouts at phone size for each language: German words are long ("Weiß ich nicht") and may overflow buttons; Chinese uses the phone's own font (not in the app's fonts)
-  - Translation check: the user can review Chinese and Spanish; German ideally by a native speaker
-- [ ] German meanings on the cards (about half a day to a day more): the cards now show only Chinese / Spanish (and English definitions), so a German UI without German meanings would feel half done. Same free source and pipeline as Spanish (Wiktionary translation tables via kaikki.org), then a quality check
+  - Card meanings stay as they are (中文 / Español meanings + English definitions)
+  - Check every screen at phone size in each language; Chinese uses the phone's own font (not in the app's fonts)
+  - Translation check: the user reviews Chinese and Spanish
+  - Show on localhost and get approval before pushing
+- [ ] **Step 2 (future): Deutsch**
+  - Add a German column to the table and "Deutsch" to the picker
+  - Check layouts: German words are long ("Weiß ich nicht") and may overflow buttons
+  - Translation check ideally by a native speaker
+  - German meanings on the cards (about half a day to a day more): a German interface without German meanings would feel half done. Same free source and pipeline as Spanish (Wiktionary translation tables via kaikki.org), then a quality check
 
 **E. Feedback and problem reports** ✅ (done and live 2026-11-08)
 A way for users to send suggestions or report problems to xiarui091@gmail.com without leaving the app. About an hour of work.
