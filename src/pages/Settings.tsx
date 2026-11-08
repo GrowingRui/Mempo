@@ -1,5 +1,6 @@
 import { useRef, useState, type ReactNode } from "react";
 import ConfirmDialog from "../components/ConfirmDialog";
+import FeedbackDialog from "../components/FeedbackDialog";
 import { InstallRow } from "../components/Install";
 import MoveRow from "../components/Move";
 import OfflineAudio from "../components/OfflineAudio";
@@ -7,6 +8,7 @@ import ReminderRow from "../components/Reminder";
 import ResetDialog from "../components/ResetDialog";
 import ScreenHeader from "../components/ScreenHeader";
 import { downloadBackup, parseBackup, type Backup } from "../lib/backup";
+import { KIND_LABEL, type FeedbackKind } from "../lib/feedback";
 import { studied } from "../lib/stats";
 import type { Progress, Settings as SettingsT, SwipeKnow, Theme } from "../lib/types";
 
@@ -77,9 +79,12 @@ const THEMES: { value: Theme; label: string }[] = [
 
 const REVIEW_CAPS = [50, 100, 200, 0];
 
+const FEEDBACK_KINDS: FeedbackKind[] = ["bug", "idea", "word", "other"];
+
 export default function Settings({ progress, setProgress, moveCode = null, onBack }: Props) {
   const { settings, cards } = progress;
   const [confirmReset, setConfirmReset] = useState(false);
+  const [feedback, setFeedback] = useState(false);
   const [pending, setPending] = useState<{ backup: Backup; moved: boolean } | null>(null); // waiting for "Replace"
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -224,6 +229,29 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
           {words === 0 ? "Nothing to delete yet." : "Deletes all your words and daily history. Your settings stay."}
         </p>
       </Section>
+
+      <Section title="Feedback" hint="Found a problem, or have an idea? Tell us. It goes straight to the developer.">
+        <button
+          type="button"
+          onClick={() => setFeedback(true)}
+          className="press w-full rounded-2xl border-2 border-line bg-card py-3 font-display text-lg font-bold [--edge:var(--color-line-edge)]"
+        >
+          Send feedback
+        </button>
+      </Section>
+
+      {feedback && (
+        <FeedbackDialog<FeedbackKind>
+          title="Send feedback"
+          legend="What is it about?"
+          choices={FEEDBACK_KINDS.map((k) => ({ value: k, label: KIND_LABEL[k] }))}
+          initial="idea"
+          screen="settings"
+          build={(kind, message) => ({ kind, message })}
+          messageLabel={(k) => (k === "bug" ? "What happened? What did you expect?" : k === "word" ? "Which word, and what’s wrong?" : "Your message")}
+          onClose={() => setFeedback(false)}
+        />
+      )}
 
       {pending && (
         <ConfirmDialog

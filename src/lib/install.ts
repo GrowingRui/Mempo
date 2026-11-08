@@ -34,7 +34,7 @@ const isIOS = /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && typeof n
 const isAndroid = /android/i.test(ua);
 const isMacSafari = !isIOS && /macintosh/i.test(ua) && /version\/\d+.*safari/i.test(ua) && !/chrome|chromium|crios|edg|firefox|opr/i.test(ua);
 
-const standalone = () =>
+export const standalone = () =>
   typeof window !== "undefined" &&
   (window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true);
 

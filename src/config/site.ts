@@ -9,6 +9,9 @@ export const site = {
   // Daily reminders (web push): the public half of the key pair. The private half is VAPID_PRIVATE_KEY
   // on Vercel (and in .env.local). Changing the pair cuts off every reminder already turned on.
   vapidPublicKey: "BMhBIKnghu4HzXgeNCoUhKOs7zhyTI1mfUGbAGqfzm_s19AKcCmo4oFtpewWGZ7kXCN2gv6073hmyY3jAIIwwDc",
+  // Where "Send feedback" goes. Kept in two parts so bots reading the page don't find the address.
+  // The server has its own copy (api/feedback.ts).
+  feedbackMail: ["xiarui091", "gmail.com"],
   // Prefix for localStorage keys. Changing it starts everyone with empty progress.
   storageKey: "mempo",
 } as const;

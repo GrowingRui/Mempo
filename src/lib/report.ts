@@ -1,4 +1,5 @@
-// "Report a translation": there's no server, so a report becomes a pre-filled GitHub issue.
+// "Report a translation": sent by email through the feedback form (src/lib/feedback.ts), or, for people who
+// prefer it, as a pre-filled public GitHub issue.
 // The issue includes a line ready to paste into scripts/manual.ts (hand fixes used by `npm run data:enrich`).
 import { site } from "../config/site";
 import type { Gloss, Word } from "./types";
@@ -33,10 +34,11 @@ export function manualLine(w: Word, topic: ReportTopic, suggestion: string): str
   return "  " + quote(w.id) + ": { " + topic + ": { " + key + ": [" + glosses.map(quote).join(", ") + "] } },";
 }
 
-export function reportUrl(w: Word, topic: ReportTopic, suggestion: string): string {
+/** What a translation report says (Markdown): the word, what's shown now, the suggestion and the manual.ts line. */
+export function reportBody(w: Word, topic: ReportTopic, suggestion: string): string {
   const text = suggestion.trim();
   const line = manualLine(w, topic, text);
-  const body = [
+  return [
     `**Word:** ${w.word} (${w.level}, id \`${w.id}\`)`,
     `**Problem with:** ${TOPIC_LABEL[topic]}`,
     "",
@@ -49,6 +51,9 @@ export function reportUrl(w: Word, topic: ReportTopic, suggestion: string): stri
     text || "(none given)",
     ...(line ? ["", "For `scripts/manual.ts`:", "```ts", line, "```"] : []),
   ].join("\n");
-  const params = new URLSearchParams({ title: `Translation: ${w.word} (${TOPIC_LABEL[topic]})`, body });
+}
+
+export function reportUrl(w: Word, topic: ReportTopic, suggestion: string): string {
+  const params = new URLSearchParams({ title: `Translation: ${w.word} (${TOPIC_LABEL[topic]})`, body: reportBody(w, topic, suggestion) });
   return `${site.repoUrl}/issues/new?${params}`;
 }
