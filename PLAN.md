@@ -304,7 +304,12 @@ Pick any of these up whenever we want; each still needs approval before work sta
   - Scheduler: `.github/workflows/reminders.yml` calls the send endpoint every 15 min. A reminder can be up to ~15 min late (plus GitHub's own delay); one that's more than 3 h late is skipped for that day
   - `npm run dev` / `npm run preview` also serve `/api/*` (plugin in `vite.config.ts`), with keys from `.env.local` (git-ignored)
   - **Live setup (done 2026-11-08):** Vercel → Storage / Marketplace → add **Upstash for Redis** (free) to the project; Vercel env vars `VAPID_PRIVATE_KEY` and `CRON_SECRET` (values in `.env.local`); GitHub repo secret `CRON_SECRET` (same value). The Upstash database is the free one from 22 Oct 2026, shared with another project; Mempo uses only the key `mempo:reminders`
-- [ ] Sync across devices (Phase 6), or first a simpler "move to another device" QR code built on the backup file
+- [x] **Move to another device** (done 2026-11-08, waiting for approval). The simpler step before real sync (Phase 6):
+  - Settings → **Move to another device**: "Show QR code" / "Enter a code" (`src/components/Move.tsx`, `src/lib/move.ts`)
+  - A QR code can't hold the backup itself (~3 KB max, a few hundred words), so it holds a link with a one-time code: `…/?move=K7M2QX9D`. The app gzips the backup file's contents (`backupJson` in `src/lib/backup.ts`) and uploads it; the worst case (all 6,133 words + 2 years of history) is ~43 KB
+  - Server: `api/move.ts` (POST → code, GET ?code= → data). Kept 10 min in the same Upstash Redis as reminders under `mempo:move:<code>`, then Redis deletes it. Codes are 8 characters of Crockford base32 (no I/L/O/U; typing O counts as 0, I/L as 1). Not deleted when read, so a cancelled restore can be retried. Tests: `api/_move.test.ts`, `src/lib/move.test.ts`
+  - Receiving: scanning opens the app on Settings and asks "Bring over this progress?" (same dialog and cleaning as Restore backup); the code is removed from the address. Typing the code works too, which iPhones need when Mempo is installed (the camera opens Safari, which has separate storage)
+  - No new Vercel settings: it uses the Upstash keys the reminders already have
 - [ ] Privacy-friendly usage stats (e.g. Vercel Analytics, free) to see if people come back
 
 **D. App in more languages** (noted 2026-11-07, not started)

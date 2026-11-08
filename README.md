@@ -98,7 +98,14 @@ There's no account: your progress is saved **in this browser on this device**. T
 - On iPhone, the installed app and Safari keep separate progress.
 - Clearing your browser data deletes your progress.
 
-To keep it safe or move it, use **Settings → Your progress**:
+To copy it to another phone, tablet or browser, use **Settings → Move to another device**:
+
+- On the device that has your progress, tap **Show QR code**.
+- Scan it with the other device's camera, or open Mempo there and tap **Enter a code** (8 letters and numbers, shown under the QR code). It shows what's coming and asks before replacing the progress there.
+- On iPhone or iPad with Mempo on the Home Screen, type the code in the installed app: the camera opens Safari, which keeps its own progress.
+- The code works for 10 minutes. Until then your progress waits on Mempo's server, then it's deleted.
+
+To keep it safe, use **Settings → Your progress**:
 
 - **Download backup** saves a small file (`mempo-backup-YYYY-MM-DD.json`).
 - **Restore backup** loads that file on any device or browser. It shows what's in the file and asks before replacing the progress there.
@@ -111,4 +118,5 @@ To keep it safe or move it, use **Settings → Your progress**:
 - **Swiping**: "Know" on the left (default) or on the right.
 - **Daily reminder**: a notification at the time you pick (06:00 to 23:00), only on days you haven't studied yet. If your streak is still alive, it reminds you of it. Turn it on separately on each device. On iPhone and iPad (iOS 16.4 or later), install the app first and turn it on from the installed app. To send it, Mempo's server keeps only this device's notification address, the time, your time zone and the last day you studied; turning the reminder off deletes them.
 - **Offline**: install the app and save pronunciations.
+- **Move to another device**: QR code or code to copy your progress.
 - **Your progress**: backup, restore, start over.

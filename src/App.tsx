@@ -2,6 +2,7 @@ import { MotionConfig } from "motion/react";
 import { useEffect, useState } from "react";
 import UpdatePrompt from "./components/UpdatePrompt";
 import type { SessionMode } from "./lib/session";
+import { takeCodeFromUrl } from "./lib/move";
 import { syncReminder, studyInfo } from "./lib/reminder";
 import { loadProgress, saveProgress } from "./lib/storage";
 import { applyTheme } from "./lib/theme";
@@ -19,7 +20,9 @@ export type Screen = { name: "home" } | { name: "study"; mode: SessionMode } | {
 
 export default function App() {
   const [progress, setProgress] = useState<Progress>(loadProgress);
-  const [screen, setScreen] = useState<Screen>({ name: "home" });
+  // Opened from a "Move to another device" QR code: go straight to Settings, which asks before replacing anything.
+  const [moveCode] = useState(takeCodeFromUrl);
+  const [screen, setScreen] = useState<Screen>(moveCode !== null ? { name: "settings" } : { name: "home" });
 
   useEffect(() => {
     saveProgress(progress);
@@ -52,7 +55,7 @@ export default function App() {
         ) : screen.name === "stats" ? (
           <Stats progress={progress} onBack={home} />
         ) : screen.name === "settings" ? (
-          <Settings progress={progress} setProgress={setProgress} onBack={home} />
+          <Settings progress={progress} setProgress={setProgress} moveCode={moveCode} onBack={home} />
         ) : screen.name === "words" ? (
           <WordList progress={progress} onBack={home} />
         ) : (

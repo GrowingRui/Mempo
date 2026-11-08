@@ -19,9 +19,13 @@ export function backupFileName(day = toDay()): string {
   return `${site.storageKey}-backup-${day}.json`;
 }
 
+/** The backup file's contents. Also what "Move to another device" sends. */
+export function backupJson(progress: Progress, space?: number): string {
+  return JSON.stringify({ app: site.storageKey, version: VERSION, exportedAt: new Date().toISOString(), progress }, null, space);
+}
+
 export function downloadBackup(progress: Progress): void {
-  const body = { app: site.storageKey, version: VERSION, exportedAt: new Date().toISOString(), progress };
-  const url = URL.createObjectURL(new Blob([JSON.stringify(body, null, 1)], { type: "application/json" }));
+  const url = URL.createObjectURL(new Blob([backupJson(progress, 1)], { type: "application/json" }));
   const a = document.createElement("a");
   a.href = url;
   a.download = backupFileName();

@@ -1,6 +1,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { InstallRow } from "../components/Install";
+import MoveRow from "../components/Move";
 import OfflineAudio from "../components/OfflineAudio";
 import ReminderRow from "../components/Reminder";
 import ResetDialog from "../components/ResetDialog";
@@ -12,6 +13,8 @@ import type { Progress, Settings as SettingsT, SwipeKnow, Theme } from "../lib/t
 interface Props {
   progress: Progress;
   setProgress: (fn: (p: Progress) => Progress) => void;
+  /** Code from a "Move to another device" QR code this page was opened with. */
+  moveCode?: string | null;
   onBack: () => void;
 }
 
@@ -74,10 +77,10 @@ const THEMES: { value: Theme; label: string }[] = [
 
 const REVIEW_CAPS = [50, 100, 200, 0];
 
-export default function Settings({ progress, setProgress, onBack }: Props) {
+export default function Settings({ progress, setProgress, moveCode = null, onBack }: Props) {
   const { settings, cards } = progress;
   const [confirmReset, setConfirmReset] = useState(false);
-  const [pending, setPending] = useState<Backup | null>(null); // backup waiting for "Replace"
+  const [pending, setPending] = useState<{ backup: Backup; moved: boolean } | null>(null); // waiting for "Replace"
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const words = Object.keys(cards).length;
@@ -87,7 +90,7 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
     if (!file) return;
     setMessage(null);
     try {
-      setPending(parseBackup(await file.text()));
+      setPending({ backup: parseBackup(await file.text()), moved: false });
     } catch (e) {
       setMessage({ ok: false, text: e instanceof Error ? e.message : "Couldn’t read this file." });
     }
@@ -167,7 +170,11 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
         <OfflineAudio />
       </Section>
 
-      <Section title="Your progress" hint="Saved in this browser only. Download a backup to keep it safe or to move it to another phone or browser.">
+      <Section title="Move to another device" hint="Copy your progress to another phone, tablet or browser with a QR code.">
+        <MoveRow progress={progress} incoming={moveCode} onReceived={(backup) => setPending({ backup, moved: true })} />
+      </Section>
+
+      <Section title="Your progress" hint="Saved in this browser only. Download a backup to keep it safe.">
         <div className="flex gap-3">
           <button
             type="button"
@@ -222,18 +229,19 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
         <ConfirmDialog
           mood="happy"
           tone="normal"
-          title="Restore this backup?"
+          title={pending.moved ? "Bring over this progress?" : "Restore this backup?"}
           cancelLabel="Cancel"
           confirmLabel="Replace my progress"
           onCancel={() => setPending(null)}
           onConfirm={() => {
-            setProgress(() => pending.progress);
-            const n = Object.keys(pending.progress.cards).length;
-            setMessage({ ok: true, text: `Backup restored: ${n.toLocaleString()} word${n === 1 ? "" : "s"}.` });
+            setProgress(() => pending.backup.progress);
+            const n = Object.keys(pending.backup.progress.cards).length;
+            const w = `${n.toLocaleString()} word${n === 1 ? "" : "s"}`;
+            setMessage({ ok: true, text: pending.moved ? `Progress moved: ${w}.` : `Backup restored: ${w}.` });
             setPending(null);
           }}
         >
-          <BackupSummary backup={pending} currentWords={words} />
+          <BackupSummary backup={pending.backup} moved={pending.moved} currentWords={words} />
         </ConfirmDialog>
       )}
 
@@ -251,14 +259,14 @@ export default function Settings({ progress, setProgress, onBack }: Props) {
   );
 }
 
-function BackupSummary({ backup, currentWords }: { backup: Backup; currentWords: number }) {
+function BackupSummary({ backup, moved, currentWords }: { backup: Backup; moved: boolean; currentWords: number }) {
   const n = Object.keys(backup.progress.cards).length;
   const days = Object.values(backup.progress.history).filter(studied).length;
   const made = backup.exportedAt && new Date(backup.exportedAt);
   return (
     <>
       <p>
-        {made && !Number.isNaN(made.getTime()) && <>Made on {made.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}. </>}
+        {!moved && made && !Number.isNaN(made.getTime()) && <>Made on {made.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}. </>}
         It has <b className="text-ink">{n.toLocaleString()} word{n === 1 ? "" : "s"}</b> and {days.toLocaleString()} day{days === 1 ? "" : "s"} of history, plus its
         settings.
       </p>
