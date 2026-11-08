@@ -297,13 +297,13 @@ Pick any of these up whenever we want; each still needs approval before work sta
 - [x] Daily review cap: Settings → "Reviews per day" (50 / **100** / 200 / no limit). Today's session takes the most overdue reviews first; the rest wait for the next days. "Reviews due" on Home still lets you do them all
 
 **C. Keeping users coming back**
-- [x] **Daily reminder notification** (done 2026-11-08, waiting for approval). Real web push, still $0, chosen by the user over an Android-only no-server version:
+- [x] **Daily reminder notification** (done and live 2026-11-08, tested by the user on a real device). Real web push, still $0, chosen by the user over an Android-only no-server version:
   - Settings → **Daily reminder**: switch + time (06:00–23:00, default 19:00). Only on days not studied yet; mentions the streak if it's still alive ("Keep your 5-day streak going 🔥"). Per device, not in backups. On iPhone / iPad Safari it explains to install first (push works only in the installed app, iOS 16.4+)
   - App side: `src/lib/reminder.ts`, `src/components/Reminder.tsx`; `src/sw.ts` shows the notification, a tap opens Mempo. `App.tsx` tells the server after the first study of the day (and when the time zone or push address changes)
   - Server: one Vercel function, `api/reminders.ts` (POST save, DELETE remove, GET send with `CRON_SECRET`). Stores per device: push address, time, time zone, last day studied + streak, last day sent. Upstash Redis (free) over its REST API; in memory when run locally. Expired subscriptions (404/410) are deleted. Tests: `api/_reminders.test.ts`
   - Scheduler: `.github/workflows/reminders.yml` calls the send endpoint every 15 min. A reminder can be up to ~15 min late (plus GitHub's own delay); one that's more than 3 h late is skipped for that day
   - `npm run dev` / `npm run preview` also serve `/api/*` (plugin in `vite.config.ts`), with keys from `.env.local` (git-ignored)
-  - **Setup before it works live** (once): Vercel → Storage / Marketplace → add **Upstash for Redis** (free) to the project; Vercel env vars `VAPID_PRIVATE_KEY` and `CRON_SECRET` (values in `.env.local`); GitHub repo secret `CRON_SECRET` (same value)
+  - **Live setup (done 2026-11-08):** Vercel → Storage / Marketplace → add **Upstash for Redis** (free) to the project; Vercel env vars `VAPID_PRIVATE_KEY` and `CRON_SECRET` (values in `.env.local`); GitHub repo secret `CRON_SECRET` (same value). The Upstash database is the free one from 22 Oct 2026, shared with another project; Mempo uses only the key `mempo:reminders`
 - [ ] Sync across devices (Phase 6), or first a simpler "move to another device" QR code built on the backup file
 - [ ] Privacy-friendly usage stats (e.g. Vercel Analytics, free) to see if people come back
 
