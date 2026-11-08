@@ -322,6 +322,17 @@ The app's own texts (buttons, hints, messages) in English, 中文, Español and 
   - Translation check: the user can review Chinese and Spanish; German ideally by a native speaker
 - [ ] German meanings on the cards (about half a day to a day more): the cards now show only Chinese / Spanish (and English definitions), so a German UI without German meanings would feel half done. Same free source and pipeline as Spanish (Wiktionary translation tables via kaikki.org), then a quality check
 
+**E. Feedback and problem reports** (noted 2026-11-08, not started; plan chosen by the user)
+A way for users to send suggestions or report problems to xiarui091@gmail.com without leaving the app. About an hour of work.
+- [ ] **Form in the app:** "Send feedback" item in the Settings / menu. Type (Bug / Suggestion / Wrong word info / Other), message, and an optional email field only for those who want a reply. Sending shows "Thanks! Sent" and the user stays in the app. No mail app needed, so it works on phones, laptops and the installed app
+- [ ] **Details added automatically:** app version, device / browser, current screen, and the word when reported from a card, so bugs can be reproduced without asking back
+- [ ] **Server:** new Vercel function `api/feedback.ts`, same pattern as `api/move.ts` / `api/reminders.ts`. Emails the message to xiarui091@gmail.com through **Resend** (free: 3,000 emails/month; its test sender `onboarding@resend.dev` can deliver to the account's own address without verifying a domain). The user's email, if given, becomes **Reply-To**, so pressing Reply in Gmail answers them. Tests: `api/_feedback.test.ts`
+- [ ] **Spam protection:** hidden trap field that only bots fill in; about 5 messages per hour per device, counted in the shared Upstash Redis under `mempo:feedback:*` (expiring keys); maximum message length
+- [ ] **Fallback:** if sending fails, the form shows "Send by email instead", a `mailto:` link with the message pre-filled. The address is hidden from bots the way Schwarzer Peter does it (`data-mail="xiarui091|gmail.com"`, turned into a real link in the browser)
+- [ ] **One-time setup for the user (~5 min):** sign up at resend.com with xiarui091@gmail.com, create an API key, add `RESEND_API_KEY` to Vercel env vars and `.env.local`
+- [ ] **To decide when we start:** the existing "Report a translation" link on the card back (B, opens a pre-filled GitHub issue, `src/lib/report.ts`) either stays as it is or also goes through this form. Keeping it public on GitHub is handy for word fixes; the form is easier for users without a GitHub account
+- Show it on localhost and wait for approval before pushing
+
 **Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
 
 ---
