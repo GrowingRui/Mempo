@@ -177,7 +177,7 @@ How it works:
 
 ### Phase 2: Basic working app (MVP) ✅ (done 2026-11-07)
 - [x] Vite + React + TS + Tailwind project setup (Vite 8, React 19, Tailwind 4, TypeScript 7)
-- [x] `git init` and connect to the `GrowingRui/Mempo` GitHub repo (remote `origin` set; first push pending)
+- [x] `git init` and connect to the `GrowingRui/Mempo` GitHub repo (remote `origin`, pushed)
 - [x] `src/config/site.ts` holds the app name, tagline and URLs in one place, so the app can be renamed later by editing one file
 - [x] Home screen with level choice + daily goal
 - [x] Card component: flip front and back, speech button
@@ -195,7 +195,7 @@ How it works so far:
 - `answer()` started as a simple placeholder; Phase 3 replaced it with full Leitner boxes (`src/lib/srs.ts`).
 - Progress is saved under the localStorage key `mempo:progress`, in the format from section 2.
 
-### Phase 3: Learning logic and swiping ✅ (done 2026-11-07, waiting for approval)
+### Phase 3: Learning logic and swiping ✅ (done 2026-11-07)
 - [x] Spaced repetition (Leitner boxes, due dates): `src/lib/srs.ts`
 - [x] Session queue: due reviews → don't-know words → new words; failed cards are put back into the queue (`src/lib/session.ts`)
 - [x] "Don't know" list logic (join and leave)
@@ -227,12 +227,12 @@ How it works:
   - Spanish cognates (e.g. *secular* = *secular*) are not asked, because they would be free points.
   - Result: score per level, a rough count of known words (score × level size), and a suggested level = the first level under 80%. One tap switches the level. The test never changes learning progress.
 
-### Phase 4: Polish (3–5 days)
-- [x] Stats + daily streak (done 2026-11-07, waiting for approval)
-- [x] Settings screen (translation display, swipe direction, dark mode, move "Start over" here) (done 2026-11-07, waiting for approval)
-- [x] PWA: manifest + service worker (`vite-plugin-pwa`) so the app installs on a phone and works offline (done 2026-11-07, waiting for approval)
-- [x] Export / import progress as a JSON file (backup) (done 2026-11-07, waiting for approval)
-- [x] Mobile layout testing (done 2026-11-07, waiting for approval)
+### Phase 4: Polish ✅ (done 2026-11-07)
+- [x] Stats + daily streak
+- [x] Settings screen (translation display, swipe direction, dark mode, move "Start over" here)
+- [x] PWA: manifest + service worker (`vite-plugin-pwa`) so the app installs on a phone and works offline
+- [x] Export / import progress as a JSON file (backup)
+- [x] Mobile layout testing
 
 How items 1 and 2 work:
 - **Streak** (`src/lib/stats.ts`): a day counts if at least one card was answered. Not studying yet today doesn't break the streak; it ends at yesterday until midnight. Home's header shows a flame with the streak (grey until you study today); tapping it opens **Stats**.
@@ -248,17 +248,17 @@ How items 3–5 work:
 - **Phone layout**: every screen checked at 320 / 360 / 390 / 430 px wide, light and dark, plus short screens. Fixes: Home's header no longer overlaps or truncates the tagline on small phones; tiles, level names and the "Custom" chip fit at 320 px; the study card's minimum height drops on short screens (under 720 px tall), so the answer buttons stay on screen on an iPhone SE in Safari.
 
 ### After Phase 4 (added on request, 2026-11-07)
-- [x] **"Install app" button** (`src/lib/install.ts`, `src/components/Install.tsx`), waiting for approval:
+- [x] **"Install app" button** (`src/lib/install.ts`, `src/components/Install.tsx`):
   - Home: a small "Get the app" card under Start, with **Install** and × (× hides it for good in this browser, key `mempo:install-dismissed`). Settings → Offline: an "Install the app" row that always explains the situation.
   - Chrome / Edge / Samsung Internet: the button opens the browser's own install dialog (`beforeinstallprompt`, caught in `main.tsx` before React renders). iPhone / iPad: a sheet with Share → Add to Home Screen. Android without the event (Firefox): menu → Install. Safari on a Mac: File → Add to Dock.
   - Hidden when running as the installed app ("You're using the installed app") and right after installing. Desktop Firefox can't install, so Settings says which browsers can.
 - [x] **README.md** for the GitHub repo: what Mempo is, how to use it, installing on each device, offline use, backups, developer commands, credits. Screenshots in `docs/`.
 
-### Phase 5: Deploy to Vercel (half a day)
-- [ ] Push the repo to GitHub
-- [ ] vercel.com → "Add New Project" → import the repo → framework preset **Vite** → Deploy
-- [ ] Free URL: `https://mempo.vercel.app` (or a similar name if that one is taken)
-- [ ] Every `git push` to `main` redeploys automatically
+### Phase 5: Deploy to Vercel ✅ (done 2026-11-07)
+- [x] Push the repo to GitHub (`GrowingRui/Mempo`)
+- [x] vercel.com → "Add New Project" → import the repo → framework preset **Vite** → Deploy
+- [x] Free URL: `https://mempo.vercel.app`
+- [x] Every `git push` to `main` redeploys automatically
 
 ### Phase 6 (optional): Sync across devices
 - [ ] Supabase free tier: Google login + a `progress` table
@@ -271,10 +271,10 @@ Only after the core app works. Each AI call costs a little money, so this breaks
 - [ ] Check sentences the learner writes with a new word, and give feedback
 - [ ] Daily usage limit to keep costs small
 
-### Backlog: next ideas (noted 2026-11-07, not started)
+### Backlog: next ideas (noted 2026-11-07)
 Pick any of these up whenever we want; each still needs approval before work starts.
 
-**A. Tests for the learning logic** ✅ (done 2026-11-07, waiting for approval)
+**A. Tests for the learning logic** ✅ (done 2026-11-07)
 - [x] Vitest added (free, open source). `npm test` runs everything once, `npm run test:watch` reruns on every change. Config: `vitest.config.ts` (kept apart from `vite.config.ts`, so no PWA/Tailwind plugins load).
 - [x] 75 tests in `src/lib/*.test.ts` (shared builders in `src/lib/test-helpers.ts`). They aren't part of the website build.
   - `srs.test.ts`: boxes and intervals, mastered, "not sure" / "don't know", lapses, only the first answer of the day moves a card up, leaving the "Don't know" list after 2 "know" days, history counts, `isDue`, `statusOf`, `nextReview`
@@ -296,7 +296,7 @@ Pick any of these up whenever we want; each still needs approval before work sta
 - [x] Notes for sensitive / offensive words (decision 5): 26 hand-written notes in `scripts/sensitive.ts`. **Offensive** (gook, retard, cripple, gypsy): red "Offensive" tag on the front of the card and a red note on the back. **Use with care** (22, e.g. queer, dumb, fat, bloody, damn, screw, alien, rape): normal words with a rude or hurtful use, yellow note on the back only. Notes also show in the word list. The enrich report lists the other words Wiktionary flags (mostly false alarms such as one rare slang sense of "plumber")
 - [x] Daily review cap: Settings → "Reviews per day" (50 / **100** / 200 / no limit). Today's session takes the most overdue reviews first; the rest wait for the next days. "Reviews due" on Home still lets you do them all
 
-**C. Keeping users coming back**
+**C. Keeping users coming back** ✅ (done 2026-11-08)
 - [x] **Daily reminder notification** (done and live 2026-11-08, tested by the user on a real device). Real web push, still $0, chosen by the user over an Android-only no-server version:
   - Settings → **Daily reminder**: switch + time (06:00–23:00, default 19:00). Only on days not studied yet; mentions the streak if it's still alive ("Keep your 5-day streak going 🔥"). Per device, not in backups. On iPhone / iPad Safari it explains to install first (push works only in the installed app, iOS 16.4+)
   - App side: `src/lib/reminder.ts`, `src/components/Reminder.tsx`; `src/sw.ts` shows the notification, a tap opens Mempo. `App.tsx` tells the server after the first study of the day (and when the time zone or push address changes)
@@ -304,13 +304,13 @@ Pick any of these up whenever we want; each still needs approval before work sta
   - Scheduler: `.github/workflows/reminders.yml` calls the send endpoint every 15 min. A reminder can be up to ~15 min late (plus GitHub's own delay); one that's more than 3 h late is skipped for that day
   - `npm run dev` / `npm run preview` also serve `/api/*` (plugin in `vite.config.ts`), with keys from `.env.local` (git-ignored)
   - **Live setup (done 2026-11-08):** Vercel → Storage / Marketplace → add **Upstash for Redis** (free) to the project; Vercel env vars `VAPID_PRIVATE_KEY` and `CRON_SECRET` (values in `.env.local`); GitHub repo secret `CRON_SECRET` (same value). The Upstash database is the free one from 22 Oct 2026, shared with another project; Mempo uses only the key `mempo:reminders`
-- [x] **Move to another device** (done 2026-11-08, waiting for approval). The simpler step before real sync (Phase 6):
+- [x] **Move to another device** (done and live 2026-11-08). The simpler step before real sync (Phase 6):
   - Settings → **Move to another device**: "Show QR code" / "Enter a code" (`src/components/Move.tsx`, `src/lib/move.ts`)
   - A QR code can't hold the backup itself (~3 KB max, a few hundred words), so it holds a link with a one-time code: `…/?move=K7M2QX9D`. The app gzips the backup file's contents (`backupJson` in `src/lib/backup.ts`) and uploads it; the worst case (all 6,133 words + 2 years of history) is ~43 KB
   - Server: `api/move.ts` (POST → code, GET ?code= → data). Kept 10 min in the same Upstash Redis as reminders under `mempo:move:<code>`, then Redis deletes it. Codes are 8 characters of Crockford base32 (no I/L/O/U; typing O counts as 0, I/L as 1). Not deleted when read, so a cancelled restore can be retried. Tests: `api/_move.test.ts`, `src/lib/move.test.ts`
   - Receiving: scanning opens the app on Settings and asks "Bring over this progress?" (same dialog and cleaning as Restore backup); the code is removed from the address. Typing the code works too, which iPhones need when Mempo is installed (the camera opens Safari, which has separate storage)
   - No new Vercel settings: it uses the Upstash keys the reminders already have
-- [x] **Usage stats** (done 2026-11-08, waiting for approval). Our own counter, $0, chosen by the user over Vercel Analytics: Vercel's free analytics resets visitors every day and custom events need the paid plan, so it can't show whether people come back
+- [x] **Usage stats** (done and live 2026-11-08). Our own counter, $0, chosen by the user over Vercel Analytics: Vercel's free analytics resets visitors every day and custom events need the paid plan, so it can't show whether people come back
   - App (`src/lib/usage.ts`): each device makes up a random 16-hex-digit id (`mempo:device`). At most two pings a UTC day: **open** (start, and when an open app comes back into view) and **study** (first answered card; counts as an open too). No IP, device details, words or answers. Failed pings are retried next time. Per device, not in backups
   - Settings → **Privacy → Anonymous usage counts**: on by default; switching off sends nothing and forgets the id
   - Server: `api/stats.ts`. POST records the ping in the shared Upstash Redis: `mempo:stats:first` (id → first day) and day sets `mempo:stats:{new,open,study}:<day>` (expire after 400 days). Max 500 new devices a day, so nobody can flood the database. Tests: `api/_stats.test.ts`, `src/lib/usage.test.ts`
@@ -327,7 +327,7 @@ The app's own texts (buttons, hints, messages) in English, 中文, Español and 
   - Translation check: the user can review Chinese and Spanish; German ideally by a native speaker
 - [ ] German meanings on the cards (about half a day to a day more): the cards now show only Chinese / Spanish (and English definitions), so a German UI without German meanings would feel half done. Same free source and pipeline as Spanish (Wiktionary translation tables via kaikki.org), then a quality check
 
-**E. Feedback and problem reports** ✅ (done 2026-11-08, live after this push)
+**E. Feedback and problem reports** ✅ (done and live 2026-11-08)
 A way for users to send suggestions or report problems to xiarui091@gmail.com without leaving the app. About an hour of work.
 - [x] **Form in the app:** "Send feedback" item in the Settings / menu. Type (Bug / Suggestion / Wrong word info / Other), message, and an optional email field only for those who want a reply. Sending shows "Thanks! Sent" and the user stays in the app. No mail app needed, so it works on phones, laptops and the installed app
 - [x] **Details added automatically:** app version, device / browser, current screen, and the word when reported from a card, so bugs can be reproduced without asking back
@@ -342,7 +342,7 @@ A way for users to send suggestions or report problems to xiarui091@gmail.com wi
 
 ---
 
-## 6. Planned folder structure
+## 6. Folder structure
 
 ```
 Mempo/
@@ -354,6 +354,8 @@ Mempo/
 │   ├── overrides.ts    # hand corrections to merging
 │   └── manual.ts       # hand-written translations and examples
 ├── data/               # raw + downloaded dictionary files (git-ignored if large)
+├── api/                # Vercel serverless functions: reminders, move, feedback, stats (+ _*.test.ts)
+├── .github/workflows/  # reminders.yml: calls /api/reminders every 15 min
 ├── public/
 │   └── data/           # final b2.json, c1.json, c2.json (deployed)
 ├── src/
@@ -382,5 +384,8 @@ Mempo/
 | Vercel Hobby hosting | $0 |
 | GitHub repo | $0 |
 | Dictionary data (ECDICT, Wiktionary, Tatoeba, FrequencyWords) | $0 |
-| Pronunciation (browser speech) | $0 |
+| Pronunciation (Piper TTS MP3s, made once on the local PC) | $0 |
+| Upstash Redis (reminders, move codes, feedback limits, usage stats; free tier, shared) | $0 |
+| Resend (feedback emails, free 3,000/month) | $0 |
+| GitHub Actions (reminder scheduler every 15 min) | $0 |
 | Custom domain (optional) | ~$10/year |
