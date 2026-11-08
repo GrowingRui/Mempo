@@ -6,6 +6,8 @@ import { takeCodeFromUrl } from "./lib/move";
 import { syncReminder, studyInfo } from "./lib/reminder";
 import { loadProgress, saveProgress } from "./lib/storage";
 import { applyTheme } from "./lib/theme";
+import { countUsage } from "./lib/usage";
+import { toDay } from "./lib/date";
 import type { Progress } from "./lib/types";
 import DontKnow from "./pages/DontKnow";
 import Home from "./pages/Home";
@@ -32,6 +34,17 @@ export default function App() {
   useEffect(() => {
     void syncReminder({ lastStudied: info.lastStudied, streak: info.streak });
   }, [info.lastStudied, info.streak]);
+  // Anonymous usage counts (Settings → Privacy): opened today, studied today. Also when an open app comes back into view.
+  useEffect(() => {
+    void countUsage("open");
+    const onShow = () => document.visibilityState === "visible" && void countUsage("open");
+    document.addEventListener("visibilitychange", onShow);
+    return () => document.removeEventListener("visibilitychange", onShow);
+  }, []);
+  // (sends only once a day; checked on every answer so it still works when the app stays open past midnight)
+  useEffect(() => {
+    if (studyInfo(progress.history).lastStudied === toDay()) void countUsage("study");
+  }, [progress.history]);
   useEffect(() => applyTheme(progress.settings.theme), [progress.settings.theme]);
   // (braces matter: scrollTo returns a Promise in newer browsers, and React treats an effect's return value as its cleanup)
   useEffect(() => {

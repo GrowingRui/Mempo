@@ -10,6 +10,7 @@ import ScreenHeader from "../components/ScreenHeader";
 import { downloadBackup, parseBackup, type Backup } from "../lib/backup";
 import { KIND_LABEL, type FeedbackKind } from "../lib/feedback";
 import { studied } from "../lib/stats";
+import { setUsageOn, usageOn } from "../lib/usage";
 import type { Progress, Settings as SettingsT, SwipeKnow, Theme } from "../lib/types";
 
 interface Props {
@@ -85,6 +86,7 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
   const { settings, cards } = progress;
   const [confirmReset, setConfirmReset] = useState(false);
   const [feedback, setFeedback] = useState(false);
+  const [usage, setUsage] = useState(usageOn);
   const [pending, setPending] = useState<{ backup: Backup; moved: boolean } | null>(null); // waiting for "Replace"
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -238,6 +240,20 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
         >
           Send feedback
         </button>
+      </Section>
+
+      <Section title="Privacy">
+        <div className="raised rounded-[20px] border-2 border-line bg-card">
+          <Toggle
+            label="Anonymous usage counts"
+            sub="Once a day, tells the developer this device opened or studied in Mempo. A random number, nothing about you or your words."
+            checked={usage}
+            onChange={(on) => {
+              setUsageOn(on);
+              setUsage(on);
+            }}
+          />
+        </div>
       </Section>
 
       {feedback && (

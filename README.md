@@ -120,3 +120,4 @@ To keep it safe, use **Settings → Your progress**:
 - **Offline**: install the app and save pronunciations.
 - **Move to another device**: QR code or code to copy your progress.
 - **Your progress**: backup, restore, start over.
+- **Privacy → Anonymous usage counts** (on by default): once a day, the app tells Mempo's server that this device opened it or studied, with a random number that stands for the device. Nothing about you, your words or your answers, and no IP address. It only shows the developer how many devices come back. Switch it off and nothing is sent; the random number is forgotten too.

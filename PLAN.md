@@ -310,7 +310,12 @@ Pick any of these up whenever we want; each still needs approval before work sta
   - Server: `api/move.ts` (POST → code, GET ?code= → data). Kept 10 min in the same Upstash Redis as reminders under `mempo:move:<code>`, then Redis deletes it. Codes are 8 characters of Crockford base32 (no I/L/O/U; typing O counts as 0, I/L as 1). Not deleted when read, so a cancelled restore can be retried. Tests: `api/_move.test.ts`, `src/lib/move.test.ts`
   - Receiving: scanning opens the app on Settings and asks "Bring over this progress?" (same dialog and cleaning as Restore backup); the code is removed from the address. Typing the code works too, which iPhones need when Mempo is installed (the camera opens Safari, which has separate storage)
   - No new Vercel settings: it uses the Upstash keys the reminders already have
-- [ ] Privacy-friendly usage stats (e.g. Vercel Analytics, free) to see if people come back
+- [x] **Usage stats** (done 2026-11-08, waiting for approval). Our own counter, $0, chosen by the user over Vercel Analytics: Vercel's free analytics resets visitors every day and custom events need the paid plan, so it can't show whether people come back
+  - App (`src/lib/usage.ts`): each device makes up a random 16-hex-digit id (`mempo:device`). At most two pings a UTC day: **open** (start, and when an open app comes back into view) and **study** (first answered card; counts as an open too). No IP, device details, words or answers. Failed pings are retried next time. Per device, not in backups
+  - Settings → **Privacy → Anonymous usage counts**: on by default; switching off sends nothing and forgets the id
+  - Server: `api/stats.ts`. POST records the ping in the shared Upstash Redis: `mempo:stats:first` (id → first day) and day sets `mempo:stats:{new,open,study}:<day>` (expire after 400 days). Max 500 new devices a day, so nobody can flood the database. Tests: `api/_stats.test.ts`, `src/lib/usage.test.ts`
+  - **Report:** open `https://mempo.vercel.app/api/stats?key=<STATS_KEY>` (bookmark it; `&format=json` for raw numbers). Devices ever, active in 7 / 30 days, how many new devices came back **the next day / within a week / in weeks 2–4** (only windows that are over), and a 30-day table (opened, studied, new, returning). The key is `STATS_KEY` in Vercel env vars, or `CRON_SECRET` if that isn't set
+  - The service worker no longer answers `/api/…` page visits with the app, so the report opens in a browser where Mempo is installed
 
 **D. App in more languages** (noted 2026-11-07, not started)
 The app's own texts (buttons, hints, messages) in English, 中文, Español and Deutsch. Separate from the word meanings on the cards.

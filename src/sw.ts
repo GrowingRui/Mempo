@@ -12,8 +12,9 @@ declare const self: ServiceWorkerGlobalScope;
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
-// One-page app: every page address opens index.html, also offline.
-registerRoute(new NavigationRoute(createHandlerBoundToURL("index.html")));
+// One-page app: every page address opens index.html, also offline. Except /api/…: the usage report
+// (/api/stats?key=…) is a real page from the server.
+registerRoute(new NavigationRoute(createHandlerBoundToURL("index.html"), { denylist: [/^\/api\//] }));
 
 // Audio: cache first. <audio> asks for byte ranges, and a partial (206) answer can't be cached,
 // so we always fetch and keep the whole file, then cut out the part the player asked for.
