@@ -7,7 +7,7 @@
 //   GET    with "Authorization: Bearer <CRON_SECRET>"   Sends every reminder that's due now.
 //          Called every 15 minutes by .github/workflows/reminders.yml.
 //
-// Stored per device (in Upstash Redis, hash "reminders"): the push address the browser gave us, the
+// Stored per device (in Upstash Redis, hash "mempo:reminders"): the push address the browser gave us, the
 // chosen time and time zone, the last day studied with the streak then, and the last day we sent one.
 // No account, no words, no progress.
 //
@@ -24,7 +24,7 @@ import * as webpush from "web-push";
 
 const VAPID_PUBLIC_KEY = "BMhBIKnghu4HzXgeNCoUhKOs7zhyTI1mfUGbAGqfzm_s19AKcCmo4oFtpewWGZ7kXCN2gv6073hmyY3jAIIwwDc"; // same as site.vapidPublicKey
 const VAPID_SUBJECT = "https://mempo.vercel.app";
-const HASH = "reminders";
+const HASH = "mempo:reminders"; // prefixed: the database may be shared with other projects
 /** A reminder that's late (scheduler hiccup) still goes out, but not more than 3 hours after the chosen time. */
 const LATE_LIMIT_MIN = 180;
 
