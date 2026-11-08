@@ -317,10 +317,10 @@ Pick any of these up whenever we want; each still needs approval before work sta
   - **Report:** open `https://mempo.vercel.app/api/stats?key=<STATS_KEY>` (bookmark it; `&format=json` for raw numbers). Devices ever, active in 7 / 30 days, how many new devices came back **the next day / within a week / in weeks 2–4** (only windows that are over), and a 30-day table (opened, studied, new, returning). The key is `STATS_KEY` in Vercel env vars, or `CRON_SECRET` if that isn't set
   - The service worker no longer answers `/api/…` page visits with the app, so the report opens in a browser where Mempo is installed
 
-**D. App in more languages** (noted 2026-11-07; scope decided 2026-11-08; step 1 built 2026-11-08, waiting for the user's review)
+**D. App in more languages** ✅ step 1 done and live 2026-11-08 · step 2 optional, future
 The app's own texts (buttons, hints, messages) in other languages. Separate from the word meanings on the cards, which don't change.
 Some users need the interface (Settings especially) in their own language. **Decided by the user 2026-11-08: Chinese and Spanish first, German later.**
-- [ ] **Step 1: 中文 + Español interface** (about 1 day):
+- [x] **Step 1: 中文 + Español interface** (done and live 2026-11-08):
   - **Language picker at the top of Settings**: English · 中文 · Español, each written in its own language, with a 🌐 icon so it can be found even in a language you can't read. **The default stays English** (decided by the user 2026-11-07: don't switch automatically from the phone's language)
   - The picker switches the **whole app**, not just Settings (a translated Settings page followed by an English Home screen would feel broken)
   - Move every English text (~300, ~15 screens) into one table with one version per language; no paid service or big library. Built so that adding a language later only means adding its column
@@ -337,7 +337,8 @@ Some users need the interface (Settings especially) in their own language. **Dec
     - Not translated: the word content (examples, English definitions, notes on sensitive words), the app name, and what reaches the developer (feedback email subject and details, which now include "App language")
     - Tests: `src/i18n/i18n.test.ts`, plus language cases in `api/_reminders.test.ts`
     - Checked every screen at 320 px in all three languages; a few Spanish/Chinese texts were shortened to fit (taglines, "词库", swipe-side buttons)
-- [ ] **Step 2 (future): Deutsch**
+    - Final check 2026-11-08: all Chinese and Spanish texts reviewed (including plurals, dates and the reminder notification), 167 tests pass, type-check clean
+- [ ] **Step 2 (optional, future): Deutsch.** Not planned yet; only if wanted later
   - Copy `src/i18n/zh.tsx` to `de.tsx` and translate it, add it to `LANGS` / `MESSAGES` in `src/i18n/index.tsx`, to `Lang` in `src/lib/types.ts` and `cleanSettings` in `src/lib/storage.ts`, and to `TEXT` / `LANGS` in `api/reminders.ts`
   - Check layouts: German words are long ("Weiß ich nicht") and may overflow buttons
   - Translation check ideally by a native speaker
