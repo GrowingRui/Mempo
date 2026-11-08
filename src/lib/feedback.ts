@@ -1,4 +1,5 @@
 import { site } from "../config/site";
+import { tr } from "../i18n";
 import { standalone } from "./install";
 
 /**
@@ -9,6 +10,7 @@ import { standalone } from "./install";
 
 export type FeedbackKind = "bug" | "idea" | "word" | "other";
 
+/** For the email subject, which the developer reads: always English. The form shows the app language's names. */
 export const KIND_LABEL: Record<FeedbackKind, string> = {
   bug: "Bug",
   idea: "Suggestion",
@@ -31,21 +33,22 @@ export interface FeedbackForm {
 export const appVersion = () => (typeof __APP_VERSION__ === "string" ? __APP_VERSION__ : "dev");
 
 /** The app version, device and screen, as "Name: value" lines. */
-export function deviceDetails(screen: string): string {
+export function deviceDetails(screen: string, appLang?: string): string {
   const nav = typeof navigator === "undefined" ? undefined : navigator;
   const lines = [
     `Version: ${appVersion()}`,
     `Screen: ${screen}`,
     `Installed app: ${standalone() ? "yes" : "no"}`,
+    ...(appLang ? [`App language: ${appLang}`] : []),
     ...(typeof window !== "undefined" ? [`Window: ${window.innerWidth}×${window.innerHeight}`] : []),
     ...(nav ? [`Language: ${nav.language}`, `Browser: ${nav.userAgent}`] : []),
   ];
   return lines.join("\n");
 }
 
-export const withDevice = (f: FeedbackForm, screen: string): FeedbackForm => ({
+export const withDevice = (f: FeedbackForm, screen: string, appLang?: string): FeedbackForm => ({
   ...f,
-  details: [f.details, deviceDetails(screen)].filter(Boolean).join("\n\n"),
+  details: [f.details, deviceDetails(screen, appLang)].filter(Boolean).join("\n\n"),
 });
 
 export const feedbackAddress = () => site.feedbackMail.join("@");
@@ -64,9 +67,11 @@ export async function sendFeedback(f: FeedbackForm): Promise<void> {
   try {
     res = await fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) });
   } catch {
-    throw new Error(navigator.onLine === false ? "You’re offline." : "Couldn’t reach Mempo’s server.");
+    throw new Error(navigator.onLine === false ? tr().feedback.offline : tr().feedback.noServer);
   }
   if (res.ok) return;
-  const data = (await res.json().catch(() => null)) as { error?: string } | null;
-  throw new Error(data?.error ?? "Couldn’t send it right now.");
+  // The server's messages are in English; show ours, in the app's language.
+  const t = tr().feedback;
+  const byStatus: Record<number, string> = { 400: t.checkForm, 413: t.tooLong, 429: t.tooMany, 503: t.notSetUp };
+  throw new Error(byStatus[res.status] ?? t.cantSend);
 }

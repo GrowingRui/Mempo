@@ -317,7 +317,7 @@ Pick any of these up whenever we want; each still needs approval before work sta
   - **Report:** open `https://mempo.vercel.app/api/stats?key=<STATS_KEY>` (bookmark it; `&format=json` for raw numbers). Devices ever, active in 7 / 30 days, how many new devices came back **the next day / within a week / in weeks 2–4** (only windows that are over), and a 30-day table (opened, studied, new, returning). The key is `STATS_KEY` in Vercel env vars, or `CRON_SECRET` if that isn't set
   - The service worker no longer answers `/api/…` page visits with the app, so the report opens in a browser where Mempo is installed
 
-**D. App in more languages** (noted 2026-11-07; scope decided 2026-11-08, not started)
+**D. App in more languages** (noted 2026-11-07; scope decided 2026-11-08; step 1 built 2026-11-08, waiting for the user's review)
 The app's own texts (buttons, hints, messages) in other languages. Separate from the word meanings on the cards, which don't change.
 Some users need the interface (Settings especially) in their own language. **Decided by the user 2026-11-08: Chinese and Spanish first, German later.**
 - [ ] **Step 1: 中文 + Español interface** (about 1 day):
@@ -329,8 +329,16 @@ Some users need the interface (Settings especially) in their own language. **Dec
   - Check every screen at phone size in each language; Chinese uses the phone's own font (not in the app's fonts)
   - Translation check: the user reviews Chinese and Spanish
   - Show on localhost and get approval before pushing
+  - How it works as built:
+    - Texts in `src/i18n/en.tsx` (the master), `zh.tsx`, `es.tsx`. TypeScript checks that every language has every key with the same parameters. Texts with numbers are small functions (`words(5)` → "5 words" / "5 个词" / "5 palabras"); numbers and dates use each language's own format
+    - Components read texts with `useT()`; code outside React (error messages in `src/lib/*.ts`) uses `tr()`. Both follow `settings.lang` (`"en" | "zh" | "es"`, default `en`), which is saved with the other settings, so backups and "Move to another device" bring it along
+    - Server error messages stay in English on the server; the app shows its own translated message based on the error status
+    - The daily reminder notification is sent in the app's language (`lang` is stored with the reminder in `api/reminders.ts`)
+    - Not translated: the word content (examples, English definitions, notes on sensitive words), the app name, and what reaches the developer (feedback email subject and details, which now include "App language")
+    - Tests: `src/i18n/i18n.test.ts`, plus language cases in `api/_reminders.test.ts`
+    - Checked every screen at 320 px in all three languages; a few Spanish/Chinese texts were shortened to fit (taglines, "词库", swipe-side buttons)
 - [ ] **Step 2 (future): Deutsch**
-  - Add a German column to the table and "Deutsch" to the picker
+  - Copy `src/i18n/zh.tsx` to `de.tsx` and translate it, add it to `LANGS` / `MESSAGES` in `src/i18n/index.tsx`, to `Lang` in `src/lib/types.ts` and `cleanSettings` in `src/lib/storage.ts`, and to `TEXT` / `LANGS` in `api/reminders.ts`
   - Check layouts: German words are long ("Weiß ich nicht") and may overflow buttons
   - Translation check ideally by a native speaker
   - German meanings on the cards (about half a day to a day more): a German interface without German meanings would feel half done. Same free source and pipeline as Spanish (Wiktionary translation tables via kaikki.org), then a quality check

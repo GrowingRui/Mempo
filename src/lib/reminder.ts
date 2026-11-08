@@ -1,7 +1,8 @@
 import { site } from "../config/site";
+import { tr } from "../i18n";
 import { toDay } from "./date";
 import { streakOf, studied } from "./stats";
-import type { Progress } from "./types";
+import type { Lang, Progress } from "./types";
 
 /**
  * Daily reminder, on this device only (not part of backups: each phone or browser turns it on itself).
@@ -75,7 +76,7 @@ async function registration(): Promise<ServiceWorkerRegistration> {
     navigator.serviceWorker.ready,
     new Promise<null>((r) => setTimeout(() => r(null), 8000)),
   ]);
-  if (!reg) throw new Error("Reminders need the app’s offline support, which isn’t running here. Reload the page and try again.");
+  if (!reg) throw new Error(tr().reminder.noWorker);
   return reg;
 }
 
@@ -97,20 +98,21 @@ async function subscription(create: boolean): Promise<PushSubscription | null> {
 async function send(method: "POST" | "DELETE", body: unknown) {
   const res = await fetch(API, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!res.ok) {
-    const msg = await res.json().then((j: { error?: string }) => j.error, () => undefined);
-    throw new Error(msg ?? "Couldn’t reach the server. Check your connection and try again.");
+    // The server's messages are in English; show ours, in the app's language.
+    throw new Error(res.status === 503 ? tr().reminder.notSetUp : tr().reminder.noServer);
   }
 }
 
-async function push(state: ReminderState, info: StudyInfo, create: boolean): Promise<ReminderState> {
+async function push(state: ReminderState, info: StudyInfo, lang: Lang, create: boolean): Promise<ReminderState> {
   const sub = await subscription(create);
-  if (!sub) throw new Error("This device’s reminder was switched off. Turn it on again.");
+  if (!sub) throw new Error(tr().reminder.switchedOff);
   const body = {
     subscription: sub.toJSON(),
     time: state.time,
     tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
     lastStudied: info.lastStudied,
     streak: info.streak,
+    lang, // the notification's language
   };
   const signature = JSON.stringify(body);
   if (signature === state.synced) return state;
@@ -121,11 +123,11 @@ async function push(state: ReminderState, info: StudyInfo, create: boolean): Pro
 }
 
 /** Asks for permission (call from a tap) and turns the reminder on. Throws with a message for the user. */
-export async function enableReminder(time: string, info: StudyInfo): Promise<ReminderState> {
+export async function enableReminder(time: string, info: StudyInfo, lang: Lang): Promise<ReminderState> {
   const result = await Notification.requestPermission();
-  if (result === "denied") throw new Error("Notifications are blocked for Mempo. Allow them in your browser’s or phone’s settings, then try again.");
-  if (result !== "granted") throw new Error("Tap “Allow” when your browser asks, so Mempo can remind you.");
-  return push({ on: true, time }, info, true);
+  if (result === "denied") throw new Error(tr().reminder.blockedRetry);
+  if (result !== "granted") throw new Error(tr().reminder.allow);
+  return push({ on: true, time }, info, lang, true);
 }
 
 export async function disableReminder(): Promise<ReminderState> {
@@ -140,18 +142,19 @@ export async function disableReminder(): Promise<ReminderState> {
   return off;
 }
 
-export async function setReminderTime(time: string, info: StudyInfo): Promise<ReminderState> {
+export async function setReminderTime(time: string, info: StudyInfo, lang: Lang): Promise<ReminderState> {
   const next = { ...loadReminder(), time };
   saveReminder(next);
-  return next.on ? push(next, info, true) : next;
+  return next.on ? push(next, info, lang, true) : next;
 }
 
 /**
- * Keeps the server up to date: called at start and whenever the history changes. Sends only when something
- * changed (first study of the day, a new time zone, a new push address). Quiet on failure: it tries again later.
+ * Keeps the server up to date: called at start and whenever the history or the app language changes. Sends only
+ * when something changed (first study of the day, a new time zone, a new push address, another language).
+ * Quiet on failure: it tries again later.
  */
-export async function syncReminder(info: StudyInfo): Promise<void> {
+export async function syncReminder(info: StudyInfo, lang: Lang): Promise<void> {
   const state = loadReminder();
   if (!state.on || reminderSupport() !== "ok" || permission() !== "granted") return;
-  await push(state, info, true).catch(() => {});
+  await push(state, info, lang, true).catch(() => {});
 }

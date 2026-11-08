@@ -52,6 +52,9 @@ export interface CardProgress {
 
 export type SwipeKnow = "left" | "right";
 
+/** Interface language (Settings → Language). Card meanings are separate (showZh / showEs / showEn). */
+export type Lang = "en" | "zh" | "es";
+
 /** "system" follows the phone or computer setting. */
 export type Theme = "system" | "light" | "dark";
 
@@ -64,6 +67,8 @@ export interface Settings {
   showEn: boolean;
   swipeKnow: SwipeKnow;
   theme: Theme;
+  /** Language of buttons and messages. */
+  lang: Lang;
   /** Most reviews in the daily session; 0 = no limit. */
   maxReviews: number;
 }

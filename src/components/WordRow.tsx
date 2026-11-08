@@ -1,18 +1,11 @@
 import { useState } from "react";
-import { formatDay } from "../lib/date";
+import { useT } from "../i18n";
+import { toDay } from "../lib/date";
 import { MAX_BOX, statusOf, type WordStatus } from "../lib/srs";
 import type { CardProgress, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import SpeakButton from "./SpeakButton";
 import { GlossList, SensitiveNote } from "./WordCard";
-
-export const STATUS_LABEL: Record<WordStatus, string> = {
-  new: "New",
-  learning: "Learning",
-  review: "Reviewing",
-  mastered: "Mastered",
-  dontknow: "Don’t know",
-};
 
 const STATUS_CLASS: Record<WordStatus, string> = {
   new: "bg-paper text-muted",
@@ -24,6 +17,7 @@ const STATUS_CLASS: Record<WordStatus, string> = {
 
 /** A word in a list: tap to show its meanings and example. */
 export default function WordRow({ word, card, settings }: { word: Word; card?: CardProgress; settings: Settings }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const status = statusOf(card);
   const summary = [settings.showZh && word.zh[0]?.gloss.slice(0, 2).join("；"), settings.showEs && word.es[0]?.gloss.slice(0, 2).join(", ")]
@@ -39,7 +33,7 @@ export default function WordRow({ word, card, settings }: { word: Word; card?: C
             <span className="truncate font-display text-xl font-extrabold">{word.word}</span>
             <span className="shrink-0 rounded-md bg-brand px-1.5 font-display text-[11px] font-extrabold text-white">{word.level}</span>
             <span className={`ml-auto shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${STATUS_CLASS[status]}`}>
-              {STATUS_LABEL[status]}
+              {t.status[status]}
             </span>
           </span>
           {!open && summary && <span className="mt-0.5 block truncate text-sm font-medium text-muted">{summary}</span>}
@@ -60,9 +54,7 @@ export default function WordRow({ word, card, settings }: { word: Word; card?: C
             </p>
           )}
           {card && card.state !== "mastered" && (
-            <p className="text-xs font-semibold text-muted">
-              Next review {formatDay(card.due)}, step {card.box} of {MAX_BOX}
-            </p>
+            <p className="text-xs font-semibold text-muted">{t.card.nextReviewStep(t.when(card.due, toDay()), card.box, MAX_BOX)}</p>
           )}
         </div>
       )}

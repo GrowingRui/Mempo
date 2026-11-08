@@ -1,14 +1,16 @@
 import { useEffect } from "react";
+import { useT } from "../i18n";
 import { playWord, preloadWord } from "../lib/speech";
 
 export default function SpeakButton({ id, text, className = "" }: { id: string; text: string; className?: string }) {
+  const t = useT();
   useEffect(() => {
     preloadWord(id);
   }, [id]);
   return (
     <button
       type="button"
-      aria-label={`Hear “${text}”`}
+      aria-label={t.card.hear(text)}
       onClick={(e) => {
         e.stopPropagation(); // don't flip the card
         playWord(id, text);

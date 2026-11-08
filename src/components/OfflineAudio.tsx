@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useT } from "../i18n";
 import { offlineSupported, saveAudio, savedAudio } from "../lib/offline";
 import { loadAllWords } from "../lib/words";
 
@@ -13,8 +14,10 @@ type State =
 
 /** Settings block: how many pronunciations are saved on this device, and a button to save the rest. */
 export default function OfflineAudio() {
+  const t = useT();
   const [state, setState] = useState<State>({ kind: "loading" });
-  const [note, setNote] = useState("");
+  // Kept as a kind (not text), so it follows a language change.
+  const [note, setNote] = useState<{ kind: "stopped" } | { kind: "failed"; n: number } | null>(null);
   const abort = useRef<AbortController | null>(null);
   const alive = useRef(true);
 
@@ -37,15 +40,15 @@ export default function OfflineAudio() {
     };
   }, []);
 
-  if (!offlineSupported) return <p className="text-sm font-medium text-muted">This browser can’t save the app for offline use.</p>;
-  if (state.kind === "loading") return <p className="text-sm font-medium text-muted">Checking what’s saved…</p>;
-  if (state.kind === "error") return <p className="text-sm font-medium text-muted">Couldn’t check the saved pronunciations. Are you online?</p>;
+  if (!offlineSupported) return <p className="text-sm font-medium text-muted">{t.offline.cantSave}</p>;
+  if (state.kind === "loading") return <p className="text-sm font-medium text-muted">{t.offline.checking}</p>;
+  if (state.kind === "error") return <p className="text-sm font-medium text-muted">{t.offline.checkFailed}</p>;
 
   const { ids, saved } = state;
   const missing = ids.length - saved;
 
   const start = async () => {
-    setNote("");
+    setNote(null);
     const { saved: have } = await count();
     const todo = ids.filter((id) => !have.has(id));
     const ctrl = new AbortController();
@@ -56,8 +59,8 @@ export default function OfflineAudio() {
     if (!alive.current) return; // left Settings: the download stopped
     const after = await savedAudio(ids);
     setState({ kind: "idle", ids, saved: after.size });
-    if (ctrl.signal.aborted) setNote("Stopped. Tap again to continue where you left off.");
-    else if (failed > 0) setNote(`${failed.toLocaleString()} couldn’t be saved (connection lost?). Tap again to retry.`);
+    if (ctrl.signal.aborted) setNote({ kind: "stopped" });
+    else if (failed > 0) setNote({ kind: "failed", n: failed });
   };
 
   const pct = state.kind === "saving" ? (state.saved + state.done) / ids.length : saved / ids.length;
@@ -65,15 +68,15 @@ export default function OfflineAudio() {
   return (
     <div className="raised rounded-[20px] border-2 border-line bg-card p-4">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="font-display text-lg font-bold">Pronunciations</span>
+        <span className="font-display text-lg font-bold">{t.offline.title}</span>
         <span className="text-sm font-bold text-muted tabular-nums">
-          {(state.kind === "saving" ? state.saved + state.done : saved).toLocaleString()} / {ids.length.toLocaleString()}
+          {t.num(state.kind === "saving" ? state.saved + state.done : saved)} / {t.num(ids.length)}
         </span>
       </div>
       <div
         className="mt-2 h-3 overflow-hidden rounded-full bg-line"
         role="progressbar"
-        aria-label="Pronunciations saved on this device"
+        aria-label={t.offline.savedAria}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(pct * 100)}
@@ -87,7 +90,7 @@ export default function OfflineAudio() {
           onClick={() => abort.current?.abort()}
           className="press mt-4 w-full rounded-2xl border-2 border-line bg-card py-2.5 font-display text-base font-bold"
         >
-          Stop
+          {t.offline.stop}
         </button>
       ) : missing > 0 ? (
         <button
@@ -95,13 +98,13 @@ export default function OfflineAudio() {
           onClick={() => void start()}
           className="press mt-4 w-full rounded-2xl bg-brand py-2.5 font-display text-base font-bold text-white [--edge:var(--color-brand-edge)]"
         >
-          Save {saved > 0 ? "the rest" : "all"} for offline · about {mb(missing)} MB
+          {t.offline.save(saved > 0, mb(missing))}
         </button>
       ) : (
-        <p className="mt-3 text-sm font-semibold text-know-ink">All saved. Every word plays without internet.</p>
+        <p className="mt-3 text-sm font-semibold text-know-ink">{t.offline.allSaved}</p>
       )}
       <p className="mt-2 text-xs font-semibold text-muted">
-        {note || "Words you’ve already heard are saved automatically. Without a saved file, your device’s own voice reads the word."}
+        {note?.kind === "stopped" ? t.offline.stopped : note?.kind === "failed" ? t.offline.failed(note.n) : t.offline.note}
       </p>
     </div>
   );

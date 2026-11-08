@@ -1,3 +1,4 @@
+import { tr } from "../i18n";
 import { backupJson, parseBackup, type Backup } from "./backup";
 import type { Progress } from "./types";
 
@@ -73,7 +74,7 @@ export const supportsMove = () => typeof CompressionStream === "function" && typ
 
 // ---------- server ----------
 
-const offline = () => new Error("You’re offline. Connect to the internet and try again.");
+const offline = () => new Error(tr().move.offline);
 
 async function request(url: string, init?: RequestInit): Promise<Response> {
   if (!navigator.onLine) throw offline();
@@ -84,21 +85,17 @@ async function request(url: string, init?: RequestInit): Promise<Response> {
   }
 }
 
-async function errorOf(res: Response, fallback: string): Promise<Error> {
-  try {
-    const body = (await res.json()) as { error?: unknown };
-    if (res.status !== 404 && typeof body.error === "string") return new Error(body.error);
-  } catch {
-    // not JSON
-  }
-  return new Error(fallback);
+/** The server's messages are in English; show ours, in the app's language. */
+function errorOf(res: Response): Error {
+  const t = tr().move;
+  return new Error(res.status === 413 ? t.tooBig : res.status === 503 ? t.notSetUp : t.noServer);
 }
 
 /** Uploads this device's progress. Returns the code to show. */
 export async function sendProgress(progress: Progress): Promise<Sent> {
   const data = toBase64(await gzip(backupJson(progress)));
   const res = await request(API, { method: "POST", headers: { "Content-Type": "text/plain" }, body: data });
-  if (!res.ok) throw await errorOf(res, "Couldn’t reach Mempo’s server. Try again in a moment.");
+  if (!res.ok) throw errorOf(res);
   const { code, expiresIn } = (await res.json()) as { code: string; expiresIn: number };
   return { code, expires: Date.now() + expiresIn * 1000 };
 }
@@ -106,14 +103,14 @@ export async function sendProgress(progress: Progress): Promise<Sent> {
 /** Downloads the progress for a code. Throws a readable message. */
 export async function receiveProgress(code: string): Promise<Backup> {
   const res = await request(`${API}?code=${encodeURIComponent(code)}`);
-  if (res.status === 404) throw new Error("This code is wrong or has expired (codes work for 10 minutes). Make a new one on the other device.");
-  if (!res.ok) throw await errorOf(res, "Couldn’t reach Mempo’s server. Try again in a moment.");
+  if (res.status === 404) throw new Error(tr().move.wrongCode);
+  if (!res.ok) throw errorOf(res);
   const { data } = (await res.json()) as { data: string };
   let text: string;
   try {
     text = await gunzip(fromBase64(data));
   } catch {
-    throw new Error("The progress didn’t arrive in one piece. Make a new code and try again.");
+    throw new Error(tr().move.broken);
   }
   return parseBackup(text);
 }

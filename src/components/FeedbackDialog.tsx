@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useLang, useT } from "../i18n";
 import { mailtoUrl, sendFeedback, withDevice, type FeedbackForm } from "../lib/feedback";
 import Mascot from "./Mascot";
 
@@ -41,6 +42,8 @@ const secondary = "press rounded-2xl border-2 border-line bg-card py-3 font-disp
  */
 export default function FeedbackDialog<T extends string>(props: Props<T>) {
   const { title, subtitle, legend, choices, initial, screen, build, messageLabel, placeholder, lang, optional, footer, onClose } = props;
+  const t = useT();
+  const appLang = useLang();
   const [choice, setChoice] = useState<T>(initial);
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
@@ -69,13 +72,13 @@ export default function FeedbackDialog<T extends string>(props: Props<T>) {
 
   const submit = async () => {
     if (!canSend) return;
-    const form = withDevice({ ...build(choice, message), message: message.trim(), email: email.trim() || undefined, website: website || undefined }, screen);
+    const form = withDevice({ ...build(choice, message), message: message.trim(), email: email.trim() || undefined, website: website || undefined }, screen, appLang);
     setState({ step: "sending" });
     try {
       await sendFeedback(form);
       setState({ step: "sent" });
     } catch (e) {
-      setState({ step: "failed", error: e instanceof Error ? e.message : "Couldn’t send it right now.", form });
+      setState({ step: "failed", error: e instanceof Error ? e.message : t.feedback.cantSend, form });
     }
   };
 
@@ -98,11 +101,11 @@ export default function FeedbackDialog<T extends string>(props: Props<T>) {
         >
           <Mascot mood="cheer" className="mx-auto size-20" />
           <h2 id="feedback-title" className="mt-3 font-display text-2xl font-extrabold">
-            Thanks! Sent
+            {t.feedback.thanks}
           </h2>
-          <p className="mt-2 font-medium text-muted">{email.trim() ? "You’ll get an answer by email." : "Every message is read."}</p>
+          <p className="mt-2 font-medium text-muted">{email.trim() ? t.feedback.replyByEmail : t.feedback.everyRead}</p>
           <button ref={doneRef} type="button" onClick={onClose} className={`${primary} mt-6 w-full`}>
-            Done
+            {t.common.done}
           </button>
         </div>
       ) : (
@@ -154,7 +157,7 @@ export default function FeedbackDialog<T extends string>(props: Props<T>) {
 
           <label className="mt-3 block">
             <span className="mb-2 block text-sm font-bold">
-              Your email <span className="font-semibold text-muted">(optional)</span>
+              {t.feedback.email} <span className="font-semibold text-muted">{t.feedback.optional}</span>
             </span>
             <input
               type="email"
@@ -162,7 +165,7 @@ export default function FeedbackDialog<T extends string>(props: Props<T>) {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               maxLength={200}
-              placeholder="Only if you’d like an answer"
+              placeholder={t.feedback.emailPlaceholder}
               className={field}
             />
           </label>
@@ -179,19 +182,19 @@ export default function FeedbackDialog<T extends string>(props: Props<T>) {
             <div role="alert" className="mt-3 rounded-2xl bg-dontknow/10 px-3 py-2 text-sm font-semibold text-dontknow-ink">
               {state.error}{" "}
               <a href={mailtoUrl(state.form)} className="underline underline-offset-2">
-                Send by email instead
+                {t.feedback.byEmail}
               </a>
             </div>
           ) : (
-            <p className="mt-2 text-xs font-semibold text-muted">The app version and your device type are added, to help fix problems.</p>
+            <p className="mt-2 text-xs font-semibold text-muted">{t.feedback.detailsNote}</p>
           )}
 
           <div className="mt-5 grid grid-cols-2 gap-3">
             <button type="button" onClick={onClose} className={secondary}>
-              Cancel
+              {t.common.cancel}
             </button>
             <button type="submit" disabled={!canSend} className={primary}>
-              {state.step === "sending" ? "Sending…" : state.step === "failed" ? "Try again" : "Send"}
+              {state.step === "sending" ? t.feedback.sending : state.step === "failed" ? t.feedback.tryAgain : t.feedback.send}
             </button>
           </div>
           {footer && <p className="mt-4 text-center text-xs font-semibold text-muted">{footer(choice, message)}</p>}

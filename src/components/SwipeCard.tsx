@@ -1,5 +1,6 @@
 import { motion, useIsPresent, useMotionValue, useTransform, type MotionValue, type PanInfo, type Variants } from "motion/react";
 import { useRef } from "react";
+import { useT } from "../i18n";
 import type { Answer, Settings, Word } from "../lib/types";
 import WordCard from "./WordCard";
 
@@ -31,7 +32,6 @@ const DIST = 110; // px past which a released card counts as answered
 const FLICK_SPEED = 600; // px/s: a quick flick also counts, even if shorter
 const FLICK_MIN = 40;
 
-const LABEL: Record<Answer, string> = { know: "Know", unsure: "Not sure", dontknow: "Don’t know" };
 const TONE: Record<Answer, string> = {
   know: "border-know text-know",
   unsure: "border-unsure text-unsure-dark",
@@ -56,6 +56,7 @@ interface Props {
 }
 
 export default function SwipeCard({ word, flipped, onFlip, settings, onSwipe }: Props) {
+  const t = useT();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-320, 320], [-16, 16]);
@@ -114,7 +115,7 @@ export default function SwipeCard({ word, flipped, onFlip, settings, onSwipe }: 
               dir === "left" ? "top-6 right-6 rotate-12" : dir === "right" ? "top-6 left-6 -rotate-12" : "top-[62%] left-1/2 -translate-x-1/2"
             }`}
           >
-            {LABEL[answers[dir]]}
+            {t.answer[answers[dir]]}
           </span>
         </motion.div>
       ))}

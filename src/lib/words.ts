@@ -1,3 +1,4 @@
+import { tr } from "../i18n";
 import { LEVELS, type Level, type Word } from "./types";
 
 const cache = new Map<Level, Promise<Word[]>>();
@@ -6,7 +7,7 @@ export function loadWords(level: Level): Promise<Word[]> {
   let p = cache.get(level);
   if (!p) {
     p = fetch(`/data/${level.toLowerCase()}.json`).then((r) => {
-      if (!r.ok) throw new Error(`Could not load ${level} words (${r.status})`);
+      if (!r.ok) throw new Error(tr().common.loadFailed(level));
       return r.json() as Promise<Word[]>;
     });
     p.catch(() => cache.delete(level)); // allow a retry after a network error

@@ -7,8 +7,9 @@ import OfflineAudio from "../components/OfflineAudio";
 import ReminderRow from "../components/Reminder";
 import ResetDialog from "../components/ResetDialog";
 import ScreenHeader from "../components/ScreenHeader";
+import { LANGS, messagesFor, useT } from "../i18n";
 import { downloadBackup, parseBackup, type Backup } from "../lib/backup";
-import { KIND_LABEL, type FeedbackKind } from "../lib/feedback";
+import type { FeedbackKind } from "../lib/feedback";
 import { studied } from "../lib/stats";
 import { setUsageOn, usageOn } from "../lib/usage";
 import type { Progress, Settings as SettingsT, SwipeKnow, Theme } from "../lib/types";
@@ -21,18 +22,29 @@ interface Props {
   onBack: () => void;
 }
 
-function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
+function Section({ title, icon, hint, children }: { title: string; icon?: ReactNode; hint?: string; children: ReactNode }) {
   return (
     <section className="mt-7">
-      <h2 className="font-display text-lg font-bold">{title}</h2>
+      <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+        {icon}
+        {title}
+      </h2>
       {hint && <p className="mt-0.5 text-sm font-medium text-muted">{hint}</p>}
       <div className="mt-2.5">{children}</div>
     </section>
   );
 }
 
+/** Globe: marks the language picker, so it can be found even in a language you can't read. */
+const GlobeIcon = () => (
+  <svg viewBox="0 0 24 24" className="size-5 text-brand-ink" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" />
+  </svg>
+);
+
 /** Row of mutually exclusive choices, styled like the level picker on Home. */
-function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { value: T; label: ReactNode }[]; onChange: (v: T) => void }) {
+function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { value: T; label: ReactNode; lang?: string }[]; onChange: (v: T) => void }) {
   return (
     <div className="flex gap-2" role="radiogroup" aria-label={label}>
       {options.map((o) => {
@@ -43,6 +55,7 @@ function Segmented<T extends string>({ label, value, options, onChange }: { labe
             type="button"
             role="radio"
             aria-checked={active}
+            lang={o.lang}
             onClick={() => onChange(o.value)}
             className={`press min-w-0 flex-1 rounded-2xl border-2 px-2 py-2.5 font-display text-base font-bold ${
               active ? "border-brand bg-brand text-white [--edge:var(--color-brand-edge)]" : "border-line bg-card hover:border-brand/40"
@@ -56,11 +69,13 @@ function Segmented<T extends string>({ label, value, options, onChange }: { labe
   );
 }
 
-function Toggle({ label, sub, checked, disabled, onChange }: { label: string; sub: string; checked: boolean; disabled?: boolean; onChange: (v: boolean) => void }) {
+function Toggle({ label, sub, checked, disabled, onChange, lang }: { label: string; sub: string; checked: boolean; disabled?: boolean; onChange: (v: boolean) => void; lang?: string }) {
   return (
     <label className={`flex items-center gap-3 px-4 py-3 ${disabled ? "opacity-60" : "cursor-pointer"}`}>
       <span className="min-w-0 flex-1">
-        <span className="block font-display text-lg font-bold">{label}</span>
+        <span lang={lang} className="block font-display text-lg font-bold">
+          {label}
+        </span>
         <span className="block text-sm font-medium text-muted">{sub}</span>
       </span>
       <input type="checkbox" role="switch" className="peer sr-only" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
@@ -72,17 +87,14 @@ function Toggle({ label, sub, checked, disabled, onChange }: { label: string; su
   );
 }
 
-const THEMES: { value: Theme; label: string }[] = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "Auto" },
-];
+const THEMES: Theme[] = ["light", "dark", "system"];
 
 const REVIEW_CAPS = [50, 100, 200, 0];
 
 const FEEDBACK_KINDS: FeedbackKind[] = ["bug", "idea", "word", "other"];
 
 export default function Settings({ progress, setProgress, moveCode = null, onBack }: Props) {
+  const t = useT();
   const { settings, cards } = progress;
   const [confirmReset, setConfirmReset] = useState(false);
   const [feedback, setFeedback] = useState(false);
@@ -99,16 +111,16 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
     try {
       setPending({ backup: parseBackup(await file.text()), moved: false });
     } catch (e) {
-      setMessage({ ok: false, text: e instanceof Error ? e.message : "Couldn’t read this file." });
+      setMessage({ ok: false, text: e instanceof Error ? e.message : t.settings.readFailed });
     }
   };
 
   const swipeOption = (side: SwipeKnow) => {
-    const left = side === "left" ? "Know" : "Don’t know";
-    const right = side === "left" ? "Don’t know" : "Know";
+    const left = side === "left" ? t.answer.know : t.answer.dontknow;
+    const right = side === "left" ? t.answer.dontknow : t.answer.know;
     return (
       <span className="flex flex-col items-center leading-tight">
-        <span>Know on the {side}</span>
+        <span>{side === "left" ? t.settings.knowOnLeft : t.settings.knowOnRight}</span>
         <span className="mt-0.5 text-xs font-semibold opacity-80">
           ← {left} · {right} →
         </span>
@@ -118,38 +130,52 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
 
   return (
     <main className="flex flex-1 flex-col pb-4">
-      <ScreenHeader title="Settings" onBack={onBack} />
+      <ScreenHeader title={t.settings.title} onBack={onBack} />
 
-      <Section title="Theme" hint="Auto follows your phone or computer.">
-        <Segmented label="Theme" value={settings.theme} options={THEMES} onChange={(theme) => update({ theme })} />
+      <Section title={t.settings.language} icon={<GlobeIcon />} hint={t.settings.languageHint}>
+        <Segmented
+          label={t.settings.language}
+          value={settings.lang}
+          options={LANGS.map((l) => ({ value: l.value, label: l.label, lang: l.value }))}
+          onChange={(lang) => {
+            update({ lang });
+            setMessage(null); // it was in the old language
+          }}
+        />
       </Section>
 
-      <Section title="Meanings" hint="Shown on the back of the card and in the word lists.">
+      <Section title={t.settings.theme} hint={t.settings.themeHint}>
+        <Segmented label={t.settings.theme} value={settings.theme} options={THEMES.map((v) => ({ value: v, label: t.settings.themes[v] }))} onChange={(theme) => update({ theme })} />
+      </Section>
+
+      <Section title={t.settings.meanings} hint={t.settings.meaningsHint}>
         <div className="raised divide-y-2 divide-line rounded-[20px] border-2 border-line bg-card">
           <Toggle
             label="中文"
-            sub="Chinese"
+            lang="zh"
+            sub={t.settings.zhSub}
             checked={settings.showZh}
             disabled={settings.showZh && !settings.showEs}
             onChange={(showZh) => update({ showZh })}
           />
           <Toggle
             label="Español"
-            sub="Spanish"
+            lang="es"
+            sub={t.settings.esSub}
             checked={settings.showEs}
             disabled={settings.showEs && !settings.showZh}
             onChange={(showEs) => update({ showEs })}
           />
         </div>
-        {!(settings.showZh && settings.showEs) && <p className="mt-2 text-xs font-semibold text-muted">Chinese or Spanish: at least one stays on.</p>}
+        {!(settings.showZh && settings.showEs) && <p className="mt-2 text-xs font-semibold text-muted">{t.settings.oneStaysOn}</p>}
         <div className="raised mt-3 rounded-[20px] border-2 border-line bg-card">
-          <Toggle label="English" sub="Definitions in English" checked={settings.showEn} onChange={(showEn) => update({ showEn })} />
+          <Toggle label="English" lang="en" sub={t.settings.enSub} checked={settings.showEn} onChange={(showEn) => update({ showEn })} />
         </div>
       </Section>
 
-      <Section title="Swiping" hint="Swipe up is always “Not sure”. The buttons follow the same order.">
+      <Section title={t.settings.swiping} hint={t.settings.swipingHint}>
         <Segmented
-          label="Swipe direction"
+          label={t.settings.swipeAria}
           value={settings.swipeKnow}
           options={[
             { value: "left", label: swipeOption("left") },
@@ -159,46 +185,46 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
         />
       </Section>
 
-      <Section title="Reviews per day" hint="After a break, the oldest reviews come first and the rest wait for the next days. “Reviews due” on Home still lets you do them all.">
+      <Section title={t.settings.reviewsPerDay} hint={t.settings.reviewsHint}>
         <Segmented
-          label="Reviews per day"
+          label={t.settings.reviewsPerDay}
           value={String(settings.maxReviews)}
-          options={REVIEW_CAPS.map((n) => ({ value: String(n), label: n ? n : "No limit" }))}
+          options={REVIEW_CAPS.map((n) => ({ value: String(n), label: n ? n : t.settings.noLimit }))}
           onChange={(v) => update({ maxReviews: Number(v) })}
         />
       </Section>
 
-      <Section title="Daily reminder">
-        <ReminderRow history={progress.history} />
+      <Section title={t.settings.reminder}>
+        <ReminderRow history={progress.history} lang={settings.lang} />
       </Section>
 
-      <Section title="Offline" hint="Once loaded, Mempo works without internet.">
+      <Section title={t.settings.offline} hint={t.settings.offlineHint}>
         <InstallRow />
         <OfflineAudio />
       </Section>
 
-      <Section title="Move to another device" hint="Copy your progress to another phone, tablet or browser with a QR code.">
+      <Section title={t.settings.move} hint={t.settings.moveHint}>
         <MoveRow progress={progress} incoming={moveCode} onReceived={(backup) => setPending({ backup, moved: true })} />
       </Section>
 
-      <Section title="Your progress" hint="Saved in this browser only. Download a backup to keep it safe.">
+      <Section title={t.settings.progress} hint={t.settings.progressHint}>
         <div className="flex gap-3">
           <button
             type="button"
             onClick={() => {
               downloadBackup(progress);
-              setMessage({ ok: true, text: "Backup downloaded." });
+              setMessage({ ok: true, text: t.settings.downloaded });
             }}
             className="press min-w-0 flex-1 rounded-2xl border-2 border-line bg-card px-2 py-3 font-display text-base font-bold min-[400px]:text-lg"
           >
-            Download backup
+            {t.settings.download}
           </button>
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
             className="press min-w-0 flex-1 rounded-2xl border-2 border-line bg-card px-2 py-3 font-display text-base font-bold min-[400px]:text-lg"
           >
-            Restore backup
+            {t.settings.restore}
           </button>
           <input
             ref={fileRef}
@@ -225,28 +251,26 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
           disabled={words === 0}
           className="press mt-5 w-full rounded-2xl border-2 border-dontknow/40 bg-card py-3 font-display text-lg font-bold text-dontknow-ink [--edge:var(--color-dontknow)] disabled:opacity-50"
         >
-          Start over
+          {t.settings.startOver}
         </button>
-        <p className="mt-2 text-xs font-semibold text-muted">
-          {words === 0 ? "Nothing to delete yet." : "Deletes all your words and daily history. Your settings stay."}
-        </p>
+        <p className="mt-2 text-xs font-semibold text-muted">{words === 0 ? t.settings.nothingToDelete : t.settings.startOverNote}</p>
       </Section>
 
-      <Section title="Feedback" hint="Found a problem, or have an idea? Tell us. It goes straight to the developer.">
+      <Section title={t.settings.feedback} hint={t.settings.feedbackHint}>
         <button
           type="button"
           onClick={() => setFeedback(true)}
           className="press w-full rounded-2xl border-2 border-line bg-card py-3 font-display text-lg font-bold [--edge:var(--color-line-edge)]"
         >
-          Send feedback
+          {t.settings.sendFeedback}
         </button>
       </Section>
 
-      <Section title="Privacy">
+      <Section title={t.settings.privacy}>
         <div className="raised rounded-[20px] border-2 border-line bg-card">
           <Toggle
-            label="Anonymous usage counts"
-            sub="Once a day, tells the developer this device opened or studied in Mempo. A random number, nothing about you or your words."
+            label={t.settings.usage}
+            sub={t.settings.usageSub}
             checked={usage}
             onChange={(on) => {
               setUsageOn(on);
@@ -258,13 +282,13 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
 
       {feedback && (
         <FeedbackDialog<FeedbackKind>
-          title="Send feedback"
-          legend="What is it about?"
-          choices={FEEDBACK_KINDS.map((k) => ({ value: k, label: KIND_LABEL[k] }))}
+          title={t.settings.sendFeedback}
+          legend={t.feedback.legend}
+          choices={FEEDBACK_KINDS.map((k) => ({ value: k, label: t.feedback.kinds[k] }))}
           initial="idea"
           screen="settings"
           build={(kind, message) => ({ kind, message })}
-          messageLabel={(k) => (k === "bug" ? "What happened? What did you expect?" : k === "word" ? "Which word, and what’s wrong?" : "Your message")}
+          messageLabel={(k) => (k === "bug" ? t.feedback.bugLabel : k === "word" ? t.feedback.wordLabel : t.feedback.messageLabel)}
           onClose={() => setFeedback(false)}
         />
       )}
@@ -273,15 +297,16 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
         <ConfirmDialog
           mood="happy"
           tone="normal"
-          title={pending.moved ? "Bring over this progress?" : "Restore this backup?"}
-          cancelLabel="Cancel"
-          confirmLabel="Replace my progress"
+          title={pending.moved ? t.settings.moveTitle : t.settings.restoreTitle}
+          cancelLabel={t.common.cancel}
+          confirmLabel={t.settings.replace}
           onCancel={() => setPending(null)}
           onConfirm={() => {
+            // Settings come along too, the interface language included (the message is already in it).
             setProgress(() => pending.backup.progress);
             const n = Object.keys(pending.backup.progress.cards).length;
-            const w = `${n.toLocaleString()} word${n === 1 ? "" : "s"}`;
-            setMessage({ ok: true, text: pending.moved ? `Progress moved: ${w}.` : `Backup restored: ${w}.` });
+            const tNew = messagesFor(pending.backup.progress.settings.lang);
+            setMessage({ ok: true, text: pending.moved ? tNew.settings.moved(n) : tNew.settings.restored(n) });
             setPending(null);
           }}
         >
@@ -304,22 +329,18 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
 }
 
 function BackupSummary({ backup, moved, currentWords }: { backup: Backup; moved: boolean; currentWords: number }) {
+  const t = useT();
   const n = Object.keys(backup.progress.cards).length;
   const days = Object.values(backup.progress.history).filter(studied).length;
-  const made = backup.exportedAt && new Date(backup.exportedAt);
+  const made = backup.exportedAt ? new Date(backup.exportedAt) : undefined;
   return (
     <>
       <p>
-        {!moved && made && !Number.isNaN(made.getTime()) && <>Made on {made.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}. </>}
-        It has <b className="text-ink">{n.toLocaleString()} word{n === 1 ? "" : "s"}</b> and {days.toLocaleString()} day{days === 1 ? "" : "s"} of history, plus its
-        settings.
+        {!moved && made && !Number.isNaN(made.getTime()) && t.settings.madeOn(made)}
+        {t.settings.backupHas(n, days)}
       </p>
-      <p className="mt-2">
-        {currentWords > 0
-          ? `It replaces what’s in this browser now (${currentWords.toLocaleString()} word${currentWords === 1 ? "" : "s"}).`
-          : "This browser has no progress yet."}
-      </p>
-      {backup.dropped > 0 && <p className="mt-2 text-sm">{backup.dropped.toLocaleString()} broken {backup.dropped === 1 ? "entry" : "entries"} in the file will be skipped.</p>}
+      <p className="mt-2">{currentWords > 0 ? t.settings.replaces(currentWords) : t.settings.noProgressHere}</p>
+      {backup.dropped > 0 && <p className="mt-2 text-sm">{t.settings.broken(backup.dropped)}</p>}
     </>
   );
 }

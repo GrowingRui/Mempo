@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
-import { site } from "../config/site";
+import { useT } from "../i18n";
 import Mascot from "./Mascot";
 
 const HOUR = 60 * 60 * 1000;
@@ -12,6 +12,7 @@ const HOUR = 60 * 60 * 1000;
  *  - "New version" when an update is waiting. It waits for a tap, so a study session is never cut off.
  */
 export default function UpdatePrompt() {
+  const t = useT();
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     offlineReady: [offlineReady, setOfflineReady],
@@ -47,23 +48,23 @@ export default function UpdatePrompt() {
           >
             <Mascot mood={needRefresh ? "cheer" : "happy"} className="size-10 shrink-0" />
             <p className="min-w-0 flex-1 text-sm leading-snug font-semibold">
-              {needRefresh ? `A new version of ${site.name} is ready.` : `${site.name} now works offline.`}
+              {needRefresh ? t.update.ready : t.update.offline}
             </p>
             {needRefresh ? (
               <>
                 <button type="button" onClick={() => setNeedRefresh(false)} className="rounded-xl px-2 py-2 text-sm font-bold text-muted hover:text-ink">
-                  Later
+                  {t.update.later}
                 </button>
                 <button
                   type="button"
                   onClick={() => void updateServiceWorker(true)}
                   className="press rounded-xl bg-brand px-3.5 py-2 font-display text-sm font-bold text-white [--depth:3px] [--edge:var(--color-brand-edge)]"
                 >
-                  Update
+                  {t.update.update}
                 </button>
               </>
             ) : (
-              <button type="button" onClick={() => setOfflineReady(false)} aria-label="Close" className="grid size-9 place-items-center rounded-xl text-lg font-bold text-muted hover:text-ink">
+              <button type="button" onClick={() => setOfflineReady(false)} aria-label={t.common.close} className="grid size-9 place-items-center rounded-xl text-lg font-bold text-muted hover:text-ink">
                 ×
               </button>
             )}

@@ -1,6 +1,7 @@
 import { MotionConfig } from "motion/react";
 import { useEffect, useState } from "react";
 import UpdatePrompt from "./components/UpdatePrompt";
+import { HTML_LANG, LangProvider } from "./i18n";
 import type { SessionMode } from "./lib/session";
 import { takeCodeFromUrl } from "./lib/move";
 import { syncReminder, studyInfo } from "./lib/reminder";
@@ -32,8 +33,8 @@ export default function App() {
   // Tells the reminder server about the first study of the day, so no reminder comes on a day already done.
   const info = studyInfo(progress.history);
   useEffect(() => {
-    void syncReminder({ lastStudied: info.lastStudied, streak: info.streak });
-  }, [info.lastStudied, info.streak]);
+    void syncReminder({ lastStudied: info.lastStudied, streak: info.streak }, progress.settings.lang);
+  }, [info.lastStudied, info.streak, progress.settings.lang]);
   // Anonymous usage counts (Settings → Privacy): opened today, studied today. Also when an open app comes back into view.
   useEffect(() => {
     void countUsage("open");
@@ -46,6 +47,10 @@ export default function App() {
     if (studyInfo(progress.history).lastStudied === toDay()) void countUsage("study");
   }, [progress.history]);
   useEffect(() => applyTheme(progress.settings.theme), [progress.settings.theme]);
+  const lang = progress.settings.lang;
+  useEffect(() => {
+    document.documentElement.lang = HTML_LANG[lang];
+  }, [lang]);
   // (braces matter: scrollTo returns a Promise in newer browsers, and React treats an effect's return value as its cleanup)
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -54,6 +59,7 @@ export default function App() {
   const home = () => setScreen({ name: "home" });
 
   return (
+    <LangProvider lang={lang}>
     <MotionConfig reducedMotion="user">
       <UpdatePrompt />
       <div className="mx-auto flex min-h-dvh max-w-md flex-col px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
@@ -76,5 +82,6 @@ export default function App() {
         )}
       </div>
     </MotionConfig>
+    </LangProvider>
   );
 }

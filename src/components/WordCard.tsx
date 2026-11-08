@@ -1,16 +1,13 @@
 import { useState } from "react";
+import { useT } from "../i18n";
 import type { Gloss, Sensitive, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import ReportDialog from "./ReportDialog";
 import SpeakButton from "./SpeakButton";
 
-export const POS_LABEL: Record<string, string> = {
-  n: "noun", v: "verb", adj: "adjective", adv: "adverb", prep: "preposition",
-  conj: "conjunction", pron: "pronoun", interj: "interjection", num: "number",
-  det: "determiner", phr: "phrase", abbr: "abbreviation",
-};
-
+/** Meanings in one language. The label is the language's own name (中文, Español, English) in every app language. */
 export function GlossList({ label, glosses, lang }: { label: string; glosses: Gloss[]; lang?: string }) {
+  const t = useT();
   if (glosses.length === 0) return null;
   return (
     <section lang={lang}>
@@ -21,12 +18,12 @@ export function GlossList({ label, glosses, lang }: { label: string; glosses: Gl
             {g.pos && (
               <span
                 className="w-9 shrink-0 rounded-lg border-2 border-line py-px text-center text-[11px] font-bold text-muted"
-                title={POS_LABEL[g.pos] ?? g.pos}
+                title={t.pos[g.pos] ?? g.pos}
               >
                 {g.pos}
               </span>
             )}
-            {g.gloss.length > 1 && label === "English" ? (
+            {g.gloss.length > 1 && lang === "en" ? (
               <ol className="list-decimal space-y-1 pl-5 text-[16px] leading-snug font-medium marker:text-muted">
                 {g.gloss.map((d, k) => (
                   <li key={k}>{d}</li>
@@ -53,16 +50,18 @@ function WarnIcon({ className }: { className: string }) {
 
 /** Small "Offensive" tag on the front of the card, so the learner knows before saying the word aloud. */
 export function SensitiveBadge() {
+  const t = useT();
   return (
     <span className="flex items-center gap-1 rounded-full bg-dontknow/12 px-2.5 py-1 text-xs font-bold text-dontknow-ink">
       <WarnIcon className="size-3.5" />
-      Offensive
+      {t.card.offensive}
     </span>
   );
 }
 
 /** The hand-written note for an offensive word (red) or a word with a rude or hurtful use (yellow). */
 export function SensitiveNote({ sensitive, className = "" }: { sensitive: Sensitive; className?: string }) {
+  const t = useT();
   const offensive = sensitive.level === "offensive";
   return (
     <aside
@@ -70,9 +69,12 @@ export function SensitiveNote({ sensitive, className = "" }: { sensitive: Sensit
     >
       <p className={`flex items-center gap-1.5 text-sm font-extrabold ${offensive ? "text-dontknow-ink" : "text-unsure-dark"}`}>
         <WarnIcon className="size-4" />
-        {offensive ? "Offensive word" : "Use with care"}
+        {offensive ? t.card.offensiveWord : t.card.useWithCare}
       </p>
-      <p className="mt-1 text-[15px] leading-snug font-medium text-ink/85">{sensitive.note}</p>
+      {/* The note itself is written in English, like the rest of the word's content. */}
+      <p lang="en" className="mt-1 text-[15px] leading-snug font-medium text-ink/85">
+        {sensitive.note}
+      </p>
     </aside>
   );
 }
@@ -87,12 +89,13 @@ interface Props {
 const FACE = "flip-face flex flex-col rounded-[32px] border-2 border-line bg-card p-6 shadow-[0_8px_0_var(--color-line-edge)]";
 
 export default function WordCard({ word, flipped, onFlip, settings }: Props) {
+  const t = useT();
   const [reporting, setReporting] = useState(false);
   const example = word.examples[0];
   const terms = [word.word, ...(word.forms ?? []), ...(word.variants ?? []), ...word.examples.map((e) => e.form ?? "")];
   const extra = [
-    word.variants?.length ? `Also spelled ${word.variants.join(", ")}.` : "",
-    word.forms?.length ? `Forms: ${word.forms.join(", ")}` : "",
+    word.variants?.length ? t.card.alsoSpelled(word.variants.join(", ")) : "",
+    word.forms?.length ? t.card.forms(word.forms.join(", ")) : "",
   ].filter(Boolean);
 
   return (
@@ -101,7 +104,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
       onClick={onFlip}
       role="button"
       tabIndex={0}
-      aria-label={flipped ? "Show the word" : "Show the meaning"}
+      aria-label={flipped ? t.card.showWord : t.card.showMeaning}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -117,7 +120,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
               <span className="rounded-full bg-brand px-3 py-1 font-display text-sm font-extrabold text-white">{word.level}</span>
               {word.sensitive?.level === "offensive" && <SensitiveBadge />}
             </span>
-            <span className="truncate text-sm font-semibold text-muted">{word.pos.map((p) => POS_LABEL[p] ?? p).join(", ")}</span>
+            <span className="truncate text-sm font-semibold text-muted">{word.pos.map((p) => t.pos[p] ?? p).join(t.locale === "zh-CN" ? "、" : ", ")}</span>
           </div>
 
           <div className="flex flex-1 flex-col items-center justify-center text-center">
@@ -133,7 +136,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
               <Highlight text={example.text} terms={terms} />
             </p>
           )}
-          <p className="mt-4 text-center text-sm font-semibold text-muted">Tap the card to see the meaning</p>
+          <p className="mt-4 text-center text-sm font-semibold text-muted">{t.card.tapToFlip}</p>
         </div>
 
         {/* Back */}
@@ -187,7 +190,7 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
             onKeyDown={(e) => e.stopPropagation()}
             className="mt-4 self-center text-xs font-semibold text-muted underline decoration-line decoration-2 underline-offset-2 hover:text-brand-ink"
           >
-            Wrong translation? Report it
+            {t.card.reportLink}
           </button>
         </div>
       </div>

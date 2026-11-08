@@ -3,6 +3,7 @@ import Mascot from "../components/Mascot";
 import QuizHeader from "../components/QuizHeader";
 import ScreenHeader from "../components/ScreenHeader";
 import SpeakButton from "../components/SpeakButton";
+import { useT } from "../i18n";
 import { buildTest, estimateKnown, PASS, PER_LEVEL, recommendLevel, scoreByLevel, type Question, type TestLang } from "../lib/leveltest";
 import { LEVELS, type Level, type Progress, type Word } from "../lib/types";
 import { loadIndex, loadWords } from "../lib/words";
@@ -18,6 +19,7 @@ const LANG_LABEL: Record<TestLang, string> = { zh: "中文", es: "Español" };
 const FEEDBACK_MS = { right: 700, wrong: 1500 };
 
 export default function LevelTest({ progress, setProgress, onExit }: Props) {
+  const t = useT();
   const { settings } = progress;
   const [lang, setLang] = useState<TestLang>(settings.showZh || !settings.showEs ? "zh" : "es");
   const [byLevel, setByLevel] = useState<Record<Level, Word[]>>();
@@ -49,18 +51,16 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
   if (!questions) {
     return (
       <main className="flex flex-1 flex-col">
-        <ScreenHeader title="Level test" onBack={onExit} />
+        <ScreenHeader title={t.test.title} onBack={onExit} />
         <div className="mt-10 flex flex-col items-center text-center">
           <Mascot className="size-24" />
-          <h2 className="mt-4 font-display text-3xl font-extrabold">What’s your level?</h2>
-          <p className="mt-2 max-w-xs font-medium text-muted">
-            {PER_LEVEL * LEVELS.length} random words from B2, C1 and C2. Pick the right meaning, or tap “I don’t know”. No guessing, so the result is honest!
-          </p>
+          <h2 className="mt-4 font-display text-3xl font-extrabold">{t.test.question}</h2>
+          <p className="mt-2 max-w-xs font-medium text-muted">{t.test.intro(PER_LEVEL * LEVELS.length)}</p>
         </div>
 
         <section className="mt-8">
-          <h3 className="mb-2.5 font-display text-lg font-bold">Answer in</h3>
-          <div className="grid grid-cols-2 gap-2.5" role="radiogroup" aria-label="Answer language">
+          <h3 className="mb-2.5 font-display text-lg font-bold">{t.test.answerIn}</h3>
+          <div className="grid grid-cols-2 gap-2.5" role="radiogroup" aria-label={t.test.answerLangAria}>
             {(["zh", "es"] as TestLang[]).map((l) => {
               const active = l === lang;
               return (
@@ -89,9 +89,9 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
             disabled={!byLevel}
             className="press w-full rounded-3xl bg-brand py-4 font-display text-2xl font-extrabold text-white [--depth:6px] [--edge:var(--color-brand-edge)] hover:bg-brand-dark disabled:opacity-60"
           >
-            {byLevel ? "Start the test" : "Loading words…"}
+            {byLevel ? t.test.start : t.common.loadingWords}
           </button>
-          <p className="mt-3 text-center text-xs font-semibold text-muted">About 3 minutes. Your learning progress isn’t changed.</p>
+          <p className="mt-3 text-center text-xs font-semibold text-muted">{t.test.about}</p>
         </div>
       </main>
     );
@@ -106,17 +106,17 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
     const isCurrent = rec === settings.level;
     return (
       <main className="flex flex-1 flex-col">
-        <ScreenHeader title="Your result" onBack={onExit} />
+        <ScreenHeader title={t.test.resultTitle} onBack={onExit} />
         <div className="mt-6 flex flex-col items-center text-center">
           <Mascot mood="cheer" className="size-24" />
-          <p className="mt-3 font-semibold text-muted">We suggest you learn</p>
+          <p className="mt-3 font-semibold text-muted">{t.test.weSuggest}</p>
           <p className="font-display text-7xl leading-none font-extrabold text-brand-ink">{rec}</p>
           <p className="mt-3 font-medium text-muted">
-            {right} of {questions.length} right
+            {t.test.rightOf(right, questions.length)}
             {known !== undefined && (
               <>
-                {" "}
-                · you probably know about <span className="font-bold text-ink">{known.toLocaleString()}</span> of {counts!.total.toLocaleString()} words
+                {" · "}
+                {t.test.probablyKnow(<span className="font-bold text-ink">{t.num(known)}</span>, counts!.total)}
               </>
             )}
           </p>
@@ -140,13 +140,13 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
           })}
         </ul>
         <p className="mt-3 text-center text-sm font-medium text-muted">
-          You “know” a level at {Math.round(PASS * 100)}% or more. We suggest the first level below that.
+          {t.test.passNote(Math.round(PASS * 100))}
         </p>
 
         <div className="mt-auto flex flex-col gap-3 pt-8">
           {isCurrent ? (
             <p className="rounded-3xl border-2 border-know/30 bg-know/10 px-4 py-3 text-center font-display text-lg font-bold text-know-ink">
-              {rec} is already your level. Nice!
+              {t.test.already(rec)}
             </p>
           ) : (
             <button
@@ -157,15 +157,15 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
               }}
               className="press w-full rounded-3xl bg-brand py-4 font-display text-xl font-extrabold text-white [--depth:6px] [--edge:var(--color-brand-edge)] hover:bg-brand-dark"
             >
-              Switch my level to {rec}
+              {t.test.switchTo(rec)}
             </button>
           )}
           <div className="grid grid-cols-2 gap-3">
             <button type="button" onClick={start} className="press rounded-2xl border-2 border-line bg-card py-3 font-display text-lg font-bold hover:border-brand/40">
-              Test again
+              {t.test.again}
             </button>
             <button type="button" onClick={onExit} className="press rounded-2xl border-2 border-line bg-card py-3 font-display text-lg font-bold hover:border-brand/40">
-              {isCurrent ? "Back home" : `Keep ${settings.level}`}
+              {isCurrent ? t.test.backHome : t.test.keep(settings.level)}
             </button>
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
 
   return (
     <main className="flex flex-1 flex-col">
-      <QuizHeader done={i} total={questions.length} onClose={onExit} closeLabel="Stop the test" />
+      <QuizHeader done={i} total={questions.length} onClose={onExit} closeLabel={t.test.stop} />
 
       <section className="raised mt-6 flex flex-col items-center rounded-[28px] border-2 border-line bg-card px-5 py-8 text-center">
         <p className="font-display text-[40px] leading-tight font-extrabold break-words">{q.word.word}</p>
@@ -207,7 +207,7 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
         <SpeakButton key={q.word.id} id={q.word.id} text={q.word.word} className="mt-4" />
       </section>
 
-      <p className="mt-6 mb-2.5 font-display text-lg font-bold">What does it mean?</p>
+      <p className="mt-6 mb-2.5 font-display text-lg font-bold">{t.test.whatMeans}</p>
       <div className="flex flex-col gap-2.5" lang={lang}>
         {q.options.map((opt, k) => (
           <button
@@ -229,7 +229,7 @@ export default function LevelTest({ progress, setProgress, onExit }: Props) {
           answered && picked === null ? "border-unsure bg-unsure text-deep [--edge:var(--color-unsure-edge)]" : "border-unsure/50 bg-card text-unsure-dark"
         } ${answered && picked !== null ? "opacity-50" : ""}`}
       >
-        I don’t know
+        {t.common.iDontKnow}
       </button>
     </main>
   );

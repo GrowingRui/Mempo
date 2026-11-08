@@ -1,6 +1,6 @@
 // Daily reminders (web push). Runs as a Vercel serverless function at /api/reminders.
 //
-//   POST   { subscription, time: "19:00", tz: "Europe/Madrid", lastStudied?: "2026-11-08", streak?: 5 }
+//   POST   { subscription, time: "19:00", tz: "Europe/Madrid", lastStudied?: "2026-11-08", streak?: 5, lang?: "zh" }
 //          Saves or updates this device's reminder. The app sends it again when the time changes and
 //          after the first study of the day, so no reminder goes out on a day already done.
 //   DELETE { endpoint }   Removes this device's reminder.
@@ -8,7 +8,8 @@
 //          Called every 15 minutes by .github/workflows/reminders.yml.
 //
 // Stored per device (in Upstash Redis, hash "mempo:reminders"): the push address the browser gave us, the
-// chosen time and time zone, the last day studied with the streak then, and the last day we sent one.
+// chosen time and time zone, the last day studied with the streak then, the app's language (for the text) and the
+// last day we sent one.
 // No account, no words, no progress.
 //
 // Settings (Vercel → Settings → Environment Variables):
@@ -39,8 +40,12 @@ export interface Reminder {
   tz: string; // IANA time zone
   lastStudied?: string; // YYYY-MM-DD, local
   streak?: number; // streak on lastStudied
+  lang?: Lang; // the app's interface language; English when missing (reminders saved before languages existed)
   lastSent?: string; // YYYY-MM-DD, local
 }
+
+export type Lang = "en" | "zh" | "es";
+const LANGS: Lang[] = ["en", "zh", "es"];
 
 // ---------- pure logic (tested in reminders.test.ts) ----------
 
@@ -76,6 +81,7 @@ export function parseReminder(body: unknown): Reminder | null {
   const r: Reminder = { sub: { endpoint: s.endpoint, keys: { p256dh: s.keys.p256dh, auth: s.keys.auth } }, time: b.time, tz: b.tz };
   if (typeof b.lastStudied === "string" && DAY.test(b.lastStudied)) r.lastStudied = b.lastStudied;
   if (Number.isInteger(b.streak) && b.streak >= 0 && b.streak < 100000) r.streak = b.streak;
+  if (LANGS.includes(b.lang) && b.lang !== "en") r.lang = b.lang;
   return r;
 }
 
@@ -105,11 +111,27 @@ export function dueDay(r: Reminder, now: Date): string | null {
   return day;
 }
 
+/** Notification texts per app language (the app's own texts are in src/i18n). */
+const TEXT: Record<Lang, { streak: (n: number) => { title: string; body: string }; plain: { title: string; body: string } }> = {
+  en: {
+    streak: (n) => ({ title: `Keep your ${n}-day streak going 🔥`, body: "A few minutes with your words today keeps it alive." }),
+    plain: { title: "Time for your words ✨", body: "A few minutes today makes them stick." },
+  },
+  zh: {
+    streak: (n) => ({ title: `保持你的 ${n} 天连续学习 🔥`, body: "今天花几分钟复习单词，就能延续下去。" }),
+    plain: { title: "该背单词啦 ✨", body: "今天花几分钟，让单词记得更牢。" },
+  },
+  es: {
+    streak: (n) => ({ title: `Mantén tu racha de ${n} ${n === 1 ? "día" : "días"} 🔥`, body: "Unos minutos con tus palabras hoy la mantienen viva." }),
+    plain: { title: "Hora de tus palabras ✨", body: "Unos minutos hoy hacen que se queden." },
+  },
+};
+
 /** What the notification says. A streak that's still alive (studied yesterday) gets a mention. */
 export function message(r: Reminder, today: string): { title: string; body: string } {
-  if (r.streak && r.streak > 0 && r.lastStudied === previousDay(today))
-    return { title: `Keep your ${r.streak}-day streak going 🔥`, body: "A few minutes with your words today keeps it alive." };
-  return { title: "Time for your words ✨", body: "A few minutes today makes them stick." };
+  const text = TEXT[r.lang ?? "en"];
+  if (r.streak && r.streak > 0 && r.lastStudied === previousDay(today)) return text.streak(r.streak);
+  return text.plain;
 }
 
 /** Short stable key for a push address. */

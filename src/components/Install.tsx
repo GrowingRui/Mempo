@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { site } from "../config/site";
+import { useEffect, useRef, useState } from "react";
+import { useT } from "../i18n";
 import { bannerDismissed, dismissBanner, promptInstall, useInstallMode, type InstallMode } from "../lib/install";
 import Mascot from "./Mascot";
 
@@ -15,8 +15,8 @@ function useInstall() {
   return { mode, canInstall: mode === "prompt" || mode === "ios" || mode === "android" || mode === "mac", start, sheet };
 }
 
-const ShareIcon = () => (
-  <svg viewBox="0 0 24 24" className="inline size-5 -translate-y-px align-middle text-brand-ink" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-label="Share">
+const ShareIcon = ({ label }: { label: string }) => (
+  <svg viewBox="0 0 24 24" className="inline size-5 -translate-y-px align-middle text-brand-ink" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-label={label}>
     <path d="M12 3v12M8 7l4-4 4 4" />
     <path d="M7 10H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1" />
   </svg>
@@ -27,60 +27,16 @@ const AddIcon = () => (
     <path d="M12 8.5v7M8.5 12h7" />
   </svg>
 );
-const MenuIcon = () => (
-  <svg viewBox="0 0 24 24" className="inline size-5 -translate-y-px align-middle text-brand-ink" fill="currentColor" aria-label="menu">
+const MenuIcon = ({ label }: { label: string }) => (
+  <svg viewBox="0 0 24 24" className="inline size-5 -translate-y-px align-middle text-brand-ink" fill="currentColor" aria-label={label}>
     <circle cx="12" cy="5" r="2" />
     <circle cx="12" cy="12" r="2" />
     <circle cx="12" cy="19" r="2" />
   </svg>
 );
 
-const STEPS: Record<"ios" | "android" | "mac", { steps: ReactNode[]; note: ReactNode }> = {
-  ios: {
-    steps: [
-      <>
-        Tap <b>Share</b> <ShareIcon /> in Safari’s toolbar (at the bottom on iPhone, at the top on iPad).
-      </>,
-      <>
-        Scroll down and tap <b>Add to Home Screen</b> <AddIcon />.
-      </>,
-      <>
-        Tap <b>Add</b>. {site.name} is now on your home screen.
-      </>,
-    ],
-    note: <>Not in Safari? Chrome and Edge on iPhone have the same Share button. If you don’t see it, open this page in Safari.</>,
-  },
-  android: {
-    steps: [
-      <>
-        Open your browser’s <b>menu</b> <MenuIcon /> (top right in Chrome, bottom right in Firefox).
-      </>,
-      <>
-        Tap <b>Install app</b> or <b>Add to Home screen</b>.
-      </>,
-      <>
-        Confirm. {site.name} is now with your other apps.
-      </>,
-    ],
-    note: <>No such option? Open this page in Chrome.</>,
-  },
-  mac: {
-    steps: [
-      <>
-        In Safari’s menu bar, open <b>File</b>.
-      </>,
-      <>
-        Choose <b>Add to Dock…</b>
-      </>,
-      <>
-        Click <b>Add</b>. {site.name} is now in your Dock and Launchpad.
-      </>,
-    ],
-    note: <>Needs macOS 14 Sonoma or later. On older Macs, use Chrome or Edge.</>,
-  },
-};
-
 function InstallSteps({ mode, onClose }: { mode: "ios" | "android" | "mac"; onClose: () => void }) {
+  const t = useT();
   const okRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     okRef.current?.focus();
@@ -88,7 +44,8 @@ function InstallSteps({ mode, onClose }: { mode: "ios" | "android" | "mac"; onCl
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
-  const { steps, note } = STEPS[mode];
+  const steps = t.install.steps({ share: <ShareIcon label={t.install.share} />, add: <AddIcon />, menu: <MenuIcon label={t.install.menu} /> })[mode];
+  const note = t.install.notes[mode];
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-end overflow-y-auto bg-deep/55 p-4 min-[480px]:place-items-center" onClick={onClose}>
@@ -101,7 +58,7 @@ function InstallSteps({ mode, onClose }: { mode: "ios" | "android" | "mac"; onCl
       >
         <Mascot mood="cheer" className="mx-auto size-16" />
         <h2 id="install-title" className="mt-2 text-center font-display text-2xl font-extrabold">
-          Add {site.name} to your {mode === "mac" ? "Dock" : "home screen"}
+          {t.install.sheetTitle(mode === "mac")}
         </h2>
         <ol className="mt-5 flex flex-col gap-3.5">
           {steps.map((s, i) => (
@@ -118,7 +75,7 @@ function InstallSteps({ mode, onClose }: { mode: "ios" | "android" | "mac"; onCl
           onClick={onClose}
           className="press mt-6 w-full rounded-2xl bg-brand py-3 font-display text-lg font-bold text-white [--edge:var(--color-brand-edge)]"
         >
-          Got it
+          {t.install.gotIt}
         </button>
       </div>
     </div>
@@ -134,6 +91,7 @@ const PhoneIcon = () => (
 
 /** Home: a small card under the Start button. Hidden once installed or after ×. */
 export function InstallBanner() {
+  const t = useT();
   const { canInstall, start, sheet } = useInstall();
   const [hidden, setHidden] = useState(bannerDismissed);
   if (!canInstall || hidden) return sheet;
@@ -144,18 +102,19 @@ export function InstallBanner() {
           <PhoneIcon />
         </span>
         <p className="min-w-0 flex-1 text-sm leading-snug font-semibold">
-          Get the app.<span className="hidden text-muted min-[360px]:inline"> It works offline too.</span>
+          {t.install.getApp}
+          <span className="hidden text-muted min-[360px]:inline">{t.install.worksOffline}</span>
         </p>
         <button
           type="button"
           onClick={start}
           className="press shrink-0 rounded-xl bg-brand px-3.5 py-2 font-display text-sm font-bold text-white [--depth:3px] [--edge:var(--color-brand-edge)]"
         >
-          Install
+          {t.common.install}
         </button>
         <button
           type="button"
-          aria-label="Hide"
+          aria-label={t.install.hide}
           onClick={() => {
             dismissBanner();
             setHidden(true);
@@ -170,28 +129,19 @@ export function InstallBanner() {
   );
 }
 
-const ROW_TEXT: Record<InstallMode, string> = {
-  installed: "You’re using the installed app.",
-  done: `Installed. Open ${site.name} from your home screen or desktop.`,
-  later: "Use the install icon in the address bar, or Install in the browser menu.",
-  prompt: "Open it from your home screen or desktop like any other app.",
-  ios: "Put it on your home screen and open it like any other app.",
-  android: "Put it on your home screen and open it like any other app.",
-  mac: "Put it in your Dock and open it like any other app.",
-  none: "This browser can’t install apps. Chrome or Edge can (phones and computers), and Safari on iPhone, iPad and Mac.",
-};
-
 /** Settings: always visible, explains why when installing isn't possible. */
 export function InstallRow() {
+  const t = useT();
   const { mode, canInstall, start, sheet } = useInstall();
+  const rowText: Record<InstallMode, string> = t.install.row;
   return (
     <div className="raised mb-3 flex items-center gap-3 rounded-[20px] border-2 border-line bg-card p-4">
       <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand/12 text-brand-ink">
         {mode === "installed" || mode === "done" ? <Mascot className="size-8" /> : <PhoneIcon />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block font-display text-lg font-bold">{mode === "installed" || mode === "done" ? "Installed" : "Install the app"}</span>
-        <span className="block text-sm font-medium text-muted">{ROW_TEXT[mode]}</span>
+        <span className="block font-display text-lg font-bold">{mode === "installed" || mode === "done" ? t.install.installed : t.install.installTheApp}</span>
+        <span className="block text-sm font-medium text-muted">{rowText[mode]}</span>
       </span>
       {canInstall && (
         <button
@@ -199,7 +149,7 @@ export function InstallRow() {
           onClick={start}
           className="press shrink-0 rounded-xl bg-brand px-4 py-2.5 font-display text-base font-bold text-white [--depth:4px] [--edge:var(--color-brand-edge)]"
         >
-          Install
+          {t.common.install}
         </button>
       )}
       {sheet}

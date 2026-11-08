@@ -22,6 +22,12 @@ describe("parseReminder", () => {
   it("drops a broken lastStudied or streak but keeps the reminder", () => {
     expect(parseReminder({ subscription: sub, time: "19:00", tz: "UTC", lastStudied: "yesterday", streak: -1 })).toEqual({ sub, time: "19:00", tz: "UTC" });
   });
+  it("keeps a known app language, leaves English and unknown ones out", () => {
+    expect(parseReminder({ subscription: sub, time: "19:00", tz: "UTC", lang: "zh" })?.lang).toBe("zh");
+    expect(parseReminder({ subscription: sub, time: "19:00", tz: "UTC", lang: "es" })?.lang).toBe("es");
+    expect(parseReminder({ subscription: sub, time: "19:00", tz: "UTC", lang: "en" })).not.toHaveProperty("lang");
+    expect(parseReminder({ subscription: sub, time: "19:00", tz: "UTC", lang: "fr" })).not.toHaveProperty("lang");
+  });
 });
 
 describe("localNow", () => {
@@ -72,6 +78,11 @@ describe("message", () => {
   it("is a plain nudge when the streak is already broken or never started", () => {
     expect(message(rem({ lastStudied: "2026-11-05", streak: 5 }), "2026-11-08").title).toBe("Time for your words ✨");
     expect(message(rem(), "2026-11-08").title).toBe("Time for your words ✨");
+  });
+  it("speaks the app's language", () => {
+    expect(message(rem({ lang: "zh", lastStudied: "2026-11-07", streak: 5 }), "2026-11-08").title).toBe("保持你的 5 天连续学习 🔥");
+    expect(message(rem({ lang: "es" }), "2026-11-08").title).toBe("Hora de tus palabras ✨");
+    expect(message(rem({ lang: "es", lastStudied: "2026-11-07", streak: 1 }), "2026-11-08").title).toBe("Mantén tu racha de 1 día 🔥");
   });
 });
 

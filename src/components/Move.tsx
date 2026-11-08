@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { encode } from "uqr";
+import { useT } from "../i18n";
 import type { Backup } from "../lib/backup";
 import { formatCode, moveLink, normalizeCode, receiveProgress, sendProgress, supportsMove, type Sent } from "../lib/move";
 import type { Progress } from "../lib/types";
@@ -10,22 +11,21 @@ const secondary = "press w-full rounded-2xl border-2 border-line bg-card py-3 fo
 
 /** Settings → "Move to another device": the two buttons and their dialogs. */
 export default function MoveRow({ progress, incoming, onReceived }: { progress: Progress; incoming: string | null; onReceived: (b: Backup) => void }) {
+  const t = useT();
   const [open, setOpen] = useState<"send" | "receive" | null>(incoming !== null ? "receive" : null);
   const words = Object.keys(progress.cards).length;
-  if (!supportsMove()) return <p className="text-sm font-semibold text-muted">This browser is too old for this. Use “Download backup” below instead.</p>;
+  if (!supportsMove()) return <p className="text-sm font-semibold text-muted">{t.move.tooOld}</p>;
   return (
     <>
       <div className="flex gap-3">
         <button type="button" disabled={words === 0} onClick={() => setOpen("send")} className={button}>
-          Show QR code
+          {t.move.showQr}
         </button>
         <button type="button" onClick={() => setOpen("receive")} className={button}>
-          Enter a code
+          {t.move.enterCode}
         </button>
       </div>
-      <p className="mt-2 text-xs font-semibold text-muted">
-        {words === 0 ? "Nothing to send yet. On the device you want to copy from, tap “Show QR code”." : "Your words, history and settings. They replace what’s on the other device."}
-      </p>
+      <p className="mt-2 text-xs font-semibold text-muted">{words === 0 ? t.move.nothingToSend : t.move.whatMoves}</p>
       {open === "send" && <SendDialog progress={progress} onClose={() => setOpen(null)} />}
       {open === "receive" && (
         <ReceiveDialog
@@ -93,6 +93,7 @@ function useCountdown(until: number | undefined): number {
 }
 
 function SendDialog({ progress, onClose }: { progress: Progress; onClose: () => void }) {
+  const t = useT();
   const [sent, setSent] = useState<Sent | null>(null);
   const [error, setError] = useState<string | null>(null);
   const left = useCountdown(sent?.expires);
@@ -102,47 +103,45 @@ function SendDialog({ progress, onClose }: { progress: Progress; onClose: () => 
   const make = useCallback(() => {
     setSent(null);
     setError(null);
-    sendProgress(snapshot).then(setSent, (e: unknown) => setError(e instanceof Error ? e.message : "Something went wrong. Try again."));
-  }, [snapshot]);
+    sendProgress(snapshot).then(setSent, (e: unknown) => setError(e instanceof Error ? e.message : t.common.somethingWrong));
+  }, [snapshot]); // not on `t`: switching language mustn't make a new code
   useEffect(make, [make]);
 
   const expired = sent !== null && left === 0;
   return (
-    <Dialog title="Move to another device" onClose={onClose}>
+    <Dialog title={t.settings.move} onClose={onClose}>
       {error ? (
         <p role="alert" className="mt-4 font-semibold text-dontknow-ink">
           {error}
         </p>
       ) : !sent ? (
         <p role="status" className="mt-4 py-16 font-semibold text-muted">
-          Making a code…
+          {t.move.making}
         </p>
       ) : expired ? (
         <p role="status" className="mt-4 py-10 font-semibold text-muted">
-          This code has expired.
+          {t.move.expired}
         </p>
       ) : (
         <>
-          <p className="mt-2 text-muted">Scan this with the other device’s camera.</p>
-          <QrCode text={moveLink(sent.code)} label={`QR code with the link to Mempo and the code ${formatCode(sent.code)}`} />
-          <p className="mt-4 text-sm font-semibold text-muted">Or open Mempo there, go to Settings → Enter a code:</p>
-          <p className="mt-1 font-display text-3xl font-extrabold tracking-widest" aria-label={`Code ${sent.code.split("").join(" ")}`}>
+          <p className="mt-2 text-muted">{t.move.scan}</p>
+          <QrCode text={moveLink(sent.code)} label={t.move.qrLabel(formatCode(sent.code))} />
+          <p className="mt-4 text-sm font-semibold text-muted">{t.move.orType}</p>
+          <p className="mt-1 font-display text-3xl font-extrabold tracking-widest" aria-label={t.move.codeAria(sent.code.split("").join(" "))}>
             {formatCode(sent.code)}
           </p>
-          <p className="mt-3 text-xs font-semibold text-muted">
-            Works for {Math.floor(left / 60)}:{String(left % 60).padStart(2, "0")} more. Until then your progress waits on Mempo’s server, then it’s deleted.
-          </p>
-          <p className="mt-2 text-xs font-semibold text-muted">On an iPhone or iPad with Mempo on the Home Screen, enter the code in that app: the camera opens Safari, which keeps its own copy.</p>
+          <p className="mt-3 text-xs font-semibold text-muted">{t.move.worksFor(`${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`)}</p>
+          <p className="mt-2 text-xs font-semibold text-muted">{t.move.iphoneNote}</p>
         </>
       )}
       <div className="mt-6 flex flex-col gap-3">
         {(error || expired) && (
           <button type="button" onClick={make} className={primary}>
-            Make a new code
+            {t.move.makeNew}
           </button>
         )}
         <button type="button" autoFocus onClick={onClose} className={error || expired ? secondary : primary}>
-          {error || expired ? "Close" : "Done"}
+          {error || expired ? t.common.close : t.common.done}
         </button>
       </div>
     </Dialog>
@@ -150,6 +149,7 @@ function SendDialog({ progress, onClose }: { progress: Progress; onClose: () => 
 }
 
 function ReceiveDialog({ initial, onClose, onReceived }: { initial: string; onClose: () => void; onReceived: (b: Backup) => void }) {
+  const t = useT();
   const [text, setText] = useState(initial.toUpperCase());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -157,17 +157,17 @@ function ReceiveDialog({ initial, onClose, onReceived }: { initial: string; onCl
   const get = useCallback(
     async (input: string) => {
       const code = normalizeCode(input);
-      if (!code) return setError("A code has 8 letters and numbers, like K7M2-QX9D.");
+      if (!code) return setError(t.move.badCode);
       setBusy(true);
       setError(null);
       try {
         onReceived(await receiveProgress(code));
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Something went wrong. Try again.");
+        setError(e instanceof Error ? e.message : t.common.somethingWrong);
         setBusy(false);
       }
     },
-    [onReceived],
+    [onReceived, t],
   );
   // Opened from a QR code: fetch straight away.
   const started = useRef(false);
@@ -179,16 +179,16 @@ function ReceiveDialog({ initial, onClose, onReceived }: { initial: string; onCl
   }, [initial, get]);
 
   return (
-    <Dialog title="Get your progress" onClose={onClose}>
+    <Dialog title={t.move.getTitle} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           void get(text);
         }}
       >
-        <p className="mt-2 text-muted">On the other device: Settings → Show QR code. Type the code shown under it.</p>
+        <p className="mt-2 text-muted">{t.move.getIntro}</p>
         <label className="mt-4 block">
-          <span className="sr-only">Code</span>
+          <span className="sr-only">{t.move.code}</span>
           <input
             value={text}
             onChange={(e) => setText(e.target.value.toUpperCase())}
@@ -210,10 +210,10 @@ function ReceiveDialog({ initial, onClose, onReceived }: { initial: string; onCl
         )}
         <div className="mt-6 flex flex-col gap-3">
           <button type="submit" disabled={busy || !text.trim()} className={primary}>
-            {busy ? "Getting it…" : "Get my progress"}
+            {busy ? t.move.getting : t.move.getMine}
           </button>
           <button type="button" onClick={onClose} className={secondary}>
-            Cancel
+            {t.common.cancel}
           </button>
         </div>
       </form>

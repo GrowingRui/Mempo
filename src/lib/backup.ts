@@ -1,4 +1,5 @@
 import { site } from "../config/site";
+import { tr } from "../i18n";
 import { toDay } from "./date";
 import { normalizeProgress } from "./storage";
 import type { Progress } from "./types";
@@ -41,15 +42,15 @@ export function parseBackup(text: string): Backup {
   try {
     data = JSON.parse(text);
   } catch {
-    throw new Error("This file isn’t a backup (it isn’t JSON).");
+    throw new Error(tr().backup.notJson);
   }
   const wrapped = data?.app === site.storageKey && typeof data.progress === "object";
   if (wrapped && typeof data.version === "number" && data.version > VERSION) {
-    throw new Error("This backup was made by a newer version of the app. Reload the page and try again.");
+    throw new Error(tr().backup.newer);
   }
   const raw = wrapped ? data.progress : data;
   if (!raw || typeof raw !== "object" || typeof raw.cards !== "object" || raw.cards === null) {
-    throw new Error(`This file isn’t a ${site.name} backup.`);
+    throw new Error(tr().backup.notOurs);
   }
   const { progress, dropped } = normalizeProgress(raw);
   return { progress, dropped, exportedAt: wrapped && typeof data.exportedAt === "string" ? data.exportedAt : undefined };

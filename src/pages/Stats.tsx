@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import Flame from "../components/Flame";
 import ScreenHeader from "../components/ScreenHeader";
-import { formatPastDay, toDay } from "../lib/date";
+import { useT } from "../i18n";
+import { toDay } from "../lib/date";
 import { breakdown, lastDays, streakOf, type DayBar, type LevelBreakdown } from "../lib/stats";
 import type { WordStatus } from "../lib/srs";
 import { LEVELS, type Level, type Progress, type Word } from "../lib/types";
@@ -9,12 +10,11 @@ import { loadWords } from "../lib/words";
 
 const DAYS = 14;
 
-const plural = (n: number, word: string) => `${n.toLocaleString()} ${word}${n === 1 ? "" : "s"}`;
-
 function Tile({ n, label }: { n: number; label: string }) {
+  const t = useT();
   return (
     <div className="raised rounded-[20px] border-2 border-line bg-card px-3 pt-2.5 pb-3">
-      <div className="font-display text-[26px] leading-tight font-extrabold tabular-nums">{n.toLocaleString()}</div>
+      <div className="font-display text-[26px] leading-tight font-extrabold tabular-nums">{t.num(n)}</div>
       <div className="text-[13px] leading-tight font-semibold text-muted">{label}</div>
     </div>
   );
@@ -26,6 +26,7 @@ function Swatch({ color }: { color: string }) {
 
 /** Daily activity: one column per day, new words at the bottom and reviews stacked on top. Tap a day for its numbers. */
 function DailyChart({ bars }: { bars: DayBar[] }) {
+  const t = useT();
   const today = toDay();
   const [picked, setPicked] = useState<string>();
   const max = Math.max(1, ...bars.map((b) => b.new + b.reviewed));
@@ -36,13 +37,13 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
   return (
     <section className="raised mt-4 rounded-[28px] border-2 border-line bg-card p-5">
       <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-display text-lg font-bold">Last {DAYS} days</h2>
+        <h2 className="font-display text-lg font-bold">{t.stats.lastDays(DAYS)}</h2>
         <div className="flex gap-3 text-xs font-semibold text-muted">
           <span className="flex items-center gap-1.5">
-            <Swatch color="--color-bar-new" /> New
+            <Swatch color="--color-bar-new" /> {t.stats.new}
           </span>
           <span className="flex items-center gap-1.5">
-            <Swatch color="--color-bar-reviewed" /> Reviewed
+            <Swatch color="--color-bar-reviewed" /> {t.stats.reviewed}
           </span>
         </div>
       </div>
@@ -50,12 +51,12 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
       <p className="mt-1 mb-6 h-5 text-sm font-semibold text-muted" aria-live="polite">
         {sel ? (
           <>
-            <span className="text-ink">{formatPastDay(sel.day, today)}</span>: {sel.new} new, {sel.reviewed} reviewed
+            <span className="text-ink">{t.pastDay(sel.day, today)}</span>: {t.stats.dayLine(sel.new, sel.reviewed)}
           </>
         ) : total ? (
-          "Tap a day to see its numbers."
+          t.stats.tapDay
         ) : (
-          "Nothing yet. Your days will show up here."
+          t.stats.nothingYet
         )}
       </p>
 
@@ -74,7 +75,7 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
                 tabIndex={-1}
                 onClick={() => setPicked(active ? undefined : b.day)}
                 onPointerEnter={(e) => e.pointerType === "mouse" && setPicked(b.day)}
-                title={`${formatPastDay(b.day, today)}: ${b.new} new, ${b.reviewed} reviewed`}
+                title={`${t.pastDay(b.day, today)}: ${t.stats.dayLine(b.new, b.reviewed)}`}
                 className={`flex h-full min-w-0 flex-1 flex-col justify-end gap-[2px] transition-opacity ${picked && !active ? "opacity-35" : ""}`}
               >
                 {b.reviewed > 0 && (
@@ -105,18 +106,18 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
       </div>
 
       <table className="sr-only">
-        <caption>Words per day, last {DAYS} days</caption>
+        <caption>{t.stats.tableCaption(DAYS)}</caption>
         <thead>
           <tr>
-            <th>Day</th>
-            <th>New</th>
-            <th>Reviewed</th>
+            <th>{t.stats.day}</th>
+            <th>{t.stats.new}</th>
+            <th>{t.stats.reviewed}</th>
           </tr>
         </thead>
         <tbody>
           {bars.map((b) => (
             <tr key={b.day}>
-              <td>{formatPastDay(b.day, today)}</td>
+              <td>{t.pastDay(b.day, today)}</td>
               <td>{b.new}</td>
               <td>{b.reviewed}</td>
             </tr>
@@ -128,14 +129,15 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
 }
 
 // Bar order goes from best to worst, so the filled part grows from the left as you learn.
-const SEGMENTS: { key: Exclude<WordStatus, "new">; label: string; color: string }[] = [
-  { key: "mastered", label: "Mastered", color: "--color-bar-mastered" },
-  { key: "review", label: "Reviewing", color: "--color-bar-review" },
-  { key: "learning", label: "Learning", color: "--color-bar-learning" },
-  { key: "dontknow", label: "Don’t know", color: "--color-bar-dontknow" },
+const SEGMENTS: { key: Exclude<WordStatus, "new">; color: string }[] = [
+  { key: "mastered", color: "--color-bar-mastered" },
+  { key: "review", color: "--color-bar-review" },
+  { key: "learning", color: "--color-bar-learning" },
+  { key: "dontknow", color: "--color-bar-dontknow" },
 ];
 
 function LevelRow({ level, b }: { level: Level; b: LevelBreakdown | undefined }) {
+  const t = useT();
   const seen = b ? b.total - b.new : 0;
   return (
     <li>
@@ -143,9 +145,7 @@ function LevelRow({ level, b }: { level: Level; b: LevelBreakdown | undefined })
         <span className="font-display text-xl font-extrabold">{level}</span>
         <span className="text-sm font-semibold text-muted tabular-nums">
           {b ? (
-            <>
-              <span className="text-ink">{seen.toLocaleString()}</span> of {b.total.toLocaleString()} seen
-            </>
+            t.stats.seenOf(<span className="text-ink">{t.num(seen)}</span>, b.total)
           ) : (
             "…"
           )}
@@ -156,7 +156,7 @@ function LevelRow({ level, b }: { level: Level; b: LevelBreakdown | undefined })
           SEGMENTS.filter((s) => b[s.key] > 0).map((s) => (
             <span
               key={s.key}
-              title={`${s.label}: ${b[s.key].toLocaleString()}`}
+              title={`${t.status[s.key]}: ${t.num(b[s.key])}`}
               className="h-full min-w-[3px] first:rounded-l-[4px] last:rounded-r-[4px]"
               style={{ width: `${(b[s.key] / b.total) * 100}%`, background: `var(${s.color})` }}
             />
@@ -165,7 +165,7 @@ function LevelRow({ level, b }: { level: Level; b: LevelBreakdown | undefined })
       {b && seen > 0 && (
         <p className="mt-1.5 text-xs font-semibold text-muted">
           {SEGMENTS.filter((s) => b[s.key] > 0)
-            .map((s) => `${b[s.key].toLocaleString()} ${s.label.toLowerCase()}`)
+            .map((s) => t.stats.segment(b[s.key], t.status[s.key]))
             .join(" · ")}
         </p>
       )}
@@ -174,6 +174,7 @@ function LevelRow({ level, b }: { level: Level; b: LevelBreakdown | undefined })
 }
 
 export default function Stats({ progress, onBack }: { progress: Progress; onBack: () => void }) {
+  const t = useT();
   const { history, cards } = progress;
   const streak = streakOf(history);
   const [words, setWords] = useState<Partial<Record<Level, Word[]>>>({});
@@ -188,48 +189,42 @@ export default function Stats({ progress, onBack }: { progress: Progress; onBack
 
   return (
     <main className="flex flex-1 flex-col pb-4">
-      <ScreenHeader title="Stats" onBack={onBack} />
+      <ScreenHeader title={t.stats.title} onBack={onBack} />
 
       {/* Streak */}
-      <section aria-label="Streak" className="raised mt-6 flex items-center gap-4 rounded-[28px] border-2 border-line bg-card p-5">
+      <section aria-label={t.stats.streakAria} className="raised mt-6 flex items-center gap-4 rounded-[28px] border-2 border-line bg-card p-5">
         <Flame lit={streak.current > 0} className="size-16 shrink-0" />
         <div>
           <p className="flex items-baseline gap-2">
             <span className="font-display text-5xl leading-none font-extrabold tabular-nums">{streak.current}</span>
-            <span className="font-display text-xl font-bold">day streak</span>
+            <span className="font-display text-xl font-bold">{t.stats.dayStreak(streak.current)}</span>
           </p>
           <p className="mt-1.5 text-sm font-semibold text-muted">
-            {streak.doneToday
-              ? "You studied today. See you tomorrow!"
-              : streak.current > 0
-                ? "Study today to keep it going."
-                : "Study today to start a streak."}
+            {streak.doneToday ? t.stats.studiedToday : streak.current > 0 ? t.stats.keepItGoing : t.stats.startStreak}
           </p>
-          <p className="mt-0.5 text-sm font-semibold text-muted">
-            Longest: <span className="text-ink">{plural(streak.longest, "day")}</span>
-          </p>
+          <p className="mt-0.5 text-sm font-semibold text-muted">{t.stats.longest(<span className="text-ink">{t.common.days(streak.longest)}</span>)}</p>
         </div>
       </section>
 
       <div className="mt-4 grid grid-cols-3 gap-2.5">
-        <Tile n={all.length} label="Words seen" />
-        <Tile n={mastered} label="Mastered" />
-        <Tile n={streak.daysStudied} label="Days studied" />
+        <Tile n={all.length} label={t.stats.wordsSeen} />
+        <Tile n={mastered} label={t.stats.mastered} />
+        <Tile n={streak.daysStudied} label={t.stats.daysStudied} />
       </div>
 
       <DailyChart bars={lastDays(history, DAYS)} />
 
       {/* Per level */}
       <section className="raised mt-4 rounded-[28px] border-2 border-line bg-card p-5">
-        <h2 className="font-display text-lg font-bold">By level</h2>
+        <h2 className="font-display text-lg font-bold">{t.stats.byLevel}</h2>
         <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-muted">
           {SEGMENTS.map((s) => (
             <span key={s.key} className="flex items-center gap-1.5">
-              <Swatch color={s.color} /> {s.label}
+              <Swatch color={s.color} /> {t.status[s.key]}
             </span>
           ))}
           <span className="flex items-center gap-1.5">
-            <Swatch color="--color-brand-soft" /> Not seen
+            <Swatch color="--color-brand-soft" /> {t.stats.notSeen}
           </span>
         </div>
         <ul className="mt-4 space-y-4">
@@ -237,7 +232,7 @@ export default function Stats({ progress, onBack }: { progress: Progress; onBack
             <LevelRow key={lv} level={lv} b={words[lv] && breakdown(words[lv], cards)} />
           ))}
         </ul>
-        <p className="mt-4 text-xs font-semibold text-muted">{plural(reviews, "review")} done in total.</p>
+        <p className="mt-4 text-xs font-semibold text-muted">{t.stats.reviewsTotal(reviews)}</p>
       </section>
     </main>
   );

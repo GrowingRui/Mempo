@@ -3,7 +3,7 @@ import Mascot from "../components/Mascot";
 import QuizHeader from "../components/QuizHeader";
 import ScreenHeader from "../components/ScreenHeader";
 import SpeakButton from "../components/SpeakButton";
-import { POS_LABEL } from "../components/WordCard";
+import { useT } from "../i18n";
 import { meaning, type TestLang } from "../lib/leveltest";
 import { buildRecall, checkSpelling, clozeFor, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
@@ -22,17 +22,13 @@ const LANG_LABEL: Record<TestLang, string> = { zh: "中文", es: "Español" };
 /** How long a right answer stays before the next question (meaning and spelling). Wrong answers, and every listening answer, wait for "Next". */
 const RIGHT_MS = 800;
 
-const KINDS: { kind: RecallKind; title: string; sub: string; icon: ReactNode }[] = [
+const KINDS: { kind: RecallKind; icon: ReactNode }[] = [
   {
     kind: "meaning",
-    title: "Meaning → word",
-    sub: "Read the translation, pick the English word.",
     icon: <path d="M4 6h9M8.5 4v2c0 4-2 7-4.5 8.5M6 10c1.2 2 3 3.4 5 4M13 20l4-9 4 9M14.5 17h5" />,
   },
   {
     kind: "listen",
-    title: "Listen → word",
-    sub: "Hear the word, pick how it’s written.",
     icon: (
       <>
         <path d="M11 5 6 9H3v6h3l5 4z" />
@@ -42,8 +38,6 @@ const KINDS: { kind: RecallKind; title: string; sub: string; icon: ReactNode }[]
   },
   {
     kind: "spell",
-    title: "Spell it",
-    sub: "Read the translation and type the word. The hardest one!",
     icon: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" />,
   },
 ];
@@ -51,6 +45,7 @@ const KINDS: { kind: RecallKind; title: string; sub: string; icon: ReactNode }[]
 type Result = { word: Word; right: boolean };
 
 export default function Recall({ progress, setProgress, onExit, onStudy }: Props) {
+  const t = useT();
   const { settings } = progress;
   const langs: TestLang[] = [...(settings.showZh ? ["zh" as const] : []), ...(settings.showEs ? ["es" as const] : [])];
   const [all, setAll] = useState<Word[]>();
@@ -80,26 +75,24 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
   if (!questions || !kind) {
     return (
       <main className="flex flex-1 flex-col">
-        <ScreenHeader title="Recall" onBack={onExit} />
-        <p className="mt-3 font-medium text-muted">
-          Test yourself on words you’ve already studied, weakest first. {ROUND} words a round. Your review schedule isn’t changed.
-        </p>
+        <ScreenHeader title={t.recall.title} onBack={onExit} />
+        <p className="mt-3 font-medium text-muted">{t.recall.intro(ROUND)}</p>
 
         {error ? (
           <p className="mt-10 text-center font-semibold text-dontknow">{error}</p>
         ) : !all ? (
-          <p className="mt-10 text-center font-semibold text-muted">Loading words…</p>
+          <p className="mt-10 text-center font-semibold text-muted">{t.common.loadingWords}</p>
         ) : studied === 0 ? (
           <div className="mt-14 flex flex-col items-center text-center">
             <Mascot className="size-24" />
-            <p className="mt-3 font-display text-2xl font-extrabold">Study a few words first</p>
-            <p className="mt-2 max-w-xs font-medium text-muted">Recall asks words you’ve already seen. Do today’s session, then come back!</p>
+            <p className="mt-3 font-display text-2xl font-extrabold">{t.recall.studyFirst}</p>
+            <p className="mt-2 max-w-xs font-medium text-muted">{t.recall.studyFirstSub}</p>
             <button
               type="button"
               onClick={onStudy}
               className="press mt-6 rounded-3xl bg-brand px-8 py-3.5 font-display text-xl font-extrabold text-white [--depth:6px] [--edge:var(--color-brand-edge)] hover:bg-brand-dark"
             >
-              Start studying
+              {t.recall.startStudying}
             </button>
           </div>
         ) : (
@@ -117,14 +110,12 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
                   </svg>
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-display text-xl font-extrabold">{k.title}</span>
-                  <span className="block text-sm font-medium text-muted">{k.sub}</span>
+                  <span className="block font-display text-xl font-extrabold">{t.recall.kinds[k.kind].title}</span>
+                  <span className="block text-sm font-medium text-muted">{t.recall.kinds[k.kind].sub}</span>
                 </span>
               </button>
             ))}
-            <p className="mt-2 text-center text-xs font-semibold text-muted">
-              {studied.toLocaleString()} studied word{studied === 1 ? "" : "s"} to practise.
-            </p>
+            <p className="mt-2 text-center text-xs font-semibold text-muted">{t.recall.toPractise(studied)}</p>
           </div>
         )}
       </main>
@@ -138,18 +129,18 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
     const newlyMissed = missed.filter((w) => !progress.cards[w.id]?.inDontKnow);
     return (
       <main className="flex flex-1 flex-col">
-        <ScreenHeader title="Round done" onBack={onExit} />
+        <ScreenHeader title={t.recall.roundDone} onBack={onExit} />
         <div className="mt-6 flex flex-col items-center text-center">
           <Mascot mood={right === questions.length ? "cheer" : "happy"} className="size-24" />
           <p className="mt-3 font-display text-6xl leading-none font-extrabold text-brand-ink tabular-nums">
             {right}/{questions.length}
           </p>
-          <p className="mt-2 font-semibold text-muted">{right === questions.length ? "Perfect round!" : "right answers"}</p>
+          <p className="mt-2 font-semibold text-muted">{right === questions.length ? t.recall.perfect : t.recall.rightAnswers}</p>
         </div>
 
         {missed.length > 0 && (
           <section className="raised mt-6 rounded-[28px] border-2 border-line bg-card p-5">
-            <h2 className="font-display text-lg font-bold">Missed</h2>
+            <h2 className="font-display text-lg font-bold">{t.recall.missed}</h2>
             <ul className="mt-2 divide-y-2 divide-line">
               {missed.map((w) => (
                 <li key={w.id} className="flex items-center gap-3 py-2">
@@ -162,10 +153,10 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
               ))}
             </ul>
             {newlyMissed.length === 0 ? (
-              <p className="mt-3 text-sm font-semibold text-muted">{missed.length === 1 ? "It’s" : "They’re"} already on your “Don’t know” list.</p>
+              <p className="mt-3 text-sm font-semibold text-muted">{t.recall.alreadyListed(missed.length)}</p>
             ) : (
               (added ? (
-                <p className="mt-3 font-semibold text-know-ink">Added to your “Don’t know” list.</p>
+                <p className="mt-3 font-semibold text-know-ink">{t.recall.added}</p>
               ) : (
                 <button
                   type="button"
@@ -175,7 +166,7 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
                   }}
                   className="press mt-3 w-full rounded-2xl border-2 border-dontknow/40 bg-card py-3 font-display text-lg font-bold text-dontknow-ink [--edge:var(--color-dontknow)]"
                 >
-                  Add {newlyMissed.length === 1 ? "it" : `these ${newlyMissed.length}`} to “Don’t know”
+                  {t.recall.addThese(newlyMissed.length)}
                 </button>
               ))
             )}
@@ -184,14 +175,14 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
 
         <div className="mt-auto grid grid-cols-2 gap-3 pt-8">
           <button type="button" onClick={() => start(kind)} className="press rounded-2xl bg-brand py-3 font-display text-lg font-bold text-white [--edge:var(--color-brand-edge)] hover:bg-brand-dark">
-            Another round
+            {t.recall.anotherRound}
           </button>
           <button
             type="button"
             onClick={() => setQuestions(undefined)}
             className="press rounded-2xl border-2 border-line bg-card py-3 font-display text-lg font-bold hover:border-brand/40"
           >
-            Other exercise
+            {t.recall.otherExercise}
           </button>
         </div>
       </main>
@@ -202,7 +193,7 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
   const i = results.length;
   return (
     <main className="flex flex-1 flex-col">
-      <QuizHeader done={i} total={questions.length} onClose={() => setQuestions(undefined)} closeLabel="Stop this round" />
+      <QuizHeader done={i} total={questions.length} onClose={() => setQuestions(undefined)} closeLabel={t.recall.stopRound} />
       <Question
         key={i}
         q={questions[i]}
@@ -216,10 +207,11 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
 }
 
 function MeaningPrompt({ word, langs }: { word: Word; langs: TestLang[] }) {
+  const t = useT();
   const pos = word.pos[0];
   return (
     <div className="flex flex-col items-center gap-2">
-      {pos && <span className="rounded-full border-2 border-line px-2.5 py-0.5 text-xs font-bold text-muted">{POS_LABEL[pos] ?? pos}</span>}
+      {pos && <span className="rounded-full border-2 border-line px-2.5 py-0.5 text-xs font-bold text-muted">{t.pos[pos] ?? pos}</span>}
       {promptMeanings(word, langs).map((l) => (
         <p key={l.lang} lang={l.lang} className="text-[22px] leading-snug font-bold">
           <span className="sr-only">{LANG_LABEL[l.lang]}: </span>
@@ -232,6 +224,7 @@ function MeaningPrompt({ word, langs }: { word: Word; langs: TestLang[] }) {
 
 /** One question. Its own component (keyed by index) so the answer state resets for the next one. */
 function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: RecallQuestion; kind: RecallKind; langs: TestLang[]; onDone: (right: boolean) => void }) {
+  const t = useT();
   const [picked, setPicked] = useState<number | null>(); // undefined = not answered, null = "I don't know"
   const [typed, setTyped] = useState("");
   const [verdict, setVerdict] = useState<"right" | "close" | "wrong">();
@@ -288,7 +281,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
             <button
               type="button"
               onClick={() => playWord(word.id, word.word)}
-              aria-label="Play the word again"
+              aria-label={t.recall.playAgain}
               className="press grid size-20 place-items-center rounded-full bg-unsure text-deep [--depth:5px] [--edge:var(--color-unsure-edge)] hover:brightness-105"
             >
               <svg viewBox="0 0 24 24" className="size-9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -296,7 +289,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
                 <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
               </svg>
             </button>
-            <p className="mt-3 text-sm font-semibold text-muted">Tap to hear it again</p>
+            <p className="mt-3 text-sm font-semibold text-muted">{t.recall.tapToHear}</p>
             {answered && (
               <div className="mt-3">
                 <MeaningPrompt word={word} langs={langs} />
@@ -309,7 +302,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
         {kind === "spell" && (
           <>
             {cloze && <p className="mt-4 text-[16px] leading-relaxed text-ink/80">{cloze}</p>}
-            <p className="mt-4 font-mono text-xl font-bold tracking-wider text-muted" aria-label={`Starts with ${word.word[0]}, ${word.word.length} letters`}>
+            <p className="mt-4 font-mono text-xl font-bold tracking-wider text-muted" aria-label={t.recall.startsWith(word.word[0], word.word.length)}>
               {letterHint(word.word)}
             </p>
           </>
@@ -338,8 +331,8 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
             autoComplete="off"
             spellCheck={false}
             enterKeyHint="done"
-            aria-label="Type the English word"
-            placeholder="Type the word…"
+            aria-label={t.recall.typeAria}
+            placeholder={t.recall.typePlaceholder}
             className={`rounded-2xl border-2 bg-card px-4 py-3 text-center font-display text-2xl font-bold outline-none ${
               !answered ? "border-line focus:border-brand" : right ? "border-know text-know-ink" : "border-dontknow text-dontknow-ink"
             }`}
@@ -351,28 +344,28 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
                 onClick={() => setVerdict("wrong")}
                 className="press rounded-2xl border-2 border-unsure/50 bg-card py-3 font-display text-lg font-bold text-unsure-dark"
               >
-                Show answer
+                {t.recall.showAnswer}
               </button>
               <button
                 type="submit"
                 disabled={!typed.trim()}
                 className="press rounded-2xl bg-brand py-3 font-display text-lg font-bold text-white [--edge:var(--color-brand-edge)] hover:bg-brand-dark disabled:opacity-40"
               >
-                Check
+                {t.recall.check}
               </button>
             </div>
           )}
           {answered && !right && (
-            <Reveal word={word} note={verdict === "close" ? "Almost! Check the spelling:" : "The answer:"}>
+            <Reveal word={word} note={verdict === "close" ? t.recall.almost : t.recall.theAnswer}>
               <button ref={nextBtn} type="submit" className={NEXT_CLASS}>
-                Next
+                {t.common.next}
               </button>
             </Reveal>
           )}
         </form>
       ) : (
         <>
-          <p className="mt-6 mb-2.5 font-display text-lg font-bold">{kind === "listen" ? "Which word did you hear?" : "Which word is it?"}</p>
+          <p className="mt-6 mb-2.5 font-display text-lg font-bold">{kind === "listen" ? t.recall.whichHeard : t.recall.whichIs}</p>
           <div className="flex flex-col gap-2.5">
             {q.options.map((opt, k) => (
               <button
@@ -393,12 +386,12 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
               onClick={() => choose(null)}
               className="press mt-4 rounded-2xl border-2 border-unsure/50 bg-card py-3 font-display text-lg font-bold text-unsure-dark"
             >
-              I don’t know
+              {t.common.iDontKnow}
             </button>
           ) : (
             waitForNext && (
               <button ref={nextBtn} type="button" onClick={() => onDone(right)} className={`mt-4 ${NEXT_CLASS}`}>
-                Next
+                {t.common.next}
               </button>
             )
           )}

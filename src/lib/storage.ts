@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showEn: true,
   swipeKnow: "left",
   theme: "light",
+  lang: "en",
   maxReviews: 100,
 };
 
@@ -35,6 +36,7 @@ function cleanSettings(s: unknown): Settings {
   if (s.swipeKnow === "left" || s.swipeKnow === "right") out.swipeKnow = s.swipeKnow;
   if (Number.isInteger(s.maxReviews) && s.maxReviews >= 0 && s.maxReviews <= 1000) out.maxReviews = s.maxReviews;
   if (s.theme === "light" || s.theme === "dark" || s.theme === "system") out.theme = s.theme;
+  if (s.lang === "en" || s.lang === "zh" || s.lang === "es") out.lang = s.lang;
   return out;
 }
 

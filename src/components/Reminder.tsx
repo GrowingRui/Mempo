@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useT } from "../i18n";
 import { disableReminder, enableReminder, loadReminder, permission, reminderSupport, setReminderTime, studyInfo } from "../lib/reminder";
-import type { Progress } from "../lib/types";
+import type { Lang, Progress } from "../lib/types";
 
 const HOURS = Array.from({ length: 18 }, (_, i) => `${String(i + 6).padStart(2, "0")}:00`); // 06:00 … 23:00
 
 /** Settings → Daily reminder: a switch and a time. */
-export default function ReminderRow({ history }: { history: Progress["history"] }) {
+export default function ReminderRow({ history, lang }: { history: Progress["history"]; lang: Lang }) {
+  const t = useT();
   const support = reminderSupport();
   const [state, setState] = useState(loadReminder);
   const [busy, setBusy] = useState(false);
@@ -19,7 +21,7 @@ export default function ReminderRow({ history }: { history: Progress["history"] 
       setState(await fn());
     } catch (e) {
       setState(loadReminder());
-      setError(e instanceof Error ? e.message : "Something went wrong. Try again.");
+      setError(e instanceof Error ? e.message : t.common.somethingWrong);
     } finally {
       setBusy(false);
     }
@@ -27,19 +29,19 @@ export default function ReminderRow({ history }: { history: Progress["history"] 
 
   const sub =
     support === "install-ios"
-      ? "On iPhone and iPad, install Mempo first (Share → Add to Home Screen), then turn this on in the app."
+      ? t.reminder.iosFirst
       : support === "unsupported"
-        ? "This browser can’t show reminders. Try Chrome, Edge, Firefox or Safari."
+        ? t.reminder.unsupported
         : state.on
-          ? `Every day at ${state.time}, unless you’ve already studied.`
-          : "A nudge at the time you choose, only on days you haven’t studied yet.";
+          ? t.reminder.on(state.time)
+          : t.reminder.off;
 
   return (
     <>
       <div className="raised divide-y-2 divide-line rounded-[20px] border-2 border-line bg-card">
         <label className={`flex items-center gap-3 px-4 py-3 ${support !== "ok" || busy ? "opacity-60" : "cursor-pointer"}`}>
           <span className="min-w-0 flex-1">
-            <span className="block font-display text-lg font-bold">Remind me to study</span>
+            <span className="block font-display text-lg font-bold">{t.reminder.label}</span>
             <span className="block text-sm font-medium text-muted">{sub}</span>
           </span>
           <input
@@ -48,7 +50,7 @@ export default function ReminderRow({ history }: { history: Progress["history"] 
             className="peer sr-only"
             checked={state.on && support === "ok"}
             disabled={support !== "ok" || busy}
-            onChange={(e) => void run(() => (e.target.checked ? enableReminder(state.time, studyInfo(history)) : disableReminder()))}
+            onChange={(e) => void run(() => (e.target.checked ? enableReminder(state.time, studyInfo(history), lang) : disableReminder()))}
           />
           <span
             aria-hidden
@@ -57,11 +59,11 @@ export default function ReminderRow({ history }: { history: Progress["history"] 
         </label>
         {state.on && support === "ok" && (
           <label className="flex items-center gap-3 px-4 py-3">
-            <span className="min-w-0 flex-1 font-display text-lg font-bold">Time</span>
+            <span className="min-w-0 flex-1 font-display text-lg font-bold">{t.reminder.time}</span>
             <select
               value={state.time}
               disabled={busy}
-              onChange={(e) => void run(() => setReminderTime(e.target.value, studyInfo(history)))}
+              onChange={(e) => void run(() => setReminderTime(e.target.value, studyInfo(history), lang))}
               className="rounded-xl border-2 border-line bg-card px-3 py-2 font-display text-base font-bold focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
               {(HOURS.includes(state.time) ? HOURS : [state.time, ...HOURS]).map((h) => (
@@ -75,14 +77,10 @@ export default function ReminderRow({ history }: { history: Progress["history"] 
       </div>
       {(error || blocked) && (
         <p role="alert" className="mt-2 text-sm font-semibold text-dontknow-ink">
-          {error ?? "Notifications are blocked for Mempo. Allow them in your browser’s or phone’s settings."}
+          {error ?? t.reminder.blocked}
         </p>
       )}
-      {support === "ok" && (
-        <p className="mt-2 text-xs font-semibold text-muted">
-          To send it, Mempo’s server keeps this device’s notification address, the time, your time zone and the last day you studied. Nothing else. Turning it off deletes them.
-        </p>
-      )}
+      {support === "ok" && <p className="mt-2 text-xs font-semibold text-muted">{t.reminder.privacy}</p>}
     </>
   );
 }

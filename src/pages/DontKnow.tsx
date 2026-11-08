@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Mascot from "../components/Mascot";
 import ScreenHeader from "../components/ScreenHeader";
 import WordRow from "../components/WordRow";
+import { useT } from "../i18n";
 import { LEAVE_DONT_KNOW_AFTER } from "../lib/srs";
 import type { Progress, Word } from "../lib/types";
 import { loadAllWords } from "../lib/words";
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function DontKnow({ progress, onPractise, onBack }: Props) {
+  const t = useT();
   const [words, setWords] = useState<Word[]>();
   const [error, setError] = useState<string>();
 
@@ -30,20 +32,18 @@ export default function DontKnow({ progress, onPractise, onBack }: Props) {
 
   return (
     <main className="flex flex-1 flex-col">
-      <ScreenHeader title="Don’t know" onBack={onBack} />
-      <p className="mt-3 font-medium text-muted">
-        Words you swiped “Don’t know”. A word leaves this list after you know it {LEAVE_DONT_KNOW_AFTER} days in a row.
-      </p>
+      <ScreenHeader title={t.answer.dontknow} onBack={onBack} />
+      <p className="mt-3 font-medium text-muted">{t.dontKnow.intro(LEAVE_DONT_KNOW_AFTER)}</p>
 
       {error ? (
         <p className="mt-10 text-center text-dontknow">{error}</p>
       ) : !words ? (
-        <p className="mt-10 text-center font-semibold text-muted">Loading words…</p>
+        <p className="mt-10 text-center font-semibold text-muted">{t.common.loadingWords}</p>
       ) : list.length === 0 ? (
         <div className="mt-16 flex flex-col items-center text-center">
           <Mascot mood="cheer" className="size-24" />
-          <p className="mt-3 font-display text-3xl font-extrabold">All clear!</p>
-          <p className="mt-2 font-medium text-muted">No words on your “Don’t know” list.</p>
+          <p className="mt-3 font-display text-3xl font-extrabold">{t.dontKnow.allClear}</p>
+          <p className="mt-2 font-medium text-muted">{t.dontKnow.empty}</p>
         </div>
       ) : (
         <>
@@ -59,7 +59,7 @@ export default function DontKnow({ progress, onPractise, onBack }: Props) {
                 onClick={onPractise}
                 className="press w-full rounded-3xl bg-dontknow py-4 font-display text-xl font-extrabold text-white [--depth:6px] [--edge:var(--color-dontknow-edge)] hover:brightness-105"
               >
-                {list.length === 1 ? "Practise this word" : `Practise these ${list.length} words`}
+                {t.dontKnow.practise(list.length)}
               </button>
             </div>
           </div>

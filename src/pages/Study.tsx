@@ -3,7 +3,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import Mascot from "../components/Mascot";
 import { CloseButton } from "../components/ScreenHeader";
 import SwipeCard, { answerDir, dirAnswers, type SwipeDir } from "../components/SwipeCard";
-import { formatDay } from "../lib/date";
+import { useT } from "../i18n";
+import { toDay } from "../lib/date";
 import { buildSession, requeue, type SessionMode } from "../lib/session";
 import { answer, nextReview } from "../lib/srs";
 import type { Answer, Progress, Word } from "../lib/types";
@@ -22,13 +23,8 @@ interface Turn {
   key: number;
 }
 
-const EMPTY: Record<SessionMode, string> = {
-  today: "Nothing left to study today.",
-  review: "No reviews due right now.",
-  dontknow: "Your “Don’t know” list is empty. Nice!",
-};
-
 export default function Study({ mode, progress, setProgress, onExit }: Props) {
+  const t = useT();
   const { settings } = progress;
   const [queue, setQueue] = useState<Turn[]>();
   const [error, setError] = useState<string>();
@@ -96,7 +92,7 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
     return (
       <Centered>
         <Mascot className="size-16 animate-bounce" />
-        <p className="mt-3 font-semibold text-muted">Loading words…</p>
+        <p className="mt-3 font-semibold text-muted">{t.common.loadingWords}</p>
       </Centered>
     );
   }
@@ -107,31 +103,29 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
     const next = nextReview(progress);
     const tally = { know: 0, unsure: 0, dontknow: 0 };
     for (const a of Object.values(firstAnswer)) tally[a]++;
-    const nextDay = next && formatDay(next.day);
     return (
       <Centered>
         {queue.length === 0 ? (
           <>
             <Mascot className="size-24" />
-            <p className="mt-4 max-w-xs font-display text-3xl leading-tight font-extrabold">{EMPTY[mode]}</p>
+            <p className="mt-4 max-w-xs font-display text-3xl leading-tight font-extrabold">{t.study.empty[mode]}</p>
           </>
         ) : (
           <>
             <Mascot mood="cheer" className="size-28" />
-            <p className="mt-3 font-display text-5xl font-extrabold">Nice work!</p>
-            <p className="mt-2 text-lg font-semibold text-muted">You went through {plural(unique, "word")}.</p>
+            <p className="mt-3 font-display text-5xl font-extrabold">{t.study.niceWork}</p>
+            <p className="mt-2 text-lg font-semibold text-muted">{t.study.wentThrough(unique)}</p>
             <div className="mt-6 grid w-full grid-cols-3 gap-2.5">
-              <Tally tone="bg-know text-white [--edge:var(--color-know-edge)]" n={tally.know} label="knew" />
-              <Tally tone="bg-unsure text-deep [--edge:var(--color-unsure-edge)]" n={tally.unsure} label="not sure" />
-              <Tally tone="bg-dontknow text-white [--edge:var(--color-dontknow-edge)]" n={tally.dontknow} label="didn’t know" />
+              <Tally tone="bg-know text-white [--edge:var(--color-know-edge)]" n={tally.know} label={t.study.knew} />
+              <Tally tone="bg-unsure text-deep [--edge:var(--color-unsure-edge)]" n={tally.unsure} label={t.study.notSure} />
+              <Tally tone="bg-dontknow text-white [--edge:var(--color-dontknow-edge)]" n={tally.dontknow} label={t.study.didntKnow} />
             </div>
-            {tally.know < unique && <p className="mt-5 max-w-xs font-medium text-muted">Every word came back until you knew it.</p>}
+            {tally.know < unique && <p className="mt-5 max-w-xs font-medium text-muted">{t.study.cameBack}</p>}
           </>
         )}
-        {next && nextDay && (
+        {next && (
           <p className="mt-6 rounded-full bg-card px-4 py-2 text-sm font-semibold text-muted">
-            Next review {nextDay === "today" || nextDay === "tomorrow" ? nextDay : `on ${nextDay}`}:{" "}
-            <span className="text-ink">{plural(next.count, "word")}</span>
+            {t.study.nextReview(t.when(next.day, toDay()), <span className="text-ink">{t.common.words(next.count)}</span>)}
           </p>
         )}
         <BackButton onClick={onExit} />
@@ -142,10 +136,10 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
   const remaining = new Set(queue.slice(pos).map((t) => t.word.id)).size;
   const answers = dirAnswers(settings);
   const prevCard = startProgress.current.cards[turn.word.id];
-  const kind = mode === "dontknow" || prevCard?.inDontKnow ? "Don’t know" : prevCard ? "Review" : "New word";
-  const again = queue.slice(0, pos).some((t) => t.word.id === turn.word.id);
+  const kind = mode === "dontknow" || prevCard?.inDontKnow ? t.answer.dontknow : prevCard ? t.study.review : t.study.newWord;
+  const again = queue.slice(0, pos).some((x) => x.word.id === turn.word.id);
   const pct = ((unique - remaining) / unique) * 100;
-  const label = (a: Answer) => (a === "know" ? "Know" : a === "unsure" ? "Not sure" : "Don’t know");
+  const label = (a: Answer) => t.answer[a];
 
   const btn = (a: Answer) => (
     <AnswerButton key={a} tone={a} onClick={() => respond(a)}>
@@ -172,13 +166,13 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
             <Mascot className="size-9" mood={again ? "sad" : "happy"} />
           </div>
         </div>
-        <span className="w-16 text-right font-display font-bold text-muted tabular-nums">{remaining} left</span>
+        <span className="min-w-16 text-right font-display font-bold whitespace-nowrap text-muted tabular-nums">{t.study.left(remaining)}</span>
       </header>
 
       <p className="mt-2 text-center">
         <span className={`rounded-full px-3 py-1 text-sm font-bold ${again ? "bg-dontknow/12 text-dontknow" : "bg-card text-muted"}`}>
           {kind}
-          {again && ", once more"}
+          {again && t.study.onceMore}
         </span>
       </p>
 
@@ -203,13 +197,11 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
         {settings.swipeKnow === "left" ? [btn("know"), btn("unsure"), btn("dontknow")] : [btn("dontknow"), btn("unsure"), btn("know")]}
       </div>
       <p className="mt-3 text-center text-xs font-semibold text-muted">
-        Swipe or use arrow keys: ← {label(answers.left)}, ↑ Not sure, → {label(answers.right)}
+        {t.study.swipeHint(label(answers.left), label(answers.right))}
       </p>
     </main>
   );
 }
-
-const plural = (n: number, word: string) => `${n.toLocaleString()} ${word}${n === 1 ? "" : "s"}`;
 
 function Tally({ tone, n, label }: { tone: string; n: number; label: string }) {
   return (
@@ -252,13 +244,14 @@ function Centered({ children }: { children: ReactNode }) {
 }
 
 function BackButton({ onClick }: { onClick: () => void }) {
+  const t = useT();
   return (
     <button
       type="button"
       onClick={onClick}
       className="press mt-8 rounded-2xl border-2 border-line bg-card px-7 py-3 font-display text-lg font-bold hover:border-brand/40"
     >
-      Back to home
+      {t.common.backToHome}
     </button>
   );
 }
