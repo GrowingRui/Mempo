@@ -29,6 +29,7 @@ const en = {
     loadingWords: "Loading words…",
     loadFailed: (level: string) => `Couldn’t load the ${level} words. Check your connection and try again.`,
     backToHome: "Back to home",
+    back: "Back",
     cancel: "Cancel",
     close: "Close",
     done: "Done",

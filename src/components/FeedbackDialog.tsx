@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useLang, useT } from "../i18n";
 import { mailtoUrl, sendFeedback, withDevice, type FeedbackForm } from "../lib/feedback";
+import { useCloseOnBack } from "../lib/nav";
 import Mascot from "./Mascot";
 
 export interface Choice<T extends string> {
@@ -51,6 +52,7 @@ export default function FeedbackDialog<T extends string>(props: Props<T>) {
   const [state, setState] = useState<State>({ step: "edit" });
   const textRef = useRef<HTMLTextAreaElement>(null);
   const doneRef = useRef<HTMLButtonElement>(null);
+  useCloseOnBack(onClose);
 
   useEffect(() => {
     textRef.current?.focus();

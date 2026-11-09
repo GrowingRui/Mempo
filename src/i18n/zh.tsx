@@ -19,6 +19,7 @@ const zh: Messages = {
     loadingWords: "正在加载单词…",
     loadFailed: (level: string) => `无法加载 ${level} 单词。请检查网络后重试。`,
     backToHome: "返回首页",
+    back: "返回",
     cancel: "取消",
     close: "关闭",
     done: "完成",

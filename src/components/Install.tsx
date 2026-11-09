@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useT } from "../i18n";
 import { bannerDismissed, dismissBanner, promptInstall, useInstallMode, type InstallMode } from "../lib/install";
+import { useCloseOnBack } from "../lib/nav";
 import Mascot from "./Mascot";
 
 /** Mode + one action: the browser's dialog when available, otherwise our steps sheet. */
@@ -38,6 +39,7 @@ const MenuIcon = ({ label }: { label: string }) => (
 function InstallSteps({ mode, onClose }: { mode: "ios" | "android" | "mac"; onClose: () => void }) {
   const t = useT();
   const okRef = useRef<HTMLButtonElement>(null);
+  useCloseOnBack(onClose);
   useEffect(() => {
     okRef.current?.focus();
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();

@@ -4,6 +4,7 @@ import { useT } from "../i18n";
 import type { Backup } from "../lib/backup";
 import { formatCode, moveLink, normalizeCode, receiveProgress, sendProgress, supportsMove, type Sent } from "../lib/move";
 import type { Progress } from "../lib/types";
+import { useCloseOnBack } from "../lib/nav";
 
 const button = "press min-w-0 flex-1 rounded-2xl border-2 border-line bg-card px-2 py-3 font-display text-base font-bold min-[400px]:text-lg disabled:opacity-50";
 const primary = "press w-full rounded-2xl bg-brand py-3 font-display text-lg font-bold text-white [--edge:var(--color-brand-edge)] disabled:opacity-60";
@@ -42,6 +43,7 @@ export default function MoveRow({ progress, incoming, onReceived }: { progress: 
 }
 
 function Dialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  useCloseOnBack(onClose);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();

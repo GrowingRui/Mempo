@@ -15,6 +15,8 @@ interface Props {
   progress: Progress;
   setProgress: (fn: (p: Progress) => Progress) => void;
   onExit: () => void;
+  /** Leaving goes Home (otherwise back to the screen it was opened from, e.g. the "Don't know" list). */
+  backToHome: boolean;
 }
 
 /** One turn in the queue. The same word can appear more than once (it comes back after a miss), so each turn has its own key. */
@@ -23,7 +25,7 @@ interface Turn {
   key: number;
 }
 
-export default function Study({ mode, progress, setProgress, onExit }: Props) {
+export default function Study({ mode, progress, setProgress, onExit, backToHome }: Props) {
   const t = useT();
   const { settings } = progress;
   const [queue, setQueue] = useState<Turn[]>();
@@ -83,7 +85,7 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
       <Centered>
         <Mascot mood="sad" className="size-20" />
         <p className="mt-3 font-semibold text-dontknow">{error}</p>
-        <BackButton onClick={onExit} />
+        <BackButton onClick={onExit} toHome={backToHome} />
       </Centered>
     );
   }
@@ -128,7 +130,7 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
             {t.study.nextReview(t.when(next.day, toDay()), <span className="text-ink">{t.common.words(next.count)}</span>)}
           </p>
         )}
-        <BackButton onClick={onExit} />
+        <BackButton onClick={onExit} toHome={backToHome} />
       </Centered>
     );
   }
@@ -150,7 +152,7 @@ export default function Study({ mode, progress, setProgress, onExit }: Props) {
   return (
     <main className="flex flex-1 flex-col">
       <header className="flex items-center gap-2">
-        <CloseButton onClick={onExit} />
+        <CloseButton onClick={onExit} label={backToHome ? undefined : t.common.back} />
         {/* progress bar with Mempo riding along it */}
         <div className="relative flex-1 py-3">
           <div className="h-4 overflow-hidden rounded-full bg-card p-[3px] shadow-[inset_0_0_0_2px_var(--color-line)]">
@@ -243,7 +245,7 @@ function Centered({ children }: { children: ReactNode }) {
   return <main className="flex flex-1 flex-col items-center justify-center text-center">{children}</main>;
 }
 
-function BackButton({ onClick }: { onClick: () => void }) {
+function BackButton({ onClick, toHome }: { onClick: () => void; toHome: boolean }) {
   const t = useT();
   return (
     <button
@@ -251,7 +253,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       className="press mt-8 rounded-2xl border-2 border-line bg-card px-7 py-3 font-display text-lg font-bold hover:border-brand/40"
     >
-      {t.common.backToHome}
+      {toHome ? t.common.backToHome : t.common.back}
     </button>
   );
 }

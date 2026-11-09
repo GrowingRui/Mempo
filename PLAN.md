@@ -190,7 +190,7 @@ How it works:
 Commands: `npm run dev` (local dev server), `npm run build` (type-check + build to `dist/`), `npm run preview`.
 
 How it works so far:
-- Screens switch with React state (no router yet). `src/lib/session.ts` picks today's new words in a fixed shuffled order (hash of the word id), so they're not alphabetical and the order is the same on every visit.
+- Screens switch with React state (no router). Since 2026-11-09 each screen is also a browser history entry so the phone's Back button works (Backlog F). `src/lib/session.ts` picks today's new words in a fixed shuffled order (hash of the word id), so they're not alphabetical and the order is the same on every visit.
 - The daily goal counts new words across all levels per calendar day (local time).
 - `answer()` started as a simple placeholder; Phase 3 replaced it with full Leitner boxes (`src/lib/srs.ts`).
 - Progress is saved under the localStorage key `mempo:progress`, in the format from section 2.
@@ -354,6 +354,14 @@ A way for users to send suggestions or report problems to xiarui091@gmail.com wi
 - [x] **One-time setup for the user (~5 min):** sign up at resend.com with xiarui091@gmail.com, create an API key, add `RESEND_API_KEY` to Vercel env vars and `.env.local`
 - [x] **Card report (decided 2026-11-08):** "Report a problem" on the card back now sends through this form (word, what's shown and the `scripts/manual.ts` line are attached). A small "Open a GitHub issue" link stays for people who prefer it public
 - Shown on localhost and approved; a real test email arrived. Resend key (sending access only) is in Vercel and `.env.local`
+
+**F. Phone Back button** ✅ (done 2026-11-09)
+Before, screens switched only in memory, so Android's Back button (and the browser's) closed Mempo instead of going back.
+- [x] Every screen is a browser history entry (`src/lib/nav.ts`; the address doesn't change). **Back goes one screen back** (Practise → the "Don't know" list → Home); **Back on Home leaves the app**
+- [x] The app's own ← / × / "Back to home" buttons do the same as the phone's Back. At the end of a session started from the "Don't know" list the button says "Back" instead of "Back to home"
+- [x] **Back with a dialog open closes only the dialog** (feedback / report, confirmations, Move to another device, install steps): `useCloseOnBack()` in each dialog
+- [x] A reload stays on the same screen; a Move QR link opens Settings and Back goes Home
+- Tests: `src/lib/nav.test.ts` (fake browser history, including the asynchronous `history.go`). Checked in real Chrome on localhost and approved by the user
 
 **Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
 

@@ -22,6 +22,7 @@ const es: Messages = {
     loadingWords: "Cargando palabras…",
     loadFailed: (level: string) => `No se pudieron cargar las palabras de ${level}. Revisa tu conexión e inténtalo de nuevo.`,
     backToHome: "Volver al inicio",
+    back: "Volver",
     cancel: "Cancelar",
     close: "Cerrar",
     done: "Listo",

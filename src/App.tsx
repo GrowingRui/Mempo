@@ -2,8 +2,8 @@ import { MotionConfig } from "motion/react";
 import { useEffect, useState } from "react";
 import UpdatePrompt from "./components/UpdatePrompt";
 import { HTML_LANG, LangProvider } from "./i18n";
-import type { SessionMode } from "./lib/session";
 import { takeCodeFromUrl } from "./lib/move";
+import { nav, type Screen } from "./lib/nav";
 import { syncReminder, studyInfo } from "./lib/reminder";
 import { loadProgress, saveProgress } from "./lib/storage";
 import { applyTheme } from "./lib/theme";
@@ -19,13 +19,16 @@ import Stats from "./pages/Stats";
 import Study from "./pages/Study";
 import WordList from "./pages/WordList";
 
-export type Screen = { name: "home" } | { name: "study"; mode: SessionMode } | { name: "dontknow" } | { name: "words" } | { name: "test" } | { name: "recall" } | { name: "stats" } | { name: "settings" };
+export type { Screen };
 
 export default function App() {
   const [progress, setProgress] = useState<Progress>(loadProgress);
   // Opened from a "Move to another device" QR code: go straight to Settings, which asks before replacing anything.
   const [moveCode] = useState(takeCodeFromUrl);
-  const [screen, setScreen] = useState<Screen>(moveCode !== null ? { name: "settings" } : { name: "home" });
+  // Screens live in the browser history, so the phone's Back button goes back inside the app (src/lib/nav.ts).
+  const [screen, setScreen] = useState<Screen>(() => nav().start(moveCode !== null ? { name: "settings" } : undefined));
+  useEffect(() => nav().listen(setScreen), []);
+  const go = (next: Screen) => nav().go(next);
 
   useEffect(() => {
     saveProgress(progress);
@@ -56,7 +59,8 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [screen]);
 
-  const home = () => setScreen({ name: "home" });
+  // The app's own back / close buttons do what the phone's Back does: one screen back (Practise → the "Don't know" list).
+  const back = () => nav().back();
 
   return (
     <LangProvider lang={lang}>
@@ -64,21 +68,21 @@ export default function App() {
       <UpdatePrompt />
       <div className="mx-auto flex min-h-dvh max-w-md flex-col px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
         {screen.name === "study" ? (
-          <Study key={screen.mode} mode={screen.mode} progress={progress} setProgress={setProgress} onExit={home} />
+          <Study key={screen.mode} mode={screen.mode} progress={progress} setProgress={setProgress} onExit={back} backToHome={nav().previous().name === "home"} />
         ) : screen.name === "dontknow" ? (
-          <DontKnow progress={progress} onPractise={() => setScreen({ name: "study", mode: "dontknow" })} onBack={home} />
+          <DontKnow progress={progress} onPractise={() => go({ name: "study", mode: "dontknow" })} onBack={back} />
         ) : screen.name === "test" ? (
-          <LevelTest progress={progress} setProgress={setProgress} onExit={home} />
+          <LevelTest progress={progress} setProgress={setProgress} onExit={back} />
         ) : screen.name === "recall" ? (
-          <Recall progress={progress} setProgress={setProgress} onExit={home} onStudy={() => setScreen({ name: "study", mode: "today" })} />
+          <Recall progress={progress} setProgress={setProgress} onExit={back} onStudy={() => go({ name: "study", mode: "today" })} />
         ) : screen.name === "stats" ? (
-          <Stats progress={progress} onBack={home} />
+          <Stats progress={progress} onBack={back} />
         ) : screen.name === "settings" ? (
-          <Settings progress={progress} setProgress={setProgress} moveCode={moveCode} onBack={home} />
+          <Settings progress={progress} setProgress={setProgress} moveCode={moveCode} onBack={back} />
         ) : screen.name === "words" ? (
-          <WordList progress={progress} onBack={home} />
+          <WordList progress={progress} onBack={back} />
         ) : (
-          <Home progress={progress} setProgress={setProgress} go={setScreen} />
+          <Home progress={progress} setProgress={setProgress} go={go} />
         )}
       </div>
     </MotionConfig>

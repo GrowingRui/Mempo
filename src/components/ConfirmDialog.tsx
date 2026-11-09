@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
+import { useCloseOnBack } from "../lib/nav";
 import Mascot from "./Mascot";
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 
 export default function ConfirmDialog({ title, children, mood = "sad", cancelLabel, confirmLabel, tone = "danger", onCancel, onConfirm }: Props) {
   const cancelRef = useRef<HTMLButtonElement>(null);
+  useCloseOnBack(onCancel);
   useEffect(() => {
     cancelRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
