@@ -1,0 +1,1631 @@
+abnormally	abnormally ← abnormal
+abruptly	abruptly ← abrupt
+absentee	absentee ← absent
+accessibility	accessibility ← accessible ← access
+accommodation	accommodation ← accommodate
+accusation	accusation ← accuse
+achievable	achievable ← achieve
+actively	actively ← active ← act
+adaptable	adaptable ← adapt
+addiction	addiction ← addict
+additionally	additionally ← addition ← add
+adequately	adequately ← adequate
+adjustment	adjustment ← adjust
+administrative	administrative ← administration
+admiringly	admiringly ← admiring
+adoption	adoption ← adopt
+advancement	advancement ← advance
+adventurous	adventurous ← adventure
+adversely	adversely ← adverse
+adversity	adversity ← adverse
+affectionately	affectionately ← affectionate
+affordable	affordable ← afford
+aggressively	aggressively ← aggressive ← aggression
+agonise	agonise ← agony
+alcoholic	alcoholic ← alcohol
+alcoholism	alcoholism ← alcohol
+allegation	allegation ← allege
+alliance	alliance ← ally
+alternatively	alternatively ← alternative
+amazement	amazement ← amaze
+amazingly	amazingly ← amazing
+ambiguity	ambiguity ← ambiguous
+amendment	amendment ← amend
+amplifier	amplifier ← amplify
+anchorage	anchorage ← anchor
+anticipation	anticipation ← anticipate
+appreciative	appreciative ← appreciation ← appreciate
+appropriately	appropriately ← appropriate
+archaeologist	archaeologist ← archaeology
+armful	armful ← arm
+artificially	artificially ← artificial
+aspiration	aspiration ← aspire
+assessment	assessment ← assess
+assurance	assurance ← assure
+astonishment	astonishment ← astonish
+attainable	attainable ← attain
+attainment	attainment ← attain
+attendance	attendance ← attend
+attentive	attentive ← attention
+attentively	attentively ← attentive ← attention
+attractiveness	attractiveness ← attractive ← attraction ← attract
+availability	availability ← available
+banker	banker ← bank
+beautify	beautify ← beauty
+biological	biological ← biology
+bitterly	bitterly ← bitter
+blindly	blindly ← blind
+blindness	blindness ← blind
+bloody	bloody ← blood
+bomber	bomber ← bomb
+bony	bony ← bone
+bookish	bookish ← book
+bossy	bossy ← boss
+boxer	boxer ← box
+bravery	bravery ← brave
+breakable	breakable ← break
+breezy	breezy ← breeze
+brewery	brewery ← brew
+brilliantly	brilliantly ← brilliant
+broadcaster	broadcaster ← broadcast
+broaden	broaden ← broad
+browser	browser ← browse
+bumper	bumper ← bump
+burial	burial ← bury
+calmly	calmly ← calm
+capability	capability ← capable
+casually	casually ← casual
+catastrophic	catastrophic ← catastrophe
+catchy	catchy ← catch
+certification	certification ← certify
+cheeky	cheeky ← cheek
+cheerfully	cheerfully ← cheerful ← cheer
+cheerfulness	cheerfulness ← cheerful ← cheer
+childish	childish ← child
+clearness	clearness ← clear
+closure	closure ← close
+coherence	coherence ← coherent
+collector	collector ← collect
+colonial	colonial ← colony
+comfortably	comfortably ← comfortable ← comfort
+commander	commander ← command
+communicative	communicative ← communicate
+compensation	compensation ← compensate
+competence	competence ← competent
+completion	completion ← complete
+complexity	complexity ← complex
+compression	compression ← compress
+conceivable	conceivable ← conceive
+concession	concession ← concede
+conductor	conductor ← conduct
+confidently	confidently ← confident
+consciousness	consciousness ← conscious
+consistently	consistently ← consistent
+consolation	consolation ← console
+consultant	consultant ← consult
+contradiction	contradiction ← contradict
+contradictory	contradictory ← contradict
+conveniently	conveniently ← convenient
+conventional	conventional ← convention
+conversion	conversion ← convert
+cooperation	cooperation ← cooperate
+cooperative	cooperative ← cooperate
+corporation	corporation ← corporate
+correspondent	correspondent ← correspond
+corruption	corruption ← corrupt
+cosiness	cosiness ← cosy
+costly	costly ← cost
+cowardly	cowardly ← coward
+creation	creation ← create
+creatively	creatively ← creative ← create
+creepy	creepy ← creep
+critically	critically ← critical
+crossly	crossly ← cross
+cruelly	cruelly ← cruel
+crystallise	crystallise ← crystal
+culturally	culturally ← cultural ← culture
+dearly	dearly ← dear
+decisive	decisive ← decision ← decide
+decomposition	decomposition ← decompose
+decorative	decorative ← decorate
+dedication	dedication ← dedicate
+deduction	deduction ← deduct
+deliberately	deliberately ← deliberate
+delicately	delicately ← delicate
+densely	densely ← dense
+dependable	dependable ← depend
+descriptive	descriptive ← description ← describe
+desirable	desirable ← desire
+desolation	desolation ← desolate
+desperately	desperately ← desperate
+desperation	desperation ← desperate
+detachment	detachment ← detach
+determiner	determiner ← determine
+dictator	dictator ← dictate
+disappearance	disappearance ← disappear
+disapproval	disapproval ← disapprove
+dishonesty	dishonesty ← dishonest ← honest
+disillusion	disillusion ← illusion
+disorder	disorder ← order
+disorderly	disorderly ← disorder ← order
+dispensable	dispensable ← dispense
+displeasure	displeasure ← displease ← please
+disposition	disposition ← dispose
+dissatisfied	dissatisfied ← satisfied
+distortion	distortion ← distort
+distraction	distraction ← distract
+distributor	distributor ← distribute
+diversion	diversion ← divert
+division	division ← divide
+doubly	doubly ← double
+doubtful	doubtful ← doubt
+dramatically	dramatically ← dramatic
+drapery	drapery ← drape
+dreamy	dreamy ← dream
+drinkable	drinkable ← drink
+duplication	duplication ← duplicate
+eagerly	eagerly ← eager
+ecologically	ecologically ← ecological ← ecology
+ecologist	ecologist ← ecology
+economist	economist ← economy
+editorial	editorial ← editor
+educator	educator ← educate
+effectively	effectively ← effective ← effect
+effectiveness	effectiveness ← effective ← effect
+efficiently	efficiently ← efficient
+elective	elective ← election
+electronically	electronically ← electronic
+elegantly	elegantly ← elegant
+elemental	elemental ← element
+eloquence	eloquence ← eloquent
+emphatically	emphatically ← emphatic
+employer	employer ← employ
+endlessly	endlessly ← endless ← end
+endurance	endurance ← endure
+enthusiastically	enthusiastically ← enthusiastic
+environmentally	environmentally ← environment
+essayist	essayist ← essay
+evacuation	evacuation ← evacuate
+evidently	evidently ← evident
+exactness	exactness ← exact
+exaggeration	exaggeration ← exaggerate
+examinee	examinee ← examine
+exceptional	exceptional ← exception
+exceptionally	exceptionally ← exceptional ← exception
+exclusion	exclusion ← exclude
+execution	execution ← execute
+exhaustion	exhaustion ← exhaust
+expansion	expansion ← expand
+expectation	expectation ← expect
+expertise	expertise ← expert
+explorer	explorer ← explore
+explosive	explosive ← explosion ← explode
+exposure	exposure ← expose
+expressive	expressive ← express
+extension	extension ← extend
+extraordinarily	extraordinarily ← extraordinary
+familiarise	familiarise ← familiar
+fantastically	fantastically ← fantastic
+fascination	fascination ← fascinate
+faulty	faulty ← fault
+fictional	fictional ← fiction
+figurative	figurative ← figure
+financially	financially ← financial
+finely	finely ← fine
+firstly	firstly ← first
+flawless	flawless ← flaw
+flexibility	flexibility ← flexible
+flexibly	flexibly ← flexible
+fluency	fluency ← fluent
+follower	follower ← follow
+fondly	fondly ← fond
+foolishly	foolishly ← foolish ← fool
+forcefully	forcefully ← forceful ← force
+formation	formation ← form
+founder	founder ← found
+frankly	frankly ← frank
+frantically	frantically ← frantic
+friendly	friendly ← friend
+functional	functional ← function
+fundamentally	fundamentally ← fundamental
+furiously	furiously ← furious
+gardener	gardener ← garden
+generalise	generalise ← general
+generously	generously ← generous
+gently	gently ← gentle
+genuinely	genuinely ← genuine
+geographic	geographic ← geography
+gloomy	gloomy ← gloom
+glorify	glorify ← glory
+godly	godly ← god
+governmental	governmental ← government
+gracefulness	gracefulness ← graceful ← grace
+graphically	graphically ← graphic
+greatness	greatness ← great
+gymnastic	gymnastic ← gymnast
+hairy	hairy ← hair
+harmless	harmless ← harm
+hastily	hastily ← hasty ← haste
+hazardous	hazardous ← hazard
+helper	helper ← help
+hesitation	hesitation ← hesitate
+holder	holder ← hold
+honorable	honorable ← honor
+hospitalise	hospitalise ← hospital
+hourly	hourly ← hour
+hugely	hugely ← huge
+humanise	humanise ← human
+humanist	humanist ← humanism
+humiliation	humiliation ← humiliate
+ideally	ideally ← ideal
+identification	identification ← identify
+idolise	idolise ← idol
+illustration	illustration ← illustrate
+imagery	imagery ← image
+imitation	imitation ← imitate
+immoral	immoral ← moral
+immortality	immortality ← immortal
+impartial	impartial ← partial
+impatiently	impatiently ← impatient
+impermanent	impermanent ← permanent
+impolite	impolite ← polite
+impolitely	impolitely ← impolite ← polite
+impossibility	impossibility ← impossible ← possible
+impractical	impractical ← practical ← practice
+impressionism	impressionism ← impression
+impressionist	impressionist ← impressionism ← impression
+imprison	imprison ← prison
+improperly	improperly ← improper
+impulsive	impulsive ← impulse
+inaccurate	inaccurate ← accurate
+inadequate	inadequate ← adequate
+independently	independently ← independent
+indication	indication ← indicate
+indulgent	indulgent ← indulge
+industrialise	industrialise ← industrial ← industry
+inexperienced	inexperienced ← experienced
+infectious	infectious ← infection
+inference	inference ← infer
+inflammation	inflammation ← inflame
+informal	informal ← formal
+injection	injection ← inject
+innocently	innocently ← innocent
+inspector	inspector ← inspect
+installation	installation ← install
+insufficient	insufficient ← sufficient
+interactive	interactive ← interact
+interpretation	interpretation ← interpret
+interpreter	interpreter ← interpret
+interruption	interruption ← interrupt
+intersection	intersection ← intersect
+intransitive	intransitive ← transitive
+intruder	intruder ← intrude
+intrusion	intrusion ← intrude
+invariable	invariable ← variable ← vary
+inventor	inventor ← invent
+investigator	investigator ← investigate
+investor	investor ← invest
+invisible	invisible ← visible
+invitingly	invitingly ← inviting
+involvement	involvement ← involve
+ironically	ironically ← ironic ← irony
+irrational	irrational ← rational
+irresistibly	irresistibly ← irresistible
+irresponsible	irresponsible ← responsible
+irritation	irritation ← irritate
+islander	islander ← island
+italicise	italicise ← italic
+jealously	jealously ← jealous
+jeopardise	jeopardise ← jeopardy
+keeper	keeper ← keep
+lastly	lastly ← last
+lecturer	lecturer ← lecture
+legendary	legendary ← legend
+legislative	legislative ← legislation
+leisurely	leisurely ← leisure
+lengthen	lengthen ← length
+lengthy	lengthy ← length
+lifeless	lifeless ← life
+lighten	lighten ← light
+liner	liner ← line
+listener	listener ← listen
+loosely	loosely ← loose
+luxurious	luxurious ← luxury
+madness	madness ← mad
+marker	marker ← mark
+mastery	mastery ← master
+memorial	memorial ← memory
+merger	merger ← merge
+microscopic	microscopic ← microscope
+microscopy	microscopy ← microscope
+mighty	mighty ← might
+migration	migration ← migrate
+miner	miner ← mine
+misconception	misconception ← conception
+mistreat	mistreat ← treat
+mistrustful	mistrustful ← mistrust ← trust
+misunderstand	misunderstand ← understand
+modernisation	modernisation ← modernize ← modern
+modernise	modernise ← modern
+modification	modification ← modify
+momentarily	momentarily ← momentary ← moment
+momentary	momentary ← moment
+morally	morally ← moral
+motorist	motorist ← motor
+mournful	mournful ← mourn
+mover	mover ← move
+muddy	muddy ← mud
+multiply	multiply ← multiple
+musical	musical ← music
+mutability	mutability ← mutable ← mutate
+mutable	mutable ← mutate
+narrowly	narrowly ← narrow
+needless	needless ← need
+needy	needy ← need
+negatively	negatively ← negative
+nervously	nervously ← nervous ← nerve
+nicely	nicely ← nice
+nobility	nobility ← noble
+nomination	nomination ← nominate
+nonprofessional	nonprofessional ← professional
+nourishment	nourishment ← nourish
+obedience	obedience ← obedient
+obesity	obesity ← obese
+observer	observer ← observe
+obsessive	obsessive ← obsession
+official	official ← office
+openly	openly ← open
+operator	operator ← operate
+optimist	optimist ← optimism
+originality	originality ← original
+originally	originally ← original
+outwardly	outwardly ← outward
+ownership	ownership ← owner ← own
+paperless	paperless ← paper
+participation	participation ← participate
+partnership	partnership ← partner
+passionately	passionately ← passionate
+pastoral	pastoral ← pastor
+patiently	patiently ← patient
+patriotism	patriotism ← patriot
+pavement	pavement ← pave
+payment	payment ← pay
+peacefully	peacefully ← peaceful ← peace
+permanence	permanence ← permanent
+perseverance	perseverance ← persevere
+persistence	persistence ← persistent
+perspiration	perspiration ← perspire
+persuasion	persuasion ← persuade
+pharmacist	pharmacist ← pharmacy
+philosophical	philosophical ← philosophy
+picky	picky ← pick
+placement	placement ← place
+pointless	pointless ← point
+politeness	politeness ← polite
+politically	politically ← political
+popularise	popularise ← popular
+popularity	popularity ← popular
+potentially	potentially ← potential
+powerfully	powerfully ← powerful ← power
+practicality	practicality ← practical ← practice
+practically	practically ← practical ← practice
+precisely	precisely ← precise
+predicative	predicative ← predicate
+predictable	predictable ← predict
+predictive	predictive ← predict
+predictor	predictor ← predict
+predominantly	predominantly ← predominant
+preferable	preferable ← prefer
+preferably	preferably ← preferable ← prefer
+presenter	presenter ← present
+presidency	presidency ← president
+presidential	presidential ← president
+prestigious	prestigious ← prestige
+prevention	prevention ← prevent
+preventive	preventive ← prevent
+priceless	priceless ← price
+privately	privately ← private
+profitable	profitable ← profit
+programmer	programmer ← programme
+projection	projection ← project
+prominence	prominence ← prominent
+protester	protester ← protest
+proudly	proudly ← proud
+provision	provision ← provide
+psychologically	psychologically ← psychological ← psychology
+publication	publication ← publish
+publicise	publicise ← public
+publicity	publicity ← public
+punctuality	punctuality ← punctual
+purposeful	purposeful ← purpose
+qualification	qualification ← qualify
+quotable	quotable ← quote
+quotation	quotation ← quote
+racism	racism ← race
+racist	racist ← racism ← race
+radically	radically ← radical
+ranger	ranger ← range
+rebellious	rebellious ← rebellion ← rebel
+receiver	receiver ← receive
+recollection	recollection ← recollect
+recommendable	recommendable ← recommend
+recommendation	recommendation ← recommend
+recruitment	recruitment ← recruit
+reference	reference ← refer
+referent	referent ← refer
+refinery	refinery ← refine
+reflective	reflective ← reflect
+refugee	refugee ← refuge
+regardless	regardless ← regard
+reinforcement	reinforcement ← reinforce
+rejection	rejection ← reject
+relativity	relativity ← relative ← relate
+relaxation	relaxation ← relax
+remarkably	remarkably ← remarkable ← remark
+reminder	reminder ← remind
+rental	rental ← rent
+replacement	replacement ← replace
+repression	repression ← repress
+residence	residence ← reside
+resignation	resignation ← resign
+resistance	resistance ← resist
+respectably	respectably ← respectable ← respect
+restriction	restriction ← restrict
+retailer	retailer ← retail
+retirement	retirement ← retire
+revival	revival ← revive
+revolutionary	revolutionary ← revolution
+revolutionise	revolutionise ← revolution
+rhythmic	rhythmic ← rhythm
+rider	rider ← ride
+righteousness	righteousness ← righteous
+rightly	rightly ← right
+risky	risky ← risk
+rocky	rocky ← rock
+rosy	rosy ← rose
+ruinous	ruinous ← ruin
+rusty	rusty ← rust
+salesmanship	salesmanship ← salesman
+salty	salty ← salt
+scholasticism	scholasticism ← scholastic
+scientifically	scientifically ← scientific
+seasonal	seasonal ← season
+secondary	secondary ← second
+secondly	secondly ← second
+seeker	seeker ← seek
+seller	seller ← sell
+senator	senator ← senate
+sensible	sensible ← sense
+separately	separately ← separate
+servant	servant ← serve
+sexism	sexism ← sex
+sexy	sexy ← sex
+shaky	shaky ← shake
+sharply	sharply ← sharp
+shoplifter	shoplifter ← shoplift
+shortness	shortness ← short
+significantly	significantly ← significant
+signify	signify ← sign
+simplification	simplification ← simplify ← simple
+sincerity	sincerity ← sincere
+skateboarder	skateboarder ← skateboard
+skillful	skillful ← skill
+skillfully	skillfully ← skillful ← skill
+socialise	socialise ← social
+softness	softness ← soft
+solidity	solidity ← solid
+specifically	specifically ← specific
+speeder	speeder ← speed
+stability	stability ← stable
+steely	steely ← steel
+stimulation	stimulation ← stimulate
+straighten	straighten ← straight
+strictly	strictly ← strict
+stubbornly	stubbornly ← stubborn
+subdivision	subdivision ← subdivide
+subsequently	subsequently ← subsequent
+successive	successive ← succession
+sufficiently	sufficiently ← sufficient
+suitably	suitably ← suitable
+supervision	supervision ← supervise
+supervisor	supervisor ← supervise
+supplier	supplier ← supply
+suspicious	suspicious ← suspicion
+symbolic	symbolic ← symbol
+sympathise	sympathise ← sympathy
+technically	technically ← technical
+temptation	temptation ← tempt
+tenderly	tenderly ← tender
+tenderness	tenderness ← tender
+theorist	theorist ← theory
+therapist	therapist ← therapy
+thickly	thickly ← thick
+thickness	thickness ← thick
+thinker	thinker ← think
+thirdly	thirdly ← third
+thoroughly	thoroughly ← thorough
+thoughtful	thoughtful ← thought
+thoughtless	thoughtless ← thought
+threaten	threaten ← threat
+timeless	timeless ← time
+timeliness	timeliness ← timely ← time
+tiredness	tiredness ← tired
+trader	trader ← trade
+trailer	trailer ← trail
+trainee	trainee ← train
+trainer	trainer ← train
+translation	translation ← translate
+translator	translator ← translate
+transmission	transmission ← transmit
+trial	trial ← try
+trusty	trusty ← trust
+truthful	truthful ← truth ← true
+truthfulness	truthfulness ← truthful ← truth ← true
+unacceptable	unacceptable ← acceptable ← accept
+unashamedly	unashamedly ← unashamed
+unavailable	unavailable ← available
+unaware	unaware ← aware
+unchanged	unchanged ← changed
+uncharacteristic	uncharacteristic ← characteristic
+unclearly	unclearly ← unclear ← clear
+uncomfortably	uncomfortably ← uncomfortable ← comfortable ← comfort
+uncommon	uncommon ← common
+unconscious	unconscious ← conscious
+understandable	understandable ← understand
+undressed	undressed ← dressed
+unease	unease ← ease
+uneasily	uneasily ← uneasy ← unease ← ease
+unenthusiastic	unenthusiastic ← enthusiastic
+uneven	uneven ← even
+unfamiliar	unfamiliar ← familiar
+unfashionable	unfashionable ← fashionable ← fashion
+unhelpful	unhelpful ← helpful ← help
+unimaginably	unimaginably ← unimaginable
+universal	universal ← universe
+unjustly	unjustly ← unjust ← just
+unlike	unlike ← like
+unlock	unlock ← lock
+unmistakably	unmistakably ← unmistakable
+unnatural	unnatural ← natural ← nature
+unofficial	unofficial ← official ← office
+unpopular	unpopular ← popular
+unrealistic	unrealistic ← realistic
+unreasonable	unreasonable ← reasonable ← reason
+unreliable	unreliable ← reliable ← rely
+unsafe	unsafe ← safe
+unsatisfactory	unsatisfactory ← satisfactory
+unselfish	unselfish ← selfish ← self
+unsuccessful	unsuccessful ← successful ← success
+unsuitable	unsuitable ← suitable
+untalented	untalented ← talented
+unthinkably	unthinkably ← unthinkable
+untie	untie ← tie
+untreated	untreated ← treated
+unusualness	unusualness ← unusual ← usual
+unwilling	unwilling ← willing
+unwise	unwise ← wise
+unworldly	unworldly ← worldly ← world
+variation	variation ← vary
+verbal	verbal ← verb
+verbally	verbally ← verbal ← verb
+vibration	vibration ← vibrate
+viewer	viewer ← view
+vigorously	vigorously ← vigorous
+villager	villager ← village
+visibly	visibly ← visible
+voter	voter ← vote
+walker	walker ← walk
+warship	warship ← war
+weaken	weaken ← weak
+weakly	weakly ← weak
+wealthy	wealthy ← wealth
+widen	widen ← wide
+width	width ← wide
+willingly	willingly ← willing
+withdrawal	withdrawal ← withdraw
+witty	witty ← wit
+worldly	worldly ← world
+worsen	worsen ← worse
+worthless	worthless ← worth
+youthful	youthful ← youth
+abstraction	abstraction ← abstract
+accomplishment	accomplishment ← accomplish
+accountable	accountable ← account
+accumulation	accumulation ← accumulate
+acidic	acidic ← acid
+acoustically	acoustically ← acoustic
+activation	activation ← active ← act
+acutely	acutely ← acute
+adaptation	adaptation ← adapt
+adjustable	adjustable ← adjust
+administratively	administratively ← administrative ← administration
+advantageous	advantageous ← advantage
+advisory	advisory ← advise
+aesthetically	aesthetically ← aesthetic
+affective	affective ← affect
+affectively	affectively ← affective ← affect
+agreeable	agreeable ← agree
+aimless	aimless ← aim
+aimlessly	aimlessly ← aimless ← aim
+alignment	alignment ← align
+allegedly	allegedly ← alleged
+allocation	allocation ← allocate
+amplification	amplification ← amplify
+amply	amply ← ample
+analyser	analyser ← analyse
+analytical	analytical ← analytic
+analytically	analytically ← analytical ← analytic
+animatedly	animatedly ← animated
+anthropologist	anthropologist ← anthropology
+appallingly	appallingly ← appalling
+apprenticeship	apprenticeship ← apprentice
+approachable	approachable ← approach
+appropriateness	appropriateness ← appropriate
+architectural	architectural ← architecture
+artistically	artistically ← artistic ← artist ← art
+assertion	assertion ← assert
+assessable	assessable ← assess
+atmospheric	atmospheric ← atmosphere
+baldly	baldly ← bald
+beguilingly	beguilingly ← beguiling
+believably	believably ← believable ← believe
+benignly	benignly ← benign
+blankness	blankness ← blank
+bribery	bribery ← bribe
+bubbly	bubbly ← bubble
+bureaucratic	bureaucratic ← bureaucrat
+bureaucratically	bureaucratically ← bureaucratic ← bureaucrat
+buzzer	buzzer ← buzz
+candidly	candidly ← candid
+capitalism	capitalism ← capital
+capitalist	capitalist ← capitalism ← capital
+carrier	carrier ← carry
+chaotically	chaotically ← chaotic
+characterization	characterization ← characterize
+circulation	circulation ← circulate
+citation	citation ← cite
+civilian	civilian ← civil
+cleanly	cleanly ← clean
+cleverness	cleverness ← clever
+clinical	clinical ← clinic
+closeness	closeness ← close
+collaboration	collaboration ← collaborate
+collaborative	collaborative ← collaboration ← collaborate
+collaborator	collaborator ← collaborate
+collective	collective ← collect
+collision	collision ← collide
+commendation	commendation ← commend
+commentary	commentary ← comment
+commercially	commercially ← commercial
+commissioner	commissioner ← commission
+comparable	comparable ← compare
+complementary	complementary ← complement
+compliance	compliance ← comply
+compliant	compliant ← comply
+compliantly	compliantly ← compliant ← comply
+complication	complication ← complicate
+complimentary	complimentary ← compliment
+computable	computable ← compute
+computation	computation ← compute
+computational	computational ← computation ← compute
+conceptualisation	conceptualisation ← conceptualise
+conceptually	conceptually ← conceptual
+conclusive	conclusive ← conclusion
+conclusively	conclusively ← conclusive ← conclusion
+conditional	conditional ← condition
+conditionally	conditionally ← condition
+confinement	confinement ← confine
+conformity	conformity ← conform
+confrontation	confrontation ← confront
+conscientiously	conscientiously ← conscientious
+consistency	consistency ← consistent
+constancy	constancy ← constant
+constitutional	constitutional ← constitution
+constitutionally	constitutionally ← constitution
+constitutive	constitutive ← constitute
+constructive	constructive ← construction ← construct
+consultancy	consultancy ← consultant ← consult
+consultation	consultation ← consult
+contextually	contextually ← contextual
+contingency	contingency ← contingent
+continuity	continuity ← continuous ← continue
+contractor	contractor ← contract
+conventionally	conventionally ← convention
+correspondingly	correspondingly ← corresponding
+councillor	councillor ← council
+coverage	coverage ← cover
+creamy	creamy ← cream
+credibly	credibly ← credible
+crudely	crudely ← crude
+customary	customary ← custom
+cynically	cynically ← cynical
+damply	damply ← damp
+defensive	defensive ← defense
+definable	definable ← define
+delegation	delegation ← delegate
+demographically	demographically ← demographic
+demonstrable	demonstrable ← demonstrate
+demonstrative	demonstrative ← demonstrate
+demonstratively	demonstratively ← demonstrative ← demonstrate
+demonstrator	demonstrator ← demonstrate
+dependence	dependence ← dependent ← depend
+deprivation	deprivation ← deprive
+derivation	derivation ← derive
+derivative	derivative ← derivation ← derive
+desertion	desertion ← desert
+detection	detection ← detect
+detrimentally	detrimentally ← detrimental
+digitalize	digitalize ← digital
+disclosure	disclosure ← disclose
+dismally	dismally ← dismal
+dispensary	dispensary ← dispense
+disproportion	disproportion ← proportion
+disproportionate	disproportionate ← proportionate
+disproportionately	disproportionately ← disproportionate ← proportionate
+dissection	dissection ← dissect
+dissimilar	dissimilar ← similar
+distinctively	distinctively ← distinctive
+distributional	distributional ← distribution ← distribute
+distributive	distributive ← distribution ← distribute
+divergence	divergence ← divergent ← diverge
+divergent	divergent ← diverge
+diversity	diversity ← diverse
+domestically	domestically ← domestic
+domestication	domestication ← domesticate
+dominance	dominance ← dominant
+dominantly	dominantly ← dominant
+domination	domination ← dominate
+dutiful	dutiful ← duty
+dutifully	dutifully ← dutiful ← duty
+dynamically	dynamically ← dynamic
+eccentrically	eccentrically ← eccentric
+eclectically	eclectically ← eclectic
+economically	economically ← economical
+ecstatically	ecstatically ← ecstatic
+effortless	effortless ← effort
+elevation	elevation ← elevate
+elitist	elitist ← elitism ← elite
+endorsement	endorsement ← endorse
+enforcement	enforcement ← enforce
+enormously	enormously ← enormous
+enviable	enviable ← envy
+estimation	estimation ← estimate
+ethically	ethically ← ethical
+evaluative	evaluative ← evaluation
+evolutionary	evolutionary ← evolution
+exclusionary	exclusionary ← exclusion ← exclude
+exclusionist	exclusionist ← exclusion ← exclude
+exotically	exotically ← exotic
+experimental	experimental ← experiment
+explicitly	explicitly ← explicit
+exploitation	exploitation ← exploit
+explosively	explosively ← explosive ← explosion ← explode
+exporter	exporter ← export
+extortion	extortion ← extort
+extremist	extremist ← extremism ← extreme
+exuberance	exuberance ← exuberant
+exuberantly	exuberantly ← exuberant
+facial	facial ← face
+facilitation	facilitation ← facilitate
+fairness	fairness ← fair
+fanatically	fanatically ← fanatical
+fanciful	fanciful ← fancy
+fatality	fatality ← fatal
+feminist	feminist ← feminism
+ferociously	ferociously ← ferocious
+fiddler	fiddler ← fiddle
+fiendish	fiendish ← fiend
+fiendishly	fiendishly ← fiendish ← fiend
+fiercely	fiercely ← fierce
+finalise	finalise ← final
+finality	finality ← final
+formality	formality ← formal
+formulation	formulation ← formulate
+fragmentation	fragmentation ← fragment
+frostily	frostily ← frosty ← frost
+frosty	frosty ← frost
+functionally	functionally ← functional ← function
+funder	funder ← fund
+fusion	fusion ← fuse
+geological	geological ← geology
+geologically	geologically ← geologic ← geology
+ghostly	ghostly ← ghost
+glumly	glumly ← glum
+governance	governance ← govern
+gruesomely	gruesomely ← gruesome
+gushingly	gushingly ← gushing
+gutsy	gutsy ← guts
+handful	handful ← hand
+homely	homely ← home
+hostility	hostility ← hostile
+hypocritically	hypocritically ← hypocritical
+identifiable	identifiable ← identify
+ideological	ideological ← ideology
+illegality	illegality ← illegal
+impersonal	impersonal ← personal ← person
+impersonally	impersonally ← impersonal ← personal ← person
+impersonation	impersonation ← impersonate
+impersonator	impersonator ← impersonate
+impish	impish ← imp
+impishly	impishly ← impish ← imp
+implementation	implementation ← implement
+inability	inability ← ability
+inappropriate	inappropriate ← appropriate
+inappropriately	inappropriately ← inappropriate ← appropriate
+inclusion	inclusion ← include
+inclusively	inclusively ← inclusive
+incompatible	incompatible ← compatible
+inconclusive	inconclusive ← conclusive ← conclusion
+inconclusively	inconclusively ← inconclusive ← conclusive ← conclusion
+inconsistency	inconsistency ← inconsistent ← consistent
+inconsistent	inconsistent ← consistent
+inconstancy	inconstancy ← constancy ← constant
+indefinite	indefinite ← definite
+indefinitely	indefinitely ← indefinite ← definite
+indicative	indicative ← indication ← indicate
+indicator	indicator ← indicate
+indistinctly	indistinctly ← indistinct
+individualist	individualist ← individualism ← individual
+individuality	individuality ← individual
+individually	individually ← individual
+inequality	inequality ← equality ← equal
+inexcusably	inexcusably ← inexcusable
+inexplicably	inexplicably ← inexplicable
+inherently	inherently ← inherent
+inheritance	inheritance ← inherit
+injustice	injustice ← justice
+insecure	insecure ← secure
+insecurely	insecurely ← insecure ← secure
+insecurity	insecurity ← security
+insensitive	insensitive ← sensitive
+insensitively	insensitively ← insensitive ← sensitive
+insertion	insertion ← insert
+insightful	insightful ← insight
+insightfully	insightfully ← insightful ← insight
+insignificant	insignificant ← significant
+insignificantly	insignificantly ← insignificant ← significant
+instinctive	instinctive ← instinct
+institutional	institutional ← institution
+institutionally	institutionally ← institutional ← institution
+instrumental	instrumental ← instrument
+insubordinately	insubordinately ← insubordinate
+insubordination	insubordination ← insubordinate
+insufficiently	insufficiently ← sufficiently ← sufficient
+intensify	intensify ← intense
+intensity	intensity ← intense
+interactively	interactively ← interactive ← interact
+interference	interference ← interfere
+interjection	interjection ← interject
+interpretative	interpretative ← interpretation ← interpret
+intuitive	intuitive ← intuition
+intuitively	intuitively ← intuitive ← intuition
+invalidity	invalidity ← invalid ← valid
+irately	irately ← irate
+irrelevant	irrelevant ← relevant
+itemisation	itemisation ← itemize ← item
+itemise	itemise ← item
+justifiable	justifiable ← justify
+justifiably	justifiably ← justifiable ← justify
+justly	justly ← just
+knowledgeable	knowledgeable ← knowledge
+legality	legality ← legal
+lesser	lesser ← less
+lethargically	lethargically ← lethargic
+limitless	limitless ← limit
+linearly	linearly ← linear
+linkage	linkage ← link
+ludicrously	ludicrously ← ludicrous
+machinery	machinery ← machine
+magnetic	magnetic ← magnet
+magnetism	magnetism ← magnet
+mandatory	mandatory ← mandate
+manipulation	manipulation ← manipulate
+marginal	marginal ← margin
+marginally	marginally ← marginal ← margin
+meaningless	meaningless ← meaning
+meaninglessly	meaninglessly ← meaningless ← meaning
+misinterpretation	misinterpretation ← misinterpret
+misplace	misplace ← place
+mobilize	mobilize ← mobile
+monotonously	monotonously ← monotonous
+mutually	mutually ← mutual
+mythological	mythological ← mythology
+naively	naively ← naive
+naturalness	naturalness ← natural ← nature
+neglectful	neglectful ← neglect
+negligently	negligently ← negligent
+neutralization	neutralization ← neutralize ← neutral
+neutralize	neutralize ← neutral
+normalise	normalise ← normal
+normality	normality ← normal
+notable	notable ← note
+notably	notably ← notable ← note
+obscurely	obscurely ← obscure
+obtainable	obtainable ← obtain
+occupational	occupational ← occupation
+occurrence	occurrence ← occur
+oddity	oddity ← odd
+operational	operational ← operation
+organizational	organizational ← organization
+ornamental	ornamental ← ornament
+parliamentary	parliamentary ← parliament
+partially	partially ← partial
+perceptive	perceptive ← perception
+perceptively	perceptively ← perceptive ← perception
+periodic	periodic ← period
+periodical	periodical ← periodic ← period
+periodically	periodically ← periodic ← period
+persecution	persecution ← persecute
+personalization	personalization ← personalize ← personal ← person
+personalize	personalize ← personal ← person
+persuasively	persuasively ← persuasive
+phenomenally	phenomenally ← phenomenal
+philosophically	philosophically ← philosophical ← philosophy
+physicality	physicality ← physical
+placidly	placidly ← placid
+plausibility	plausibility ← plausible
+plausibly	plausibly ← plausible
+pleasurable	pleasurable ← pleasure ← please
+portrayal	portrayal ← portray
+preacher	preacher ← preach
+precedent	precedent ← precede
+precision	precision ← precise
+pregnancy	pregnancy ← pregnant
+presently	presently ← present
+prevalence	prevalence ← prevalent
+primitively	primitively ← primitive
+principally	principally ← principal
+processor	processor ← process
+productivity	productivity ← productive
+professionalism	professionalism ← professional
+prohibitive	prohibitive ← prohibit
+prohibitively	prohibitively ← prohibitive ← prohibit
+prolifically	prolifically ← prolific
+prophetic	prophetic ← prophet
+proportionately	proportionately ← proportionate
+prosecution	prosecution ← prosecute
+provocatively	provocatively ← provocative
+psychiatric	psychiatric ← psychiatry
+psychiatrist	psychiatrist ← psychiatry
+purchaser	purchaser ← purchase
+purity	purity ← pure
+quirky	quirky ← quirk
+radiator	radiator ← radiate
+raunchily	raunchily ← raunchy
+reactionary	reactionary ← reaction
+reactive	reactive ← react
+readable	readable ← read
+realism	realism ← real
+realist	realist ← realism
+reassessment	reassessment ← reassess
+reassurance	reassurance ← reassure
+rebellion	rebellion ← rebel
+recognizable	recognizable ← recognize
+recognizably	recognizably ← recognizable ← recognize
+reconstruction	reconstruction ← reconstruct
+refreshingly	refreshingly ← refreshing
+refurbishment	refurbishment ← refurbish
+regionally	regionally ← regional ← region
+regulator	regulator ← regulate
+reinterpretation	reinterpretation ← reinterpret
+reinvestment	reinvestment ← reinvest
+relevance	relevance ← relevant
+reliability	reliability ← reliable ← rely
+reliably	reliably ← reliable ← rely
+reliance	reliance ← rely
+reliant	reliant ← rely
+reluctantly	reluctantly ← reluctant
+remedial	remedial ← remedy
+remorsefully	remorsefully ← remorseful ← remorse
+remorseless	remorseless ← remorse
+remorselessly	remorselessly ← remorseless ← remorse
+remotely	remotely ← remote
+removable	removable ← remove
+removal	removal ← remove
+repellant	repellant ← repel
+representation	representation ← represent
+reproduction	reproduction ← reproduce
+resourceful	resourceful ← resource
+respondent	respondent ← respond
+responsive	responsive ← response
+responsiveness	responsiveness ← responsive ← response
+restoration	restoration ← restore
+restorative	restorative ← restore
+restrictive	restrictive ← restrict
+restrictively	restrictively ← restrictive ← restrict
+robustly	robustly ← robust
+rotation	rotation ← rotate
+rudimentary	rudimentary ← rudiment
+ruthlessness	ruthlessness ← ruthless
+sarcastically	sarcastically ← sarcastic
+schematically	schematically ← schematic
+scornful	scornful ← scorn
+scornfully	scornfully ← scornful ← scorn
+securely	securely ← secure
+sedately	sedately ← sedate
+selective	selective ← selection ← select
+selectively	selectively ← selective ← selection ← select
+selector	selector ← select
+sensitivity	sensitivity ← sensitive
+sentimental	sentimental ← sentiment
+sentimentally	sentimentally ← sentimental ← sentiment
+sexuality	sexuality ← sexual
+sexually	sexually ← sexual
+showy	showy ← show
+simulation	simulation ← simulate
+slackly	slackly ← slack
+smugly	smugly ← smug
+socialist	socialist ← socialism ← social
+somberly	somberly ← somber
+spacious	spacious ← space
+specifiable	specifiable ← specify
+specification	specification ← specify
+specificity	specificity ← specific
+speculation	speculation ← speculate
+speculative	speculative ← speculation ← speculate
+sponsorship	sponsorship ← sponsor
+spontaneously	spontaneously ← spontaneous
+startlingly	startlingly ← startling
+statutory	statutory ← statute
+stiffen	stiffen ← stiff
+strategically	strategically ← strategic ← strategy
+strategist	strategist ← strategy
+stressfully	stressfully ← stressful ← stress
+structural	structural ← structure
+stuffily	stuffily ← stuffy ← stuff
+stuffy	stuffy ← stuff
+stylistically	stylistically ← stylistic
+submission	submission ← submit
+subscriber	subscriber ← subscribe
+substantially	substantially ← substantial
+substitution	substitution ← substitute
+subtly	subtly ← subtle
+succulently	succulently ← succulent
+sufficiency	sufficiency ← sufficient
+superficially	superficially ← superficial
+suspension	suspension ← suspend
+sustainable	sustainable ← sustain
+sustainably	sustainably ← sustainable ← sustain
+synthetically	synthetically ← synthetic
+tactful	tactful ← tact
+tactfully	tactfully ← tactful ← tact
+tautly	tautly ← taut
+technologically	technologically ← technological ← technology
+tediously	tediously ← tedious
+temperamental	temperamental ← temperament
+temperamentally	temperamentally ← temperamental ← temperament
+thankfully	thankfully ← thankful
+theoretically	theoretically ← theoretical
+torturous	torturous ← torture
+traditionalist	traditionalist ← traditional ← tradition
+tranquility	tranquility ← tranquil
+transferable	transferable ← transfer
+transference	transference ← transfer
+transparency	transparency ← transparent
+tribal	tribal ← tribe
+trustee	trustee ← trust
+unaffected	unaffected ← affected
+unassisted	unassisted ← assisted
+unconventional	unconventional ← conventional ← convention
+unconvincing	unconvincing ← convincing
+unconvincingly	unconvincingly ← unconvincing ← convincing
+uncultured	uncultured ← cultured
+uneconomical	uneconomical ← economical
+unenviably	unenviably ← unenviable
+uninjured	uninjured ← injured
+uninspiring	uninspiring ← inspiring
+uninvolved	uninvolved ← involved
+unjustified	unjustified ← justified
+unmanageable	unmanageable ← manageable ← manage
+unmusical	unmusical ← musical ← music
+unmusically	unmusically ← unmusical ← musical ← music
+unpublished	unpublished ← published
+unregulated	unregulated ← regulated
+unreliably	unreliably ← unreliable ← reliable ← rely
+unresourceful	unresourceful ← resourceful ← resource
+unresponsive	unresponsive ← responsive ← response
+unrestricted	unrestricted ← restricted
+unrestrictive	unrestrictive ← restrictive ← restrict
+unspecified	unspecified ← specified
+unsustainable	unsustainable ← sustainable ← sustain
+unsustainably	unsustainably ← unsustainable ← sustainable ← sustain
+untangle	untangle ← tangle
+unveil	unveil ← veil
+unwaveringly	unwaveringly ← unwavering
+validation	validation ← validate
+validity	validity ← valid
+validly	validly ← valid
+variability	variability ← variable ← vary
+variable	variable ← vary
+variably	variably ← variable ← vary
+variance	variance ← vary
+veneration	veneration ← venerate
+versatility	versatility ← versatile
+vicious	vicious ← vice
+viciously	viciously ← vicious ← vice
+victorious	victorious ← victory
+victoriously	victoriously ← victorious ← victory
+voluntarily	voluntarily ← voluntary
+voraciously	voraciously ← voracious
+vulnerability	vulnerability ← vulnerable
+wickedly	wickedly ← wicked
+wryly	wryly ← wry
+abandonment	abandonment ← abandon
+abhorrent	abhorrent ← abhor
+abhorrently	abhorrently ← abhorrent ← abhor
+abstractly	abstractly ← abstract
+abundantly	abundantly ← abundant
+academically	academically ← academic
+accompaniment	accompaniment ← accompany
+accountability	accountability ← accountable ← account
+acreage	acreage ← acre
+acrobatic	acrobatic ← acrobat
+acrobatically	acrobatically ← acrobatic ← acrobat
+adaptability	adaptability ← adaptable ← adapt
+adaptive	adaptive ← adapt
+additive	additive ← addition ← add
+adornment	adornment ← adorn
+adulthood	adulthood ← adult
+aggregation	aggregation ← aggregate
+agility	agility ← agile
+allegorical	allegorical ← allegory
+allotment	allotment ← allot
+alterable	alterable ← alter
+alteration	alteration ← alter
+amorphously	amorphously ← amorphous
+analogous	analogous ← analogy
+anarchic	anarchic ← anarchy
+angsty	angsty ← angst
+anonymity	anonymity ← anonymous
+anthropological	anthropological ← anthropology
+anticlimactically	anticlimactically ← anticlimactic
+appreciably	appreciably ← appreciable
+approximation	approximation ← approximate
+arbitrarily	arbitrarily ← arbitrary
+arbitrariness	arbitrariness ← arbitrary
+arcanely	arcanely ← arcane
+archetypal	archetypal ← archetype
+archival	archival ← archive
+arduously	arduously ← arduous
+articulation	articulation ← articulate
+assimilation	assimilation ← assimilate
+assuredly	assuredly ← assured
+athleticism	athleticism ← athletic ← athlete
+attributable	attributable ← attribute
+attribution	attribution ← attribute
+attributive	attributive ← attribute
+austerely	austerely ← austere
+authorship	authorship ← author
+autonomously	autonomously ← autonomous
+banishment	banishment ← banish
+belligerence	belligerence ← belligerent
+blubbery	blubbery ← blubber
+buffoonery	buffoonery ← buffoon
+calamitous	calamitous ← calamity
+calamitously	calamitously ← calamitous ← calamity
+callously	callously ← callous
+carbonize	carbonize ← carbon
+catastrophically	catastrophically ← catastrophic ← catastrophe
+challenger	challenger ← challenge
+chemically	chemically ← chemical
+chronologically	chronologically ← chronological
+circumnavigation	circumnavigation ← circumnavigate
+clarification	clarification ← clarify
+cogently	cogently ← cogent
+coherently	coherently ← coherent
+coincident	coincident ← coincide
+collapsible	collapsible ← collapse
+collider	collider ← collide
+colloquially	colloquially ← colloquial
+commencement	commencement ← commence
+commensurately	commensurately ← commensurate
+communicable	communicable ← communicate
+communicatively	communicatively ← communicative ← communicate
+compatibility	compatibility ← compatible
+compellingly	compellingly ← compelling
+compilation	compilation ← compile
+comprehensively	comprehensively ← comprehensive
+computerize	computerize ← computer
+conceivably	conceivably ← conceivable ← conceive
+concurrence	concurrence ← concur
+concurrent	concurrent ← concur
+concurrently	concurrently ← concurrent ← concur
+condensation	condensation ← condense
+conformability	conformability ← conformable
+conformance	conformance ← conform
+conformation	conformation ← conform
+conformist	conformist ← conform
+confrontational	confrontational ← confrontation ← confront
+confrontationally	confrontationally ← confrontational ← confrontation ← confront
+connotation	connotation ← connote
+consignment	consignment ← consign
+consultative	consultative ← consultation ← consult
+contactable	contactable ← contact
+contrarily	contrarily ← contrary
+contrastive	contrastive ← contrast
+controversially	controversially ← controversial ← controversy
+convertible	convertible ← convert
+convincingly	convincingly ← convincing
+counterproductively	counterproductively ← counterproductive
+crucially	crucially ← crucial
+crystallization	crystallization ← crystallize ← crystal
+cultish	cultish ← cult
+cyclic	cyclic ← cycle
+dampen	dampen ← damp
+debatable	debatable ← debate
+deficiently	deficiently ← deficient
+definitive	definitive ← definite
+deniable	deniable ← deny
+denotation	denotation ← denote
+depressive	depressive ← depression
+derision	derision ← deride
+derisive	derisive ← derision ← deride
+derisively	derisively ← derisive ← derision ← deride
+detectable	detectable ← detect
+deterrent	deterrent ← deter
+deviation	deviation ← deviate
+devotedly	devotedly ← devoted
+diligently	diligently ← diligent
+dimensional	dimensional ← dimension
+discernible	discernible ← discern
+discretionary	discretionary ← discretion
+disdainful	disdainful ← disdain
+disparagement	disparagement ← disparage
+disparagingly	disparagingly ← disparaging
+dispersal	dispersal ← disperse
+displacement	displacement ← displace
+disposable	disposable ← dispose
+dissemination	dissemination ← disseminate
+dissension	dissension ← dissent
+diversely	diversely ← diverse
+diversification	diversification ← diversify ← diverse
+diversify	diversify ← diverse
+divination	divination ← divine
+domesticity	domesticity ← domestic
+drabness	drabness ← drab
+dubiously	dubiously ← dubious
+dwarfism	dwarfism ← dwarf
+eccentricity	eccentricity ← eccentric
+edification	edification ← edify
+elimination	elimination ← eliminate
+embodiment	embodiment ← embody
+emergent	emergent ← emerge
+eminence	eminence ← eminent
+empirically	empirically ← empirical
+enduringly	enduringly ← enduring
+energetically	energetically ← energetic
+ephemerality	ephemerality ← ephemeral
+equivalence	equivalence ← equivalent
+erosion	erosion ← erode
+erroneously	erroneously ← erroneous
+ethnicity	ethnicity ← ethnic
+euphemistically	euphemistically ← euphemistic
+euphorically	euphorically ← euphoric
+evolutionist	evolutionist ← evolution
+exaltedly	exaltedly ← exalted
+exorcist	exorcist ← exorcism
+expansive	expansive ← expansion ← expand
+expertly	expertly ← expert
+externalise	externalise ← external
+externality	externality ← external
+extraction	extraction ← extract
+fabrication	fabrication ← fabricate
+facilitator	facilitator ← facilitate
+fallacious	fallacious ← fallacy
+figuratively	figuratively ← figurative ← figure
+flightiness	flightiness ← flighty
+forfeiture	forfeiture ← forfeit
+forlornly	forlornly ← forlorn
+formidably	formidably ← formidable
+genomic	genomic ← genome
+gravitationally	gravitationally ← gravitation
+habitation	habitation ← habitat
+haphazardly	haphazardly ← haphazard
+haughtily	haughtily ← haughty
+hauntingly	hauntingly ← haunting
+hierarchical	hierarchical ← hierarchy
+histrionically	histrionically ← histrionic
+hypothetically	hypothetically ← hypothetical
+hysterically	hysterically ← hysterical
+identically	identically ← identical
+ideologically	ideologically ← ideological ← ideology
+idiomatically	idiomatically ← idiomatic
+ignominiously	ignominiously ← ignominious
+illogical	illogical ← logical ← logic
+illogically	illogically ← illogical ← logical ← logic
+immature	immature ← mature
+immaturity	immaturity ← immature ← mature
+imperceptible	imperceptible ← perceptible
+imperceptibly	imperceptibly ← imperceptible ← perceptible
+implicitly	implicitly ← implicit
+imposition	imposition ← impose
+imprecise	imprecise ← precise
+impressionistically	impressionistically ← impressionistic
+improvisational	improvisational ← improvisation ← improvise
+inaccuracy	inaccuracy ← accuracy
+inadequately	inadequately ← inadequate ← adequate
+inartistic	inartistic ← artistic ← artist ← art
+incapable	incapable ← capable
+inchoately	inchoately ← inchoate
+incoherently	incoherently ← incoherent
+incompatibility	incompatibility ← incompatible ← compatible
+inconceivably	inconceivably ← inconceivable
+incongruity	incongruity ← incongruous
+incongruously	incongruously ← incongruous
+incorporation	incorporation ← incorporate
+indignantly	indignantly ← indignant
+indiscrete	indiscrete ← discrete
+indiscretion	indiscretion ← discretion
+individualism	individualism ← individual
+indolently	indolently ← indolent
+indulgence	indulgence ← indulge
+indulgently	indulgently ← indulgent ← indulge
+inevitability	inevitability ← inevitable
+inexorability	inexorability ← inexorable
+inexorably	inexorably ← inexorable
+infallibility	infallibility ← infallible
+infallibly	infallibly ← infallible
+infernally	infernally ← infernal
+infinitely	infinitely ← infinite
+inflexibility	inflexibility ← inflexible ← flexible
+inflexible	inflexible ← flexible
+ingenuously	ingenuously ← ingenuous
+ingratiatingly	ingratiatingly ← ingratiating
+inhibition	inhibition ← inhibit
+initiation	initiation ← initiate
+initiator	initiator ← initiate
+instantaneously	instantaneously ← instantaneous
+instructive	instructive ← instruction
+intelligently	intelligently ← intelligent
+intensely	intensely ← intense
+intenseness	intenseness ← intense
+intensification	intensification ← intensify ← intense
+intensively	intensively ← intensive ← intense
+internalise	internalise ← internal
+internally	internally ← internal
+interrogation	interrogation ← interrogate
+interrogative	interrogative ← interrogation ← interrogate
+interrogatively	interrogatively ← interrogative ← interrogation ← interrogate
+intrinsically	intrinsically ← intrinsic
+investigative	investigative ← investigation ← investigate
+invisibility	invisibility ← invisible ← visible
+ironic	ironic ← irony
+irrelevancy	irrelevancy ← irrelevant ← relevant
+irrevocably	irrevocably ← irrevocable
+kinetically	kinetically ← kinetic
+lamentation	lamentation ← lament
+laudable	laudable ← laud
+liberalise	liberalise ← liberal
+liberalism	liberalism ← liberal
+liberally	liberally ← liberal
+liberator	liberator ← liberate
+logically	logically ← logical ← logic
+logician	logician ← logic
+luridly	luridly ← lurid
+lyrically	lyrically ← lyrical
+lyricist	lyricist ← lyric
+magnanimity	magnanimity ← magnanimous
+magnanimously	magnanimously ← magnanimous
+malicious	malicious ← malice
+maliciously	maliciously ← malicious ← malice
+malleability	malleability ← malleable
+manipulative	manipulative ← manipulation ← manipulate
+materialism	materialism ← material
+materialistic	materialistic ← materialist ← material
+maturation	maturation ← mature
+maturational	maturational ← maturation ← mature
+maturity	maturity ← mature
+medically	medically ← medical
+mediocrity	mediocrity ← mediocre
+melodious	melodious ← melody
+melodiously	melodiously ← melodious ← melody
+menacingly	menacingly ← menacing
+mentality	mentality ← mental
+meteorological	meteorological ← meteorology
+methodological	methodological ← methodology
+methodologically	methodologically ← methodological ← methodology
+meticulously	meticulously ← meticulous
+midwifery	midwifery ← midwife
+migratory	migratory ← migrate
+minimalist	minimalist ← minimal
+minimally	minimally ← minimal
+ministerial	ministerial ← minister
+modernism	modernism ← modern
+mundanity	mundanity ← mundane
+munificence	munificence ← munificent
+mutinous	mutinous ← mutiny
+mutinously	mutinously ← mutinous ← mutiny
+neutrality	neutrality ← neutral
+nonchalantly	nonchalantly ← nonchalant
+nostalgically	nostalgically ← nostalgic
+notoriety	notoriety ← notorious
+notoriously	notoriously ← notorious
+objectively	objectively ← objective ← object
+objectivity	objectivity ← objective ← object
+occupancy	occupancy ← occupant
+occupier	occupier ← occupy
+opulently	opulently ← opulent
+painstakingly	painstakingly ← painstaking
+paradoxically	paradoxically ← paradoxical
+parasitic	parasitic ← parasite
+passively	passively ← passive
+passivity	passivity ← passive
+patchily	patchily ← patchy ← patch
+patchy	patchy ← patch
+patronize	patronize ← patron
+patronizingly	patronizingly ← patronizing
+persistently	persistently ← persistent
+perversity	perversity ← perverse
+philanthropic	philanthropic ← philanthropy
+philanthropically	philanthropically ← philanthropic ← philanthropy
+physiological	physiological ← physiology
+physiologically	physiologically ← physiological ← physiology
+polemical	polemical ← polemic
+ponderously	ponderously ← ponderous
+portraiture	portraiture ← portrait
+postural	postural ← posture
+precedence	precedence ← precede
+precociously	precociously ← precocious
+predictability	predictability ← predictable ← predict
+predictably	predictably ← predictable ← predict
+predominance	predominance ← predominant
+presentational	presentational ← presentation ← present
+preservationist	preservationist ← preservation ← preserve
+pressurize	pressurize ← pressure
+presupposition	presupposition ← presuppose
+prioritise	prioritise ← priority
+procedural	procedural ← procedure
+professionally	professionally ← professional
+profitability	profitability ← profitable ← profit
+proliferation	proliferation ← proliferate
+promotable	promotable ← promote
+promoter	promoter ← promote
+proportional	proportional ← proportion
+proportionally	proportionally ← proportion
+proprietorial	proprietorial ← proprietor
+proscription	proscription ← proscribe
+protrusion	protrusion ← protrude
+proverbial	proverbial ← proverb
+provincial	provincial ← province
+prurience	prurience ← prurient
+punitively	punitively ← punitive
+qualitatively	qualitatively ← qualitative
+randomly	randomly ← random
+rapturous	rapturous ← rapture
+rapturously	rapturously ← rapturous ← rapture
+rationalise	rationalise ← rational
+rationality	rationality ← rational
+rationally	rationally ← rational
+recitation	recitation ← recite
+recoverable	recoverable ← recover
+recuperative	recuperative ← recuperation
+redundancy	redundancy ← redundant
+redundantly	redundantly ← redundant
+refinement	refinement ← refine
+remorseful	remorseful ← remorse
+residual	residual ← residue
+resoundingly	resoundingly ← resounding
+resuscitation	resuscitation ← resuscitate
+retainer	retainer ← retain
+reversal	reversal ← reverse
+reversible	reversible ← reverse
+revolutionist	revolutionist ← revolution
+rhetorical	rhetorical ← rhetoric
+rhetorically	rhetorically ← rhetorical ← rhetoric
+rigidity	rigidity ← rigid
+rigidly	rigidly ← rigid
+romper	romper ← romp
+rumination	rumination ← ruminate
+ruminative	ruminative ← rumination ← ruminate
+scavenger	scavenger ← scavenge
+scholarly	scholarly ← scholar
+secularly	secularly ← secular
+seedy	seedy ← seed
+selectivity	selectivity ← selective ← selection ← select
+snobbery	snobbery ← snob
+solicitous	solicitous ← solicit
+soliloquize	soliloquize ← soliloquy
+solitariness	solitariness ← solitary
+spherically	spherically ← spherical
+spontaneity	spontaneity ← spontaneous
+spuriously	spuriously ← spurious
+squirmy	squirmy ← squirm
+stabilisation	stabilisation ← stabilize
+statistically	statistically ← statistical
+sterility	sterility ← sterile
+stipulation	stipulation ← stipulate
+stoicism	stoicism ← stoic
+stringently	stringently ← stringent
+stylise	stylise ← style
+subordination	subordination ← subordinate
+subsidise	subsidise ← subsidy
+subsistence	subsistence ← subsist
+successively	successively ← successive ← succession
+summarily	summarily ← summary
+summarisation	summarisation ← summarize ← summary
+summation	summation ← sum
+superfluously	superfluously ← superfluous
+surrealism	surrealism ← surreal
+surrealist	surrealist ← surrealism ← surreal
+surreptitiously	surreptitiously ← surreptitious
+sustainability	sustainability ← sustainable ← sustain
+symbolically	symbolically ← symbolic ← symbol
+symbolise	symbolise ← symbol
+symbolism	symbolism ← symbol
+tacitly	tacitly ← tacit
+taciturnity	taciturnity ← taciturn
+tactical	tactical ← tactic
+tactically	tactically ← tactical ← tactic
+tantalizingly	tantalizingly ← tantalizing
+telescopic	telescopic ← telescope
+telescopically	telescopically ← telescopic ← telescope
+tenaciously	tenaciously ← tenacious
+tensely	tensely ← tense
+tenser	tenser ← tense
+termination	termination ← terminate
+testimonial	testimonial ← testimony
+thematically	thematically ← thematic
+timidity	timidity ← timid
+topical	topical ← topic
+topographical	topographical ← topographic ← topography
+topographically	topographically ← topographic ← topography
+torrential	torrential ← torrent
+totemic	totemic ← totem
+traceable	traceable ← trace
+tranquilize	tranquilize ← tranquil
+transmitter	transmitter ← transmit
+treacherous	treacherous ← treachery
+treacherously	treacherously ← treacherous ← treachery
+unambiguously	unambiguously ← unambiguous
+unanticipated	unanticipated ← anticipated
+unappreciated	unappreciated ← appreciated
+unassigned	unassigned ← assigned
+unattached	unattached ← attached
+unbiased	unbiased ← biased
+unconfined	unconfined ← confined
+uncontroversial	uncontroversial ← controversial ← controversy
+unconvinced	unconvinced ← convinced
+undemonstratively	undemonstratively ← undemonstrative
+undiminished	undiminished ← diminished
+undiminishing	undiminishing ← diminishing
+unequivocally	unequivocally ← unequivocal
+unexceptional	unexceptional ← exceptional ← exception
+unexceptionally	unexceptionally ← unexceptional ← exceptional ← exception
+unfeasible	unfeasible ← feasible
+unfeasibly	unfeasibly ← unfeasible ← feasible
+unharried	unharried ← harried
+unification	unification ← unify
+uniformly	uniformly ← uniform
+unintelligent	unintelligent ← intelligent
+uniquely	uniquely ← unique
+uniqueness	uniqueness ← unique
+unlicensed	unlicensed ← licensed
+unmodified	unmodified ← modified
+unmonitored	unmonitored ← monitored
+unnervingly	unnervingly ← unnerving
+unobtrusive	unobtrusive ← obtrusive
+unobtrusively	unobtrusively ← unobtrusive ← obtrusive
+unobtrusiveness	unobtrusiveness ← unobtrusive ← obtrusive
+unpredictability	unpredictability ← unpredictable
+unpromising	unpromising ← promising
+unrestrained	unrestrained ← restrained
+unscheduled	unscheduled ← scheduled
+unstable	unstable ← stable
+unstressed	unstressed ← stressed
+unsuspected	unsuspected ← suspected
+utiliser	utiliser ← utilise
+venomous	venomous ← venom
+venomously	venomously ← venomous ← venom
+vestigial	vestigial ← vestige
+vestigially	vestigially ← vestigial ← vestige
+vindication	vindication ← vindicate
+virginal	virginal ← virgin
+visibility	visibility ← visible
+visualisation	visualisation ← visualize
+vocational	vocational ← vocation
+whimsical	whimsical ← whimsy
+wholly	wholly ← whole
+wistfully	wistfully ← wistful
+wordage	wordage ← word
+zealous	zealous ← zeal
+zoologist	zoologist ← zoology

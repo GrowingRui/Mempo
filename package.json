@@ -14,7 +14,8 @@
     "icons": "pwa-assets-generator",
     "data:fetch-dicts": "node scripts/fetch-dicts.ts",
     "data:scrape": "node scripts/scrape.ts",
-    "data:enrich": "node scripts/enrich.ts",
+    "data:enrich": "node scripts/enrich.ts && node scripts/families.ts --write",
+    "data:families": "node scripts/families.ts --write",
     "test": "vitest run",
     "test:watch": "vitest"
   },

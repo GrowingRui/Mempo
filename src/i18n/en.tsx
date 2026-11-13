@@ -68,6 +68,8 @@ const en = {
     allWords: "All words",
     recall: "Recall",
     recallSub: "Test yourself on words you’ve studied",
+    exam: "Exam practice",
+    examSub: "Cambridge exam tasks, like word formation",
     yourLevel: "Your level",
     takeTest: "Not sure? Take a level test",
     levelAria: "Level",
@@ -137,6 +139,7 @@ const en = {
       meaning: { title: "Meaning → word", sub: "Read the translation, pick the English word." },
       listen: { title: "Listen → word", sub: "Hear the word, pick how it’s written." },
       spell: { title: "Spell it", sub: "Read the translation and type the word. The hardest one!" },
+      form: { title: "Word formation", sub: "Change the word in capitals so it fits the sentence." },
     },
     toPractise: (n: number) => `${plural(n, "studied word", "studied words")} to practise.`,
     roundDone: "Round done",
@@ -160,6 +163,16 @@ const en = {
     theAnswer: "The answer:",
     whichHeard: "Which word did you hear?",
     whichIs: "Which word is it?",
+    formPrompt: "Use the word in capitals to make a word that fits the gap.",
+    formAria: "Type the word that fits the gap",
+    wrongForm: "Right word, wrong form. The gap needs:",
+  },
+
+  exam: {
+    title: "Exam practice",
+    intro: (round: number) =>
+      `Tasks from the Cambridge Reading and Use of English paper (B2 First, C1 Advanced, C2 Proficiency). ${round} questions a round, which can include words you haven’t studied yet. Your review schedule isn’t changed.`,
+    part: (n: number) => `Part ${n}`,
   },
 
   test: {

@@ -5,13 +5,21 @@ import ScreenHeader from "../components/ScreenHeader";
 import SpeakButton from "../components/SpeakButton";
 import { useT } from "../i18n";
 import { meaning, type TestLang } from "../lib/leveltest";
+import { checkForm, formGap, formPool } from "../lib/exam";
 import { buildRecall, checkSpelling, clozeFor, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
 import { markDontKnow } from "../lib/srs";
 import type { Progress, Word } from "../lib/types";
 import { loadAllWords } from "../lib/words";
 
+/**
+ * recall: test yourself on studied words (Home → Recall). exam: Cambridge exam tasks (Home → Exam practice),
+ * which can also ask words you haven't studied. Both share this quiz screen.
+ */
+export type QuizSection = "recall" | "exam";
+
 interface Props {
+  section: QuizSection;
   progress: Progress;
   setProgress: (fn: (p: Progress) => Progress) => void;
   onExit: () => void;
@@ -22,13 +30,16 @@ const LANG_LABEL: Record<TestLang, string> = { zh: "中文", es: "Español" };
 /** How long a right answer stays before the next question (meaning and spelling). Wrong answers, and every listening answer, wait for "Next". */
 const RIGHT_MS = 800;
 
-const KINDS: { kind: RecallKind; icon: ReactNode }[] = [
+/** `part`: the task's number in the Cambridge Reading and Use of English paper (exam practice only). */
+const KINDS: { kind: RecallKind; section: QuizSection; part?: number; icon: ReactNode }[] = [
   {
     kind: "meaning",
+    section: "recall",
     icon: <path d="M4 6h9M8.5 4v2c0 4-2 7-4.5 8.5M6 10c1.2 2 3 3.4 5 4M13 20l4-9 4 9M14.5 17h5" />,
   },
   {
     kind: "listen",
+    section: "recall",
     icon: (
       <>
         <path d="M11 5 6 9H3v6h3l5 4z" />
@@ -38,14 +49,23 @@ const KINDS: { kind: RecallKind; icon: ReactNode }[] = [
   },
   {
     kind: "spell",
+    section: "recall",
     icon: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" />,
+  },
+  {
+    kind: "form",
+    section: "exam",
+    part: 3,
+    icon: <path d="M3 5h7v5H3zM14 14h7v5h-7zM6.5 10v6.5H11M9 14l2 2.5-2 2.5" />,
   },
 ];
 
 type Result = { word: Word; right: boolean };
 
-export default function Recall({ progress, setProgress, onExit, onStudy }: Props) {
+export default function Recall({ section, progress, setProgress, onExit, onStudy }: Props) {
   const t = useT();
+  const kinds = KINDS.filter((k) => k.section === section);
+  const exam = section === "exam";
   const { settings } = progress;
   const langs: TestLang[] = [...(settings.showZh ? ["zh" as const] : []), ...(settings.showEs ? ["es" as const] : [])];
   const [all, setAll] = useState<Word[]>();
@@ -66,7 +86,7 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
   const start = (k: RecallKind) => {
     if (!all) return;
     setKind(k);
-    setQuestions(buildRecall(recallPool(all, progress), all, k, langs));
+    setQuestions(buildRecall(k === "form" ? formPool(all, progress) : recallPool(all, progress), all, k, langs));
     setResults([]);
     setAdded(false);
   };
@@ -75,14 +95,14 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
   if (!questions || !kind) {
     return (
       <main className="flex flex-1 flex-col">
-        <ScreenHeader title={t.recall.title} onBack={onExit} />
-        <p className="mt-3 font-medium text-muted">{t.recall.intro(ROUND)}</p>
+        <ScreenHeader title={exam ? t.exam.title : t.recall.title} onBack={onExit} />
+        <p className="mt-3 font-medium text-muted">{exam ? t.exam.intro(ROUND) : t.recall.intro(ROUND)}</p>
 
         {error ? (
           <p className="mt-10 text-center font-semibold text-dontknow">{error}</p>
         ) : !all ? (
           <p className="mt-10 text-center font-semibold text-muted">{t.common.loadingWords}</p>
-        ) : studied === 0 ? (
+        ) : studied === 0 && !exam ? (
           <div className="mt-14 flex flex-col items-center text-center">
             <Mascot className="size-24" />
             <p className="mt-3 font-display text-2xl font-extrabold">{t.recall.studyFirst}</p>
@@ -97,7 +117,7 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
           </div>
         ) : (
           <div className="mt-6 flex flex-col gap-3">
-            {KINDS.map((k) => (
+            {kinds.map((k) => (
               <button
                 key={k.kind}
                 type="button"
@@ -110,12 +130,13 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
                   </svg>
                 </span>
                 <span className="min-w-0">
+                  {k.part && <span className="block text-xs font-bold tracking-wide text-brand-ink uppercase">{t.exam.part(k.part)}</span>}
                   <span className="block font-display text-xl font-extrabold">{t.recall.kinds[k.kind].title}</span>
                   <span className="block text-sm font-medium text-muted">{t.recall.kinds[k.kind].sub}</span>
                 </span>
               </button>
             ))}
-            <p className="mt-2 text-center text-xs font-semibold text-muted">{t.recall.toPractise(studied)}</p>
+            {!exam && <p className="mt-2 text-center text-xs font-semibold text-muted">{t.recall.toPractise(studied)}</p>}
           </div>
         )}
       </main>
@@ -126,7 +147,9 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
   if (results.length === questions.length) {
     const right = results.filter((r) => r.right).length;
     const missed = results.filter((r) => !r.right).map((r) => r.word);
-    const newlyMissed = missed.filter((w) => !progress.cards[w.id]?.inDontKnow);
+    // Word formation can ask words you haven't studied yet; those have no card to put on the list.
+    const newlyMissed = missed.filter((w) => progress.cards[w.id] && !progress.cards[w.id].inDontKnow);
+    const listed = missed.filter((w) => progress.cards[w.id]?.inDontKnow).length;
     return (
       <main className="flex flex-1 flex-col">
         <ScreenHeader title={t.recall.roundDone} onBack={onExit} />
@@ -153,7 +176,7 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
               ))}
             </ul>
             {newlyMissed.length === 0 ? (
-              <p className="mt-3 text-sm font-semibold text-muted">{t.recall.alreadyListed(missed.length)}</p>
+              listed > 0 && <p className="mt-3 text-sm font-semibold text-muted">{t.recall.alreadyListed(listed)}</p>
             ) : (
               (added ? (
                 <p className="mt-3 font-semibold text-know-ink">{t.recall.added}</p>
@@ -206,13 +229,23 @@ export default function Recall({ progress, setProgress, onExit, onStudy }: Props
   );
 }
 
-function MeaningPrompt({ word, langs }: { word: Word; langs: TestLang[] }) {
+/**
+ * The meaning in the languages the user shows. As a question, a Spanish meaning that spells out the
+ * answer (decisión) is left out; once answered (`revealed`) there's nothing to give away, so all are shown.
+ */
+function MeaningPrompt({ word, langs, revealed = false }: { word: Word; langs: TestLang[]; revealed?: boolean }) {
   const t = useT();
   const pos = word.pos[0];
+  const lines = revealed
+    ? langs.flatMap((lang) => {
+        const text = meaning(word, lang);
+        return text ? [{ lang, text }] : [];
+      })
+    : promptMeanings(word, langs);
   return (
     <div className="flex flex-col items-center gap-2">
       {pos && <span className="rounded-full border-2 border-line px-2.5 py-0.5 text-xs font-bold text-muted">{t.pos[pos] ?? pos}</span>}
-      {promptMeanings(word, langs).map((l) => (
+      {lines.map((l) => (
         <p key={l.lang} lang={l.lang} className="text-[22px] leading-snug font-bold">
           <span className="sr-only">{LANG_LABEL[l.lang]}: </span>
           {l.text}
@@ -227,12 +260,13 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
   const t = useT();
   const [picked, setPicked] = useState<number | null>(); // undefined = not answered, null = "I don't know"
   const [typed, setTyped] = useState("");
-  const [verdict, setVerdict] = useState<"right" | "close" | "wrong">();
+  const [verdict, setVerdict] = useState<"right" | "form" | "close" | "wrong">();
   const timer = useRef<number>(undefined);
   const nextBtn = useRef<HTMLButtonElement>(null);
   const word = q.word;
-  const answered = kind === "spell" ? verdict !== undefined : picked !== undefined;
-  const right = kind === "spell" ? verdict === "right" : picked === q.correct;
+  const typing = kind === "spell" || kind === "form";
+  const answered = typing ? verdict !== undefined : picked !== undefined;
+  const right = typing ? verdict === "right" : picked === q.correct;
   // Listening always waits for "Next", so there is time to read the meaning that appears.
   const waitForNext = !right || kind === "listen";
 
@@ -255,7 +289,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
 
   // Keys 1-4 pick an option.
   useEffect(() => {
-    if (kind === "spell") return;
+    if (typing) return;
     const onKey = (e: KeyboardEvent) => {
       const n = Number(e.key);
       if (n >= 1 && n <= q.options.length && !e.ctrlKey && !e.metaKey && !e.altKey) choose(n - 1);
@@ -272,6 +306,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
   };
 
   const cloze = kind === "spell" ? clozeFor(word) : undefined;
+  const gap = kind === "form" ? formGap(word) : undefined;
 
   return (
     <>
@@ -292,7 +327,20 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
             <p className="mt-3 text-sm font-semibold text-muted">{t.recall.tapToHear}</p>
             {answered && (
               <div className="mt-3">
-                <MeaningPrompt word={word} langs={langs} />
+                <MeaningPrompt word={word} langs={langs} revealed />
+              </div>
+            )}
+          </>
+        ) : kind === "form" && gap ? (
+          <>
+            <p className="text-sm font-semibold text-muted">{t.recall.formPrompt}</p>
+            <p className="mt-4 text-[19px] leading-relaxed font-medium">{gap.text}</p>
+            <p className="mt-5 rounded-2xl border-2 border-brand/30 bg-brand-soft px-5 py-2 font-display text-2xl font-extrabold tracking-[0.12em] text-brand-ink uppercase">
+              {word.base}
+            </p>
+            {answered && (
+              <div className="mt-5">
+                <MeaningPrompt word={word} langs={langs} revealed />
               </div>
             )}
           </>
@@ -309,7 +357,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
         )}
       </section>
 
-      {kind === "spell" ? (
+      {typing ? (
         <form
           className="mt-6 flex flex-col gap-3"
           onSubmit={(e) => {
@@ -317,7 +365,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
             if (answered) {
               if (!right) onDone(false);
             }
-            else if (typed.trim()) setVerdict(checkSpelling(typed, word));
+            else if (typed.trim()) setVerdict(gap ? checkForm(typed, gap, word) : checkSpelling(typed, word));
           }}
         >
           <input
@@ -331,7 +379,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
             autoComplete="off"
             spellCheck={false}
             enterKeyHint="done"
-            aria-label={t.recall.typeAria}
+            aria-label={kind === "form" ? t.recall.formAria : t.recall.typeAria}
             placeholder={t.recall.typePlaceholder}
             className={`rounded-2xl border-2 bg-card px-4 py-3 text-center font-display text-2xl font-bold outline-none ${
               !answered ? "border-line focus:border-brand" : right ? "border-know text-know-ink" : "border-dontknow text-dontknow-ink"
@@ -356,7 +404,11 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
             </div>
           )}
           {answered && !right && (
-            <Reveal word={word} note={verdict === "close" ? t.recall.almost : t.recall.theAnswer}>
+            <Reveal
+              word={word}
+              answer={gap?.answer}
+              note={verdict === "form" ? t.recall.wrongForm : verdict === "close" ? t.recall.almost : t.recall.theAnswer}
+            >
               <button ref={nextBtn} type="submit" className={NEXT_CLASS}>
                 {t.common.next}
               </button>
@@ -404,14 +456,15 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
 const NEXT_CLASS =
   "press w-full rounded-2xl bg-brand py-3 font-display text-lg font-bold text-white [--edge:var(--color-brand-edge)] hover:bg-brand-dark";
 
-function Reveal({ word, note, children }: { word: Word; note: string; children: ReactNode }) {
+/** The right answer after a wrong one. `answer` is the form the gap needed, if not the headword ("decisions"). */
+function Reveal({ word, answer, note, children }: { word: Word; answer?: string; note: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3 rounded-2xl border-2 border-know/30 bg-know/10 px-4 py-3">
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold text-muted">{note}</span>
-          <span className="block font-display text-2xl font-extrabold text-know-ink">{word.word}</span>
-          {word.phonetic && <span className="block text-sm font-medium text-muted">/{word.phonetic}/</span>}
+          <span className="block font-display text-2xl font-extrabold text-know-ink">{answer ?? word.word}</span>
+          {word.phonetic && (answer ?? word.word) === word.word && <span className="block text-sm font-medium text-muted">/{word.phonetic}/</span>}
         </span>
         <SpeakButton id={word.id} text={word.word} className="shrink-0" />
       </div>

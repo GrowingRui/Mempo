@@ -33,6 +33,8 @@ export interface Word {
   variants?: string[];
   forms?: string[];
   lemma?: string;
+  /** The word it's built from, for word formation (decision → "decide"). Set by scripts/families.ts. */
+  base?: string;
   examples: Example[];
 }
 

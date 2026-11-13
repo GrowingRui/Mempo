@@ -73,8 +73,15 @@ export default function App() {
           <DontKnow progress={progress} onPractise={() => go({ name: "study", mode: "dontknow" })} onBack={back} />
         ) : screen.name === "test" ? (
           <LevelTest progress={progress} setProgress={setProgress} onExit={back} />
-        ) : screen.name === "recall" ? (
-          <Recall progress={progress} setProgress={setProgress} onExit={back} onStudy={() => go({ name: "study", mode: "today" })} />
+        ) : screen.name === "recall" || screen.name === "exam" ? (
+          <Recall
+            key={screen.name}
+            section={screen.name}
+            progress={progress}
+            setProgress={setProgress}
+            onExit={back}
+            onStudy={() => go({ name: "study", mode: "today" })}
+          />
         ) : screen.name === "stats" ? (
           <Stats progress={progress} onBack={back} />
         ) : screen.name === "settings" ? (

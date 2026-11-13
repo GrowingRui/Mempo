@@ -56,6 +56,8 @@ const zh: Messages = {
     allWords: "词库",
     recall: "回忆练习",
     recallSub: "检验一下学过的单词",
+    exam: "考试练习",
+    examSub: "剑桥考试题型，例如构词",
     yourLevel: "你的水平",
     takeTest: "不确定？做个水平测试",
     levelAria: "水平",
@@ -122,6 +124,7 @@ const zh: Messages = {
       meaning: { title: "看释义 → 选单词", sub: "看翻译，选出对应的英文单词。" },
       listen: { title: "听发音 → 选单词", sub: "听单词，选出它的拼写。" },
       spell: { title: "拼写", sub: "看翻译，输入单词。最难的一项！" },
+      form: { title: "构词", sub: "把大写的词变成适合句子的形式。" },
     },
     toPractise: (n: number) => `可练习的已学单词：${N(n)} 个。`,
     roundDone: "本轮完成",
@@ -145,6 +148,16 @@ const zh: Messages = {
     theAnswer: "答案：",
     whichHeard: "你听到的是哪个词？",
     whichIs: "是哪个词？",
+    formPrompt: "用大写的词变出适合空格的词。",
+    formAria: "输入适合空格的词",
+    wrongForm: "词对了，形式不对。空格需要：",
+  },
+
+  exam: {
+    title: "考试练习",
+    intro: (round: number) =>
+      `剑桥《阅读与英语运用》试卷（B2 First、C1 Advanced、C2 Proficiency）中的题型。每轮 ${N(round)} 题，可能包括还没学过的词。不会改变你的复习计划。`,
+    part: (n: number) => `第 ${n} 部分`,
   },
 
   test: {

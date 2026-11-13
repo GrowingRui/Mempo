@@ -1,13 +1,17 @@
 // Active recall: instead of judging yourself, you have to find or produce the English word.
-// Only words you have already studied are asked. Practising here doesn't move cards between boxes;
-// at the end you can choose to put the missed words on the "Don't know" list (markDontKnow in srs.ts).
+// Only words you have already studied are asked (except in exam practice, see exam.ts). Practising here
+// doesn't move cards between boxes; at the end you can choose to put the missed words on the
+// "Don't know" list (markDontKnow in srs.ts).
 import { toDay } from "./date";
 import { meaning, type TestLang } from "./leveltest";
 import { isDue } from "./srs";
 import type { Progress, Word } from "./types";
 
-/** meaning: read the translation, pick the word. listen: hear it, pick the word. spell: read the translation, type the word. */
-export type RecallKind = "meaning" | "listen" | "spell";
+/**
+ * meaning: read the translation, pick the word. listen: hear it, pick the word. spell: read the translation, type the word.
+ * form: word formation (exam practice, Cambridge Use of English Part 3; questions from exam.ts).
+ */
+export type RecallKind = "meaning" | "listen" | "spell" | "form";
 
 export const ROUND = 15;
 export const OPTIONS = 4;
@@ -19,7 +23,7 @@ export interface RecallQuestion {
   correct: number;
 }
 
-function shuffle<T>(xs: T[], rnd: () => number): T[] {
+export function shuffle<T>(xs: T[], rnd: () => number): T[] {
   const a = [...xs];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(rnd() * (i + 1));
@@ -40,12 +44,12 @@ export function normalize(s: string): string {
 }
 
 /** Every spelling that counts as the word: the headword, its variants and its forms. */
-function accepted(w: Word): Set<string> {
+export function accepted(w: Word): Set<string> {
   return new Set([w.word, ...(w.variants ?? []), ...(w.forms ?? [])].map(normalize));
 }
 
 /** How many single-letter edits turn a into b (stops counting above 2). */
-function editDistance(a: string, b: string): number {
+export function editDistance(a: string, b: string): number {
   if (Math.abs(a.length - b.length) > 2) return 3;
   let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
   for (let i = 1; i <= a.length; i++) {
@@ -72,14 +76,20 @@ export function letterHint(word: string): string {
   return [...word].map((ch, i) => (i === 0 || !/\p{L}/u.test(ch) ? ch : "_")).join(" ");
 }
 
-const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+export const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Finds the word, or any of its forms and variants, as a whole word in a sentence. */
+export function wordRe(w: Word): RegExp {
+  const terms = [...accepted(w), normalize(w.word)].flatMap((t) => [t, t.replace(/ /g, "-")]);
+  const sorted = [...new Set(terms)].filter(Boolean).sort((a, b) => b.length - a.length);
+  return new RegExp(`(?<!\\p{L})(?:${sorted.map((t) => escapeRe(t).replace(/ /g, "[\\s-]+")).join("|")})(?!\\p{L})`, "giu");
+}
+
+export const GAP = "_____";
 
 /** The example sentence with the word (or any of its forms) replaced by a gap; undefined if it isn't in the sentence. */
 export function blankOut(text: string, w: Word): string | undefined {
-  const terms = [...accepted(w), normalize(w.word)].flatMap((t) => [t, t.replace(/ /g, "-")]);
-  const sorted = [...new Set(terms)].filter(Boolean).sort((a, b) => b.length - a.length);
-  const re = new RegExp(`(?<!\\p{L})(?:${sorted.map((t) => escapeRe(t).replace(/ /g, "[\\s-]+")).join("|")})(?!\\p{L})`, "giu");
-  const out = text.replace(re, "_____");
+  const out = text.replace(wordRe(w), GAP);
   return out === text ? undefined : out;
 }
 
@@ -170,10 +180,11 @@ function distractors(target: Word, all: Word[], kind: RecallKind, langs: TestLan
  * Words with no meaning in the shown languages are skipped for "meaning" and "spell".
  */
 export function buildRecall(pool: Word[], all: Word[], kind: RecallKind, langs: TestLang[], count = ROUND, rnd = Math.random): RecallQuestion[] {
-  const usable = kind === "listen" ? pool : pool.filter((w) => promptMeanings(w, langs).length > 0);
+  // "form" pools come ready from formPool (exam.ts).
+  const usable = kind === "listen" || kind === "form" ? pool : pool.filter((w) => promptMeanings(w, langs).length > 0);
   const picked = shuffle(usable.slice(0, count), rnd);
   return picked.map((word) => {
-    if (kind === "spell") return { word, options: [], correct: -1 };
+    if (kind === "spell" || kind === "form") return { word, options: [], correct: -1 };
     const options = shuffle([word, ...distractors(word, all, kind, langs, rnd)], rnd);
     return { word, options, correct: options.indexOf(word) };
   });

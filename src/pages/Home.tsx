@@ -31,6 +31,30 @@ function GoalChip({ active, onClick, children, wide }: { active: boolean; onClic
   );
 }
 
+/** A full-width link to another screen: icon, title, one line of explanation, arrow (Recall, Exam practice). */
+function LinkRow({ onClick, title, sub, icon }: { onClick: () => void; title: string; sub: string; icon: ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="press mt-2.5 flex items-center gap-3 rounded-[20px] border-2 border-line bg-card px-3 py-2.5 text-left hover:border-brand/40"
+    >
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand-ink">
+        <svg viewBox="0 0 24 24" className="size-[22px]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          {icon}
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-display text-lg leading-tight font-extrabold">{title}</span>
+        <span className="block text-[13px] font-semibold text-muted">{sub}</span>
+      </span>
+      <svg viewBox="0 0 24 24" className="size-4 shrink-0 text-muted" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  );
+}
+
 function NavTile({ onClick, n, label, tone }: { onClick: () => void; n: number | undefined; label: string; tone: string }) {
   const t = useT();
   return (
@@ -154,24 +178,18 @@ export default function Home({ progress, setProgress, go }: Props) {
         <NavTile onClick={() => go({ name: "words" })} n={index?.counts.total} label={t.home.allWords} tone="text-ink" />
       </nav>
 
-      <button
-        type="button"
+      <LinkRow
         onClick={() => go({ name: "recall" })}
-        className="press mt-2.5 flex items-center gap-3 rounded-[20px] border-2 border-line bg-card px-3 py-2.5 text-left hover:border-brand/40"
-      >
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand-ink">
-          <svg viewBox="0 0 24 24" className="size-[22px]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 19.5h5M10.5 22h3" />
-          </svg>
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block font-display text-lg leading-tight font-extrabold">{t.home.recall}</span>
-          <span className="block text-[13px] font-semibold text-muted">{t.home.recallSub}</span>
-        </span>
-        <svg viewBox="0 0 24 24" className="size-4 shrink-0 text-muted" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+        title={t.home.recall}
+        sub={t.home.recallSub}
+        icon={<path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 19.5h5M10.5 22h3" />}
+      />
+      <LinkRow
+        onClick={() => go({ name: "exam" })}
+        title={t.home.exam}
+        sub={t.home.examSub}
+        icon={<path d="M2 9l10-5 10 5-10 5zM6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6" />}
+      />
 
       {/* Level */}
       <section className="mt-7">
