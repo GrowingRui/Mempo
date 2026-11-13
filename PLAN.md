@@ -366,7 +366,11 @@ Before, screens switched only in memory, so Android's Back button (and the brows
 **G. Ideas from popular vocabulary apps** (noted 2026-11-13)
 Compared with Anki, Quizlet, Memrise, Duolingo, WordUp, Vocabulary.com, Drops and Lingvist. All $0. Each still needs approval before work starts. **Decided by the user 2026-11-13: start with 2 (word formation).**
 - [ ] **1. Placement test / "I know these already"** (WordUp, Lingvist, Vocabulary.com). A quick test per level that skips the words you already know, so B2–C2 learners don't swipe through hundreds of easy ones. ~½ day
-- [ ] **2. Word formation exercise** (Cambridge Use of English Part 3; Vocabulary.com question types). A sentence with a gap and a base word in capitals (DECIDE → *decision*); type the right form. Uses `forms` and related words already in the data. ~1 day
+- [ ] **2. Word formation exercise** (Cambridge Use of English Part 3; Vocabulary.com question types). Built 2026-11-13, waiting for approval on localhost. Moves to its own **Exam practice** section (see H below):
+  - **Word formation**: an example sentence with a gap, the base word in capitals (DECIDE), type the form that fits. Only the exact form counts, as in the exam: "decision" when the gap needs "decisions" shows "Right word, wrong form"; one typo shows "Almost!". The meaning appears after answering
+  - Studied words first (weakest first), then other words from your level, so a round is full from day one. Missed studied words can go to "Don't know" as in the other exercises
+  - Data: `base` on 1,631 of 6,128 cards (about 1,600 with a usable sentence), made by `scripts/families.ts` (`npm run data:families`, also runs after `data:enrich`). It strips prefixes / suffixes with spelling repairs (decis|ion → decide) and keeps a link only if the word's main dictionary definition mentions the base ("the act of deciding"); negative prefixes (un-, in-, dis-, mis-, non- …) need "not / lack / without …" in the definition. Up to 3 steps (unacceptable ← acceptable ← ACCEPT), never to a much rarer word. No -ed / -ing (their examples are mostly verbs). Bad pairs found by eye are in `BLOCK`; every link is listed in `data/reports/families.txt`
+  - App: `formGap`, `checkForm`, `formPool` in `src/lib/recall.ts` (tests in `recall.test.ts`); texts in en / zh / es
 - [ ] **3. Matching game against the clock** (Quizlet Match, Drops). Match words to meanings in a grid, a quick extra mode next to Recall. ~½ day
 - [ ] **4. Streak freeze + badges** (Duolingo). Keep the streak after one missed day; badges for 7 / 30 days, 500 words, a finished level. ~½ day
 - [ ] **5. Word of the day** (WordUp, Vocabulary.com) on Home and in the daily reminder. ~2 h
@@ -376,6 +380,14 @@ Compared with Anki, Quizlet, Memrise, Duolingo, WordUp, Vocabulary.com, Drops an
 - [ ] **9. Topics** (Drops, Memrise): work, health, environment… Every word needs a topic tag first. ~1 day
 - [ ] **10. Short stories with your words**: part of Phase 7 (needs a paid AI API)
 - Left out: native-speaker video clips (Memrise, WordUp), because of licensing
+
+**H. Exam practice section** (decided by the user 2026-11-13)
+Recall checks words you've already studied; exam tasks train a skill and may use words you haven't studied yet. So they get their own place: an **"Exam practice"** button on Home next to Recall, opening a screen with the Cambridge *Reading and Use of English* task types (the same four in B2 First, C1 Advanced and C2 Proficiency). Only tasks that work are shown, no "coming soon" items.
+- [ ] **Step 1: the section + Part 3 Word formation** (in progress 2026-11-13). Move Word formation out of Recall into the new screen (own Home button, Back works as on the other screens); logic moves from `src/lib/recall.ts` to its own file
+- [ ] **Part 1: Multiple-choice cloze** (next, ~1 day). A gap and 4 similar words (*make / do / take / have*), only one fits. From our example sentences, with wrong choices of the same part of speech and close meaning. Collocations are the hard part: the wrong choices must really be wrong in that sentence, so they need checking
+- [ ] **Part 2: Open cloze** (later, with Phase 7). A gap with no options; the answer is a grammar word (*which, despite, unless*). Not really vocabulary, and needs our own texts
+- [ ] **Part 4: Key word transformation** (later, with Phase 7). Rewrite a sentence with a given word in 2–5 words. Needs hand-written questions or AI to check the answers
+- [ ] **Later idea: exam-style texts.** In the real exam each part is one short text with 8 gaps, not single sentences. Join 8 example sentences into one set so it feels closer to the paper
 
 **Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
 
