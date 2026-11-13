@@ -363,6 +363,20 @@ Before, screens switched only in memory, so Android's Back button (and the brows
 - [x] A reload stays on the same screen; a Move QR link opens Settings and Back goes Home
 - Tests: `src/lib/nav.test.ts` (fake browser history, including the asynchronous `history.go`). Checked in real Chrome on localhost and approved by the user
 
+**G. Ideas from popular vocabulary apps** (noted 2026-11-13)
+Compared with Anki, Quizlet, Memrise, Duolingo, WordUp, Vocabulary.com, Drops and Lingvist. All $0. Each still needs approval before work starts. **Decided by the user 2026-11-13: start with 2 (word formation).**
+- [ ] **1. Placement test / "I know these already"** (WordUp, Lingvist, Vocabulary.com). A quick test per level that skips the words you already know, so B2–C2 learners don't swipe through hundreds of easy ones. ~½ day
+- [ ] **2. Word formation exercise** (Cambridge Use of English Part 3; Vocabulary.com question types). A sentence with a gap and a base word in capitals (DECIDE → *decision*); type the right form. Uses `forms` and related words already in the data. ~1 day
+- [ ] **3. Matching game against the clock** (Quizlet Match, Drops). Match words to meanings in a grid, a quick extra mode next to Recall. ~½ day
+- [ ] **4. Streak freeze + badges** (Duolingo). Keep the streak after one missed day; badges for 7 / 30 days, 500 words, a finished level. ~½ day
+- [ ] **5. Word of the day** (WordUp, Vocabulary.com) on Home and in the daily reminder. ~2 h
+- [ ] **6. Your own words / lists** (Anki, Quizlet). Star cards into "My list", or add words you meet while reading. ~1 day
+- [ ] **7. Speak it** (Memrise, Duolingo). Say the word, the browser's free speech recognition checks it (good in Chrome / Android, weaker on iPhone). ~½ day
+- [ ] **8. Better scheduling (FSRS)** (Anki). The modern spaced repetition method; invisible to users, fewer wasted reviews. ~1 day
+- [ ] **9. Topics** (Drops, Memrise): work, health, environment… Every word needs a topic tag first. ~1 day
+- [ ] **10. Short stories with your words**: part of Phase 7 (needs a paid AI API)
+- Left out: native-speaker video clips (Memrise, WordUp), because of licensing
+
 **Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
 
 ---
