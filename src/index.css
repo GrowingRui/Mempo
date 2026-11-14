@@ -29,6 +29,10 @@
   --color-dontknow-edge: #d93a40;
 
   --color-marker: #ffe27a; /* highlighter behind the word in example sentences */
+  /* Where the marker starts (from the top of the line). Light mode: lower half only, like a
+     highlighter pen. Dark mode: the whole line, because the word is always dark indigo and its
+     upper half would otherwise sit on the dark card. */
+  --marker-top: 45%;
   --color-cheek: #ff9bb3;
 
   /* Text versions of the colours above. Same as the fills in light mode, lighter in dark mode
@@ -72,6 +76,8 @@
   --color-brand-ink: #b3a3ff;
   --color-know-ink: #45d996;
   --color-dontknow-ink: #ff8589;
+
+  --marker-top: 4%;
 
   --color-bar-new: #8a72ff;
   --color-bar-reviewed: #5b46c9;

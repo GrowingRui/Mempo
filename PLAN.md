@@ -412,7 +412,7 @@ Before, every screen was one narrow column (max ~450 px) on every device, and on
 - [x] Study, Recall, Exam practice, Skip and the level test stay one narrow column, without tab bar or sidebar. The "Don't know" list has the sidebar but no tab bar (its Practise button sits there)
 - [x] **Back button:** `nav().tab()` in `src/lib/nav.ts`. Switching tabs replaces the entry instead of adding one, so Back from any tab goes to Today and Back on Today leaves the app; a screen opened from a tab goes back to that tab. Tests in `nav.test.ts`
 - [x] Texts `nav`, `practice`, `home.morePractice` / `yourPlan` / `change` / `planGoal` in en / zh / es. Checked at 320 / 360 / 390 / 820 / 1100 / 1440 px, all three languages, light and dark
-- Noticed, not fixed yet: in dark mode the highlighted word in example sentences is light text on the yellow marker (hard to read)
+- Fixed 2026-11-14: in dark mode the yellow marker behind the word in example sentences covered only the lower half, so the dark word sat half on the dark card. Now it covers the whole word in dark mode (`--marker-top` in `src/index.css`); light mode unchanged
 
 **Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
 
