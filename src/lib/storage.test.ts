@@ -6,7 +6,7 @@ import { card, TODAY } from "./test-helpers";
 
 describe("normalizeProgress", () => {
   it("keeps valid progress as it is", () => {
-    const p = { settings: { ...DEFAULT_SETTINGS, level: "C1", dailyNew: 30 }, cards: { a: card({ lastSeen: TODAY }) }, history: { [TODAY]: { new: 1, reviewed: 2 } } };
+    const p = { settings: { ...DEFAULT_SETTINGS, level: "C1", dailyNew: 30 }, cards: { a: card({ lastSeen: TODAY }) }, history: { [TODAY]: { new: 1, reviewed: 2 } }, myList: { a: TODAY } };
     expect(normalizeProgress(p)).toEqual({ progress: p, dropped: 0 });
   });
 
@@ -37,13 +37,13 @@ describe("normalizeProgress", () => {
 
   it("anything that isn't an object gives empty progress", () => {
     for (const junk of [null, 42, "hi", []]) {
-      expect(normalizeProgress(junk).progress).toEqual({ settings: DEFAULT_SETTINGS, cards: {}, history: {} });
+      expect(normalizeProgress(junk).progress).toEqual({ settings: DEFAULT_SETTINGS, cards: {}, history: {}, myList: {} });
     }
   });
 });
 
 describe("parseBackup", () => {
-  const progress = { settings: DEFAULT_SETTINGS, cards: { a: card() }, history: {} };
+  const progress = { settings: DEFAULT_SETTINGS, cards: { a: card() }, history: {}, myList: { a: "2026-11-07" } };
 
   it("reads a backup file", () => {
     const text = JSON.stringify({ app: "mempo", version: 1, exportedAt: "2026-11-07T10:00:00.000Z", progress });

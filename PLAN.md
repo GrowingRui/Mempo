@@ -393,7 +393,11 @@ Compared with Anki, Quizlet, Memrise, Duolingo, WordUp, Vocabulary.com, Drops an
 - [x] **5. Word of the day** (WordUp, Vocabulary.com). Done 2026-11-14. A card on Home (word, pronunciation, meaning, example) and the word in the daily reminder
   - Same word for everyone at a level on a day, picked from the date alone (`src/lib/wotd.ts`, tests in `wotd.test.ts`): it steps through the level's words by a golden-ratio stride, so every word comes once before any repeats and neighbouring days aren't alphabetical neighbours. Left out: inflected cards (`lemma`), sensitive words, words without an example or meaning
   - Reminder: the server still knows no words. The service worker (`src/sw.ts`) replaces the body with "Word of the day: … · meaning", reading the level and languages the app saves in Cache Storage (`mempo-prefs`) and the word list from the offline cache. If either is missing, the old text is shown
-- [ ] **6. Your own words / lists** (Anki, Quizlet). Star cards into "My list", or add words you meet while reading. ~1 day
+- [x] **6. My list** (Anki, Quizlet). Done 2026-11-14:
+  - A ☆ on the study card (front and back), on every word row (Word list, "Don't know", My list) and on the Word of the day. Tap again to take the word off
+  - Practice → **My list** (`src/pages/MyList.tsx`, screen `{ name: "mylist" }`): the starred words, most recently added first; "Add a word" searches all 6,128 words (English, 中文, español; same search as the Word list, now in `src/lib/search.ts`); "Practise these N words" opens a study session of the whole list (study mode `mylist`), weakest first: "Don't know" words, then not studied, then due, then the rest. Answers count like any study
+  - Saved in progress as `myList` (word id → day added; `src/lib/mylist.ts`), so backups and "Move to another device" carry it. Older progress and backups load with an empty list. "Start over" keeps the list
+  - Only Mempo's own words for now. Words that aren't in Mempo (with your own meaning) could come later
 - [ ] **7. Speak it** (Memrise, Duolingo). Say the word, the browser's free speech recognition checks it (good in Chrome / Android, weaker on iPhone). ~½ day
 - [ ] **8. Better scheduling (FSRS)** (Anki). The modern spaced repetition method; invisible to users, fewer wasted reviews. ~1 day
 - [ ] **9. Topics** (Drops, Memrise): work, health, environment… Every word needs a topic tag first. ~1 day

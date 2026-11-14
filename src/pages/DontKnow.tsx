@@ -3,17 +3,19 @@ import Mascot from "../components/Mascot";
 import ScreenHeader from "../components/ScreenHeader";
 import WordRow from "../components/WordRow";
 import { useT } from "../i18n";
+import { inMyList, toggleMyList } from "../lib/mylist";
 import { LEAVE_DONT_KNOW_AFTER } from "../lib/srs";
 import type { Progress, Word } from "../lib/types";
 import { loadAllWords } from "../lib/words";
 
 interface Props {
   progress: Progress;
+  setProgress: (fn: (p: Progress) => Progress) => void;
   onPractise: () => void;
   onBack: () => void;
 }
 
-export default function DontKnow({ progress, onPractise, onBack }: Props) {
+export default function DontKnow({ progress, setProgress, onPractise, onBack }: Props) {
   const t = useT();
   const [words, setWords] = useState<Word[]>();
   const [error, setError] = useState<string>();
@@ -49,7 +51,13 @@ export default function DontKnow({ progress, onPractise, onBack }: Props) {
         <>
           <ul className="mt-5 grid grid-cols-1 items-start gap-3 pb-28 md:grid-cols-2">
             {list.map((w) => (
-              <WordRow key={w.id} word={w} card={cards[w.id]} settings={progress.settings} />
+              <WordRow
+                key={w.id}
+                word={w}
+                card={cards[w.id]}
+                settings={progress.settings}
+                star={{ starred: inMyList(progress, w.id), onToggle: () => setProgress((p) => toggleMyList(p, w.id)) }}
+              />
             ))}
           </ul>
           <div className="pointer-events-none fixed inset-x-0 bottom-0 md:left-[88px] lg:left-60 bg-gradient-to-t from-paper-2 via-paper-2/90 to-transparent pt-10 pb-[max(1.25rem,env(safe-area-inset-bottom))]">

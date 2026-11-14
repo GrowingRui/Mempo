@@ -4,6 +4,7 @@ import type { Gloss, Sensitive, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import ReportDialog from "./ReportDialog";
 import SpeakButton from "./SpeakButton";
+import StarButton from "./StarButton";
 
 /** Meanings in one language. The label is the language's own name (中文, Español, English) in every app language. */
 export function GlossList({ label, glosses, lang }: { label: string; glosses: Gloss[]; lang?: string }) {
@@ -79,16 +80,23 @@ export function SensitiveNote({ sensitive, className = "" }: { sensitive: Sensit
   );
 }
 
+/** The ☆ on the card: whether the word is on My list, and how to change that. */
+export interface CardStar {
+  starred: boolean;
+  onToggle: () => void;
+}
+
 interface Props {
   word: Word;
   flipped: boolean;
   onFlip: () => void;
   settings: Settings;
+  star?: CardStar;
 }
 
 const FACE = "flip-face flex flex-col rounded-[32px] border-2 border-line bg-card p-6 shadow-[0_8px_0_var(--color-line-edge)]";
 
-export default function WordCard({ word, flipped, onFlip, settings }: Props) {
+export default function WordCard({ word, flipped, onFlip, settings, star }: Props) {
   const t = useT();
   const [reporting, setReporting] = useState(false);
   const example = word.examples[0];
@@ -120,7 +128,10 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
               <span className="rounded-full bg-brand px-3 py-1 font-display text-sm font-extrabold text-white">{word.level}</span>
               {word.sensitive?.level === "offensive" && <SensitiveBadge />}
             </span>
-            <span className="truncate text-sm font-semibold text-muted">{word.pos.map((p) => t.pos[p] ?? p).join(t.locale === "zh-CN" ? "、" : ", ")}</span>
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="truncate text-sm font-semibold text-muted">{word.pos.map((p) => t.pos[p] ?? p).join(t.locale === "zh-CN" ? "、" : ", ")}</span>
+              {star && <StarButton word={word.word} starred={star.starred} onToggle={star.onToggle} className="shrink-0" />}
+            </span>
           </div>
 
           <div className="flex flex-1 flex-col items-center justify-center text-center">
@@ -146,7 +157,10 @@ export default function WordCard({ word, flipped, onFlip, settings }: Props) {
               <h2 className="font-display text-3xl leading-tight font-extrabold [overflow-wrap:anywhere]">{word.word}</h2>
               {word.phonetic && <p className="text-sm font-medium text-muted">/{word.phonetic}/</p>}
             </div>
-            <SpeakButton id={word.id} text={word.word} className="shrink-0" />
+            <span className="flex shrink-0 items-center gap-2">
+              {star && <StarButton word={word.word} starred={star.starred} onToggle={star.onToggle} />}
+              <SpeakButton id={word.id} text={word.word} />
+            </span>
           </div>
 
           {word.sensitive && <SensitiveNote sensitive={word.sensitive} className="mt-4" />}

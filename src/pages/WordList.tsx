@@ -2,6 +2,8 @@ import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from "
 import ScreenHeader from "../components/ScreenHeader";
 import WordRow from "../components/WordRow";
 import { useT } from "../i18n";
+import { inMyList, toggleMyList } from "../lib/mylist";
+import { norm, searchIndex, searchWords } from "../lib/search";
 import { statusOf, type WordStatus } from "../lib/srs";
 import { LEVELS, type Level, type Progress, type Word } from "../lib/types";
 import { loadAllWords } from "../lib/words";
@@ -24,10 +26,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   );
 }
 
-/** Lower-case, accents removed, so "accion" finds "acción". */
-const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
-
-export default function WordList({ progress }: { progress: Progress }) {
+export default function WordList({ progress, setProgress }: { progress: Progress; setProgress: (fn: (p: Progress) => Progress) => void }) {
   const t = useT();
   const [words, setWords] = useState<Word[]>();
   const [error, setError] = useState<string>();
@@ -47,20 +46,7 @@ export default function WordList({ progress }: { progress: Progress }) {
     setShown(PAGE);
   }, [level, status, q]);
 
-  // Search text per word: headword, spellings and forms first (they rank higher), then the translations.
-  const searchable = useMemo(
-    () =>
-      new Map(
-        (words ?? []).map((w) => [
-          w.id,
-          {
-            en: [w.word, ...(w.variants ?? []), ...(w.forms ?? [])].map(norm),
-            tr: norm([...w.zh, ...w.es].flatMap((g) => g.gloss).join(" | ")),
-          },
-        ]),
-      ),
-    [words],
-  );
+  const searchable = useMemo(() => searchIndex(words ?? []), [words]);
 
   const { cards } = progress;
   const inLevel = (words ?? []).filter((w) => level === "all" || w.level === level);
@@ -68,21 +54,7 @@ export default function WordList({ progress }: { progress: Progress }) {
   for (const w of inLevel) counts[statusOf(cards[w.id])]++;
 
   let list = inLevel.filter((w) => status === "all" || statusOf(cards[w.id]) === status);
-  if (q) {
-    const rank = (w: Word) => {
-      const s = searchable.get(w.id)!;
-      if (s.en.some((e) => e === q)) return 0;
-      if (s.en.some((e) => e.startsWith(q))) return 1;
-      if (s.en.some((e) => e.includes(q))) return 2;
-      if (s.tr.includes(q)) return 3;
-      return 4;
-    };
-    list = list
-      .map((w) => ({ w, r: rank(w) }))
-      .filter((x) => x.r < 4)
-      .sort((a, b) => a.r - b.r)
-      .map((x) => x.w);
-  }
+  list = searchWords(list, searchable, q);
 
   return (
     <main className="flex flex-1 flex-col">
@@ -130,7 +102,13 @@ export default function WordList({ progress }: { progress: Progress }) {
           ) : (
             <ul className="mt-2 grid grid-cols-1 items-start gap-3 md:grid-cols-2">
               {list.slice(0, shown).map((w) => (
-                <WordRow key={w.id} word={w} card={cards[w.id]} settings={progress.settings} />
+                <WordRow
+                  key={w.id}
+                  word={w}
+                  card={cards[w.id]}
+                  settings={progress.settings}
+                  star={{ starred: inMyList(progress, w.id), onToggle: () => setProgress((p) => toggleMyList(p, w.id)) }}
+                />
               ))}
             </ul>
           )}

@@ -16,7 +16,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export function emptyProgress(): Progress {
-  return { settings: { ...DEFAULT_SETTINGS }, cards: {}, history: {} };
+  return { settings: { ...DEFAULT_SETTINGS }, cards: {}, history: {}, myList: {} };
 }
 
 const isObj = (v: unknown): v is Record<string, any> => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -72,7 +72,12 @@ export function normalizeProgress(p: unknown): { progress: Progress; dropped: nu
     if (DAY.test(day) && isObj(h)) history[day] = { new: Math.max(0, num(h.new)), reviewed: Math.max(0, num(h.reviewed)) } satisfies DayHistory;
     else dropped++;
   }
-  return { progress: { settings: cleanSettings(src.settings), cards, history }, dropped };
+  // My list (added later, so older progress and backups simply have none).
+  const myList: Progress["myList"] = {};
+  for (const [id, day] of Object.entries(isObj(src.myList) ? src.myList : {})) {
+    if (id && typeof day === "string" && DAY.test(day)) myList[id] = day;
+  }
+  return { progress: { settings: cleanSettings(src.settings), cards, history, myList }, dropped };
 }
 
 export function loadProgress(): Progress {

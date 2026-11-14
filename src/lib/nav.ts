@@ -13,6 +13,7 @@ export type Screen =
   | { name: "practice" }
   | { name: "study"; mode: SessionMode }
   | { name: "dontknow" }
+  | { name: "mylist" }
   | { name: "words" }
   | { name: "test" }
   | { name: "skip" }

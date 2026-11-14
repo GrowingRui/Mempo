@@ -7,6 +7,8 @@ import Mascot from "../components/Mascot";
 import type { Tab } from "../components/AppNav";
 import { PRACTICE_ICONS, PracticeCard } from "./Practice";
 import SpeakButton from "../components/SpeakButton";
+import StarButton from "../components/StarButton";
+import { inMyList, toggleMyList } from "../lib/mylist";
 import { site } from "../config/site";
 import { useT } from "../i18n";
 import { toDay } from "../lib/date";
@@ -56,7 +58,7 @@ function NavTile({ onClick, n, label, tone }: { onClick: () => void; n: number |
 }
 
 /** Today's word for the chosen level (src/lib/wotd.ts): the same one the daily reminder shows. */
-function WordOfTheDay({ word, progress }: { word: Word; progress: Progress }) {
+function WordOfTheDay({ word, progress, onStar }: { word: Word; progress: Progress; onStar: () => void }) {
   const t = useT();
   const { showZh, showEs } = progress.settings;
   const lines = [
@@ -74,6 +76,7 @@ function WordOfTheDay({ word, progress }: { word: Word; progress: Progress }) {
           <p className="font-display text-[26px] leading-tight font-extrabold [overflow-wrap:anywhere]">{word.word}</p>
           {word.phonetic && <p className="text-sm font-medium text-muted">/{word.phonetic}/</p>}
         </div>
+        <StarButton word={word.word} starred={inMyList(progress, word.id)} onToggle={onStar} className="shrink-0" />
         <SpeakButton id={word.id} text={word.word} className="size-11 shrink-0" />
       </div>
       {lines.map((l) => (
@@ -273,7 +276,7 @@ export default function Home({ progress, setProgress, go, tab }: Props) {
               </span>
             </span>
           </button>
-          {wotd && <WordOfTheDay word={wotd} progress={progress} />}
+          {wotd && <WordOfTheDay word={wotd} progress={progress} onStar={() => setProgress((p) => toggleMyList(p, wotd.id))} />}
 
           {/* Level and daily goal */}
           <section aria-labelledby="your-plan" className="rounded-[24px] border-2 border-line bg-card px-4 pt-3 pb-4">

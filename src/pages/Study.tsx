@@ -8,6 +8,7 @@ import { useT } from "../i18n";
 import { badgesOf, byLevel, newBadges } from "../lib/badges";
 import { toDay } from "../lib/date";
 import { buildSession, requeue, type SessionMode } from "../lib/session";
+import { inMyList, toggleMyList } from "../lib/mylist";
 import { answer, nextReview } from "../lib/srs";
 import type { Answer, Level, Progress, Word } from "../lib/types";
 import { loadAllWords } from "../lib/words";
@@ -198,6 +199,7 @@ export default function Study({ mode, progress, setProgress, onExit, backToHome 
             onFlip={() => setFlipped((f) => !f)}
             settings={settings}
             onSwipe={(dir) => respond(answers[dir], dir)}
+            star={{ starred: inMyList(progress, turn.word.id), onToggle: () => setProgress((p) => toggleMyList(p, turn.word.id)) }}
           />
         </AnimatePresence>
       </div>

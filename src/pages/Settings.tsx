@@ -327,7 +327,7 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
           words={words}
           onCancel={() => setConfirmReset(false)}
           onConfirm={() => {
-            setProgress((p) => ({ settings: p.settings, cards: {}, history: {} }));
+            setProgress((p) => ({ settings: p.settings, cards: {}, history: {}, myList: p.myList })); // My list is the user's own, so it stays
             setConfirmReset(false);
           }}
         />

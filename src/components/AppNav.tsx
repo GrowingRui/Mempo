@@ -9,9 +9,9 @@ import Mascot from "./Mascot";
 
 export type Tab = "home" | "practice" | "words" | "stats" | "settings";
 
-/** Which tab is lit on a screen (the "Don't know" list belongs to Practice). */
+/** Which tab is lit on a screen (the "Don't know" list and My list belong to Practice). */
 export function tabOf(screen: Screen): Tab | undefined {
-  if (screen.name === "dontknow") return "practice";
+  if (screen.name === "dontknow" || screen.name === "mylist") return "practice";
   return (["home", "practice", "words", "stats", "settings"] as const).find((n) => n === screen.name);
 }
 

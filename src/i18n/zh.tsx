@@ -56,6 +56,8 @@ const zh: Messages = {
     dontKnowSub: "继续练习你没记住的词",
     testTitle: "水平测试",
     testSub: "不确定自己的水平？几分钟就能知道",
+    myListTitle: "我的单词本",
+    myListSub: "你加星标的单词，随时练习",
   },
 
   home: {
@@ -105,6 +107,7 @@ const zh: Messages = {
       today: "今天没有要学的了。",
       review: "现在没有要复习的单词。",
       dontknow: "“不认识”列表是空的，真棒！",
+      mylist: "单词本是空的。点单词上的 ☆ 就能加入。",
     },
     niceWork: "干得好！",
     wentThrough: (n: number) => `你学完了 ${words(n)}。`,
@@ -125,6 +128,8 @@ const zh: Messages = {
   },
 
   card: {
+    star: (w: string) => `把“${w}”加入我的单词本`,
+    unstar: (w: string) => `把“${w}”移出我的单词本`,
     offensive: "冒犯性",
     offensiveWord: "冒犯性词语",
     useWithCare: "慎用",
@@ -300,6 +305,16 @@ const zh: Messages = {
     words: (n: number) => words(n),
     level: (level: string) => `完成 ${level}`,
     newTitle: (_n: number) => "获得新徽章！",
+  },
+
+  myList: {
+    title: "我的单词本",
+    intro: "你想练习的单词。在卡片或单词列表里点 ☆ 加入，也可以在这里搜索。",
+    add: "添加单词",
+    search: "搜索英文、中文或 español",
+    noMatch: "没有找到单词。",
+    emptyTitle: "还没有单词",
+    empty: "在卡片或单词列表里点 ☆，或在上面搜索，把想练习的单词收集到这里。",
   },
 
   dontKnow: {

@@ -68,6 +68,8 @@ const en = {
     dontKnowSub: "Keep practising the words you missed",
     testTitle: "Level test",
     testSub: "Not sure about your level? Find out in a few minutes",
+    myListTitle: "My list",
+    myListSub: "Words you starred, to practise any time",
   },
 
   home: {
@@ -120,6 +122,7 @@ const en = {
       today: "Nothing left to study today.",
       review: "No reviews due right now.",
       dontknow: "Your “Don’t know” list is empty. Nice!",
+      mylist: "Your list is empty. Tap ☆ on a word to add it.",
     },
     niceWork: "Nice work!",
     wentThrough: (n: number) => `You went through ${words(n)}.`,
@@ -140,6 +143,8 @@ const en = {
   },
 
   card: {
+    star: (w: string) => `Add “${w}” to My list`,
+    unstar: (w: string) => `Remove “${w}” from My list`,
     offensive: "Offensive",
     offensiveWord: "Offensive word",
     useWithCare: "Use with care",
@@ -316,6 +321,16 @@ const en = {
     words: (n: number) => words(n),
     level: (level: string) => `${level} finished`,
     newTitle: (n: number): string => (n === 1 ? "New badge!" : "New badges!"),
+  },
+
+  myList: {
+    title: "My list",
+    intro: "Words you want to practise. Tap ☆ on a card or in the word list to add a word, or search for it here.",
+    add: "Add a word",
+    search: "Search English, 中文 or español",
+    noMatch: "No word found.",
+    emptyTitle: "Nothing here yet",
+    empty: "Tap ☆ on a card or in the word list, or search above, to collect words you want to practise.",
   },
 
   dontKnow: {

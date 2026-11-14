@@ -2,7 +2,7 @@ import { motion, useIsPresent, useMotionValue, useTransform, type MotionValue, t
 import { useRef } from "react";
 import { useT } from "../i18n";
 import type { Answer, Settings, Word } from "../lib/types";
-import WordCard from "./WordCard";
+import WordCard, { type CardStar } from "./WordCard";
 
 export type SwipeDir = "left" | "right" | "up";
 
@@ -53,9 +53,10 @@ interface Props {
   onFlip: () => void;
   settings: Settings;
   onSwipe: (dir: SwipeDir) => void;
+  star?: CardStar;
 }
 
-export default function SwipeCard({ word, flipped, onFlip, settings, onSwipe }: Props) {
+export default function SwipeCard({ word, flipped, onFlip, settings, onSwipe, star }: Props) {
   const t = useT();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -101,7 +102,7 @@ export default function SwipeCard({ word, flipped, onFlip, settings, onSwipe }: 
         }
       }}
     >
-      <WordCard word={word} flipped={flipped} onFlip={onFlip} settings={settings} />
+      <WordCard word={word} flipped={flipped} onFlip={onFlip} settings={settings} star={star} />
 
       {(Object.keys(hints) as SwipeDir[]).map((dir) => (
         <motion.div

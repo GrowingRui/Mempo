@@ -5,6 +5,7 @@ import { MAX_BOX, statusOf, type WordStatus } from "../lib/srs";
 import type { CardProgress, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import SpeakButton from "./SpeakButton";
+import StarButton from "./StarButton";
 import { GlossList, SensitiveNote } from "./WordCard";
 
 const STATUS_CLASS: Record<WordStatus, string> = {
@@ -15,8 +16,18 @@ const STATUS_CLASS: Record<WordStatus, string> = {
   dontknow: "bg-dontknow/12 text-dontknow-ink",
 };
 
-/** A word in a list: tap to show its meanings and example. */
-export default function WordRow({ word, card, settings }: { word: Word; card?: CardProgress; settings: Settings }) {
+/** A word in a list: tap to show its meanings and example. With `star`, a ☆ puts it on My list or takes it off. */
+export default function WordRow({
+  word,
+  card,
+  settings,
+  star,
+}: {
+  word: Word;
+  card?: CardProgress;
+  settings: Settings;
+  star?: { starred: boolean; onToggle: () => void };
+}) {
   const t = useT();
   const [open, setOpen] = useState(false);
   const status = statusOf(card);
@@ -38,6 +49,7 @@ export default function WordRow({ word, card, settings }: { word: Word; card?: C
           </span>
           {!open && summary && <span className="mt-0.5 block truncate text-sm font-medium text-muted">{summary}</span>}
         </button>
+        {star && <StarButton word={word.word} starred={star.starred} onToggle={star.onToggle} className="shrink-0" />}
         <SpeakButton id={word.id} text={word.word} className="shrink-0" />
       </div>
 

@@ -59,6 +59,8 @@ const es: Messages = {
     dontKnowSub: "Sigue practicando las palabras que fallaste",
     testTitle: "Prueba de nivel",
     testSub: "¿No sabes tu nivel? Descúbrelo en unos minutos",
+    myListTitle: "Mi lista",
+    myListSub: "Las palabras que marcaste con estrella, para practicar cuando quieras",
   },
 
   home: {
@@ -112,6 +114,7 @@ const es: Messages = {
       today: "No queda nada por estudiar hoy.",
       review: "No hay repasos pendientes ahora.",
       dontknow: "Tu lista “No lo sé” está vacía. ¡Bien hecho!",
+      mylist: "Tu lista está vacía. Toca ☆ en una palabra para añadirla.",
     },
     niceWork: "¡Buen trabajo!",
     wentThrough: (n: number) => `Has repasado ${words(n)}.`,
@@ -132,6 +135,8 @@ const es: Messages = {
   },
 
   card: {
+    star: (w: string) => `Añadir “${w}” a Mi lista`,
+    unstar: (w: string) => `Quitar “${w}” de Mi lista`,
     offensive: "Ofensiva",
     offensiveWord: "Palabra ofensiva",
     useWithCare: "Úsala con cuidado",
@@ -310,6 +315,16 @@ const es: Messages = {
     words: (n: number) => words(n),
     level: (level: string) => `${level} completo`,
     newTitle: (n: number) => (n === 1 ? "¡Nueva insignia!" : "¡Nuevas insignias!"),
+  },
+
+  myList: {
+    title: "Mi lista",
+    intro: "Palabras que quieres practicar. Toca ☆ en una tarjeta o en la lista de palabras para añadir una, o búscala aquí.",
+    add: "Añadir una palabra",
+    search: "Busca en inglés, 中文 o español",
+    noMatch: "No se encontró ninguna palabra.",
+    emptyTitle: "Aún no hay nada",
+    empty: "Toca ☆ en una tarjeta o en la lista de palabras, o busca arriba, para reunir las palabras que quieres practicar.",
   },
 
   dontKnow: {

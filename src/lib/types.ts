@@ -84,4 +84,6 @@ export interface Progress {
   settings: Settings;
   cards: Record<string, CardProgress>;
   history: Record<string, DayHistory>;
+  /** My list: words the user starred, word id → day added (YYYY-MM-DD). */
+  myList: Record<string, string>;
 }

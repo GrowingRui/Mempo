@@ -1,5 +1,6 @@
 import { toDay } from "./date";
 import { isDue } from "./srs";
+import { myListIds } from "./mylist";
 import type { Answer, Progress, Word } from "./types";
 
 /** FNV-1a hash: gives every word a fixed pseudo-random place in the study order,
@@ -15,8 +16,11 @@ export function hash(s: string): number {
 
 const byHash = (a: string, b: string) => hash(a) - hash(b);
 
-/** today: due reviews (capped) → "Don't know" words → new words. review: every due card, no cap. dontknow: the whole list. */
-export type SessionMode = "today" | "review" | "dontknow";
+/**
+ * today: due reviews (capped) → "Don't know" words → new words. review: every due card, no cap. dontknow: the whole list.
+ * mylist: every word on My list, weakest first.
+ */
+export type SessionMode = "today" | "review" | "dontknow" | "mylist";
 
 export function newWordsLeftToday(p: Progress, today = toDay()): number {
   const done = p.history[today]?.new ?? 0;
@@ -68,6 +72,16 @@ export function buildSession(words: Word[], p: Progress, mode: SessionMode, toda
 
   if (mode === "dontknow") {
     return pick(Object.keys(p.cards).filter((id) => p.cards[id].inDontKnow).sort(byHash));
+  }
+  if (mode === "mylist") {
+    // "Don't know" words first, then words not studied yet, then due ones, then the rest by next review.
+    const rank = (id: string) => {
+      const c = p.cards[id];
+      return !c ? 1 : c.inDontKnow ? 0 : isDue(c, today) ? 2 : 3;
+    };
+    return pick(
+      myListIds(p).sort((a, b) => rank(a) - rank(b) || (p.cards[a]?.due ?? "").localeCompare(p.cards[b]?.due ?? "") || byHash(a, b)),
+    );
   }
   if (mode === "review") {
     return pick(

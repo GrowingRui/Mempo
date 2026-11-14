@@ -15,6 +15,7 @@ import type { Progress } from "./lib/types";
 import DontKnow from "./pages/DontKnow";
 import Home from "./pages/Home";
 import LevelTest from "./pages/LevelTest";
+import MyList from "./pages/MyList";
 import Practice from "./pages/Practice";
 import Recall from "./pages/Recall";
 import Settings from "./pages/Settings";
@@ -34,9 +35,10 @@ const WIDTH: Partial<Record<Screen["name"], string>> = {
   stats: "max-w-md md:max-w-4xl",
   words: "max-w-md md:max-w-4xl",
   dontknow: "max-w-md md:max-w-4xl",
+  mylist: "max-w-md md:max-w-4xl",
 };
-/** Screens with the sidebar (tablets, computers) and the bottom tab bar (phones; not on "Don't know", which has its own button there). */
-const WITH_SIDEBAR = new Set<Screen["name"]>(["home", "practice", "words", "stats", "settings", "dontknow"]);
+/** Screens with the sidebar (tablets, computers) and the bottom tab bar (phones; not on "Don't know" and My list, which have their own button there). */
+const WITH_SIDEBAR = new Set<Screen["name"]>(["home", "practice", "words", "stats", "settings", "dontknow", "mylist"]);
 const WITH_TABBAR = new Set<Screen["name"]>(["home", "practice", "words", "stats", "settings"]);
 
 export default function App() {
@@ -102,7 +104,9 @@ export default function App() {
         {screen.name === "study" ? (
           <Study key={screen.mode} mode={screen.mode} progress={progress} setProgress={setProgress} onExit={back} backToHome={nav().previous().name === "home"} />
         ) : screen.name === "dontknow" ? (
-          <DontKnow progress={progress} onPractise={() => go({ name: "study", mode: "dontknow" })} onBack={back} />
+          <DontKnow progress={progress} setProgress={setProgress} onPractise={() => go({ name: "study", mode: "dontknow" })} onBack={back} />
+        ) : screen.name === "mylist" ? (
+          <MyList progress={progress} setProgress={setProgress} onPractise={() => go({ name: "study", mode: "mylist" })} onBack={back} />
         ) : screen.name === "test" ? (
           <LevelTest progress={progress} setProgress={setProgress} onExit={back} />
         ) : screen.name === "skip" ? (
@@ -123,7 +127,7 @@ export default function App() {
         ) : screen.name === "settings" ? (
           <Settings progress={progress} setProgress={setProgress} moveCode={moveCode} onBack={back} />
         ) : screen.name === "words" ? (
-          <WordList progress={progress} />
+          <WordList progress={progress} setProgress={setProgress} />
         ) : (
           <Home progress={progress} setProgress={setProgress} go={go} tab={tab} />
         )}
