@@ -52,6 +52,11 @@ export function sessionParts(p: Progress, today = toDay()) {
   return { reviews, dontKnow, allDue, dontKnowTotal, heldBack };
 }
 
+/** The words of your level you haven't studied yet, in the order new words come up in the daily session. */
+export function upcomingNew(words: Word[], p: Progress): Word[] {
+  return words.filter((w) => w.level === p.settings.level && !p.cards[w.id]).sort((a, b) => byHash(a.id, b.id));
+}
+
 /**
  * The cards for one study session.
  * `words` must contain every level that has progress (reviews come from all levels);
@@ -74,10 +79,7 @@ export function buildSession(words: Word[], p: Progress, mode: SessionMode, toda
   }
   const { reviews, dontKnow } = sessionParts(p, today);
   const n = newWordsLeftToday(p, today);
-  const fresh = words
-    .filter((w) => w.level === p.settings.level && !p.cards[w.id])
-    .sort((a, b) => byHash(a.id, b.id))
-    .slice(0, n);
+  const fresh = upcomingNew(words, p).slice(0, n);
   return [...pick(reviews), ...pick(dontKnow), ...fresh];
 }
 

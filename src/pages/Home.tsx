@@ -35,7 +35,7 @@ function GoalChip({ active, onClick, children, wide }: { active: boolean; onClic
   );
 }
 
-/** A full-width link to another screen: icon, title, one line of explanation, arrow (Recall, Exam practice). */
+/** A full-width link to another screen: icon, title, one line of explanation, arrow (Recall, Exam practice, Skip words you know). */
 function LinkRow({ onClick, title, sub, icon }: { onClick: () => void; title: string; sub: string; icon: ReactNode }) {
   return (
     <button
@@ -231,6 +231,15 @@ export default function Home({ progress, setProgress, go }: Props) {
         sub={t.home.examSub}
         icon={<path d="M2 9l10-5 10 5-10 5zM6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6" />}
       />
+
+      {levelIds && seen < levelIds.length && (
+        <LinkRow
+          onClick={() => go({ name: "skip" })}
+          title={t.home.skip}
+          sub={t.home.skipSub}
+          icon={<path d="M5 6l6 6-6 6M13 6l6 6-6 6" />}
+        />
+      )}
 
       {wotd && <WordOfTheDay word={wotd} progress={progress} />}
 

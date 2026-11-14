@@ -12,7 +12,7 @@ export interface Question {
   correct: number; // index into options
 }
 
-function shuffle<T>(xs: T[]): T[] {
+export function shuffle<T>(xs: T[]): T[] {
   const a = [...xs];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -34,9 +34,29 @@ export function meaning(w: Word, lang: TestLang, pos?: string): string | undefin
 }
 
 /** Spanish cognates like "secular" = "secular" would be free points, so they aren't asked. */
-function askable(w: Word, lang: TestLang): boolean {
+export function askable(w: Word, lang: TestLang): boolean {
   const m = meaning(w, lang);
   return !!m && !m.toLowerCase().split(/[;,\s]+/).includes(w.word.toLowerCase());
+}
+
+/** One "what does it mean?" question: the right meaning and 3 wrong ones taken from `pool`. */
+export function makeQuestion(word: Word, pool: Word[], lang: TestLang): Question {
+  const right = meaning(word, lang)!;
+  const pos = word[lang][0]?.pos;
+  const seen = new Set([right]);
+  const wrong: string[] = [];
+  // Prefer distractors with the same part of speech, so the answer can't be spotted by grammar alone.
+  const candidates = shuffle(pool.filter((w) => w.id !== word.id));
+  const ordered = [...candidates.filter((w) => w[lang][0]?.pos === pos), ...candidates];
+  for (const d of ordered) {
+    if (wrong.length === 3) break;
+    const m = meaning(d, lang, pos);
+    if (!m || seen.has(m) || m.includes(right) || right.includes(m)) continue;
+    seen.add(m);
+    wrong.push(m);
+  }
+  const options = shuffle([right, ...wrong]);
+  return { word, options, correct: options.indexOf(right) };
 }
 
 /** PER_LEVEL random words from each level, shuffled together, each with 3 wrong meanings taken from the same level. */
@@ -45,24 +65,7 @@ export function buildTest(byLevel: Record<Level, Word[]>, lang: TestLang): Quest
   for (const lv of LEVELS) {
     const pool = byLevel[lv].filter((w) => meaning(w, lang));
     const picked = shuffle(pool.filter((w) => askable(w, lang))).slice(0, PER_LEVEL);
-    for (const word of picked) {
-      const right = meaning(word, lang)!;
-      const pos = word[lang][0]?.pos;
-      const seen = new Set([right]);
-      const wrong: string[] = [];
-      // Prefer distractors with the same part of speech, so the answer can't be spotted by grammar alone.
-      const candidates = shuffle(pool.filter((w) => w.id !== word.id));
-      const ordered = [...candidates.filter((w) => w[lang][0]?.pos === pos), ...candidates];
-      for (const d of ordered) {
-        if (wrong.length === 3) break;
-        const m = meaning(d, lang, pos);
-        if (!m || seen.has(m) || m.includes(right) || right.includes(m)) continue;
-        seen.add(m);
-        wrong.push(m);
-      }
-      const options = shuffle([right, ...wrong]);
-      questions.push({ word, options, correct: options.indexOf(right) });
-    }
+    for (const word of picked) questions.push(makeQuestion(word, pool, lang));
   }
   return shuffle(questions);
 }

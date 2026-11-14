@@ -16,6 +16,7 @@ import Home from "./pages/Home";
 import LevelTest from "./pages/LevelTest";
 import Recall from "./pages/Recall";
 import Settings from "./pages/Settings";
+import Skip from "./pages/Skip";
 import Stats from "./pages/Stats";
 import Study from "./pages/Study";
 import WordList from "./pages/WordList";
@@ -79,6 +80,8 @@ export default function App() {
           <DontKnow progress={progress} onPractise={() => go({ name: "study", mode: "dontknow" })} onBack={back} />
         ) : screen.name === "test" ? (
           <LevelTest progress={progress} setProgress={setProgress} onExit={back} />
+        ) : screen.name === "skip" ? (
+          <Skip key={progress.settings.level} progress={progress} setProgress={setProgress} onExit={back} />
         ) : screen.name === "recall" || screen.name === "exam" ? (
           <Recall
             key={screen.name}

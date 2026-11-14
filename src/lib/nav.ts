@@ -14,6 +14,7 @@ export type Screen =
   | { name: "dontknow" }
   | { name: "words" }
   | { name: "test" }
+  | { name: "skip" }
   | { name: "recall" }
   | { name: "exam" }
   | { name: "stats" }
