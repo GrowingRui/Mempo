@@ -5,8 +5,8 @@ import ScreenHeader from "../components/ScreenHeader";
 import SpeakButton from "../components/SpeakButton";
 import { useT } from "../i18n";
 import { meaning, type TestLang } from "../lib/leveltest";
-import { checkForm, formGap, formPool } from "../lib/exam";
-import { buildRecall, checkSpelling, clozeFor, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
+import { buildCloze, checkForm, formGap, formPool, loadCloze, type ClozeItem } from "../lib/exam";
+import { buildRecall, checkSpelling, clozeFor, GAP, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
 import { markDontKnow } from "../lib/srs";
 import type { Progress, Word } from "../lib/types";
@@ -53,6 +53,12 @@ const KINDS: { kind: RecallKind; section: QuizSection; part?: number; icon: Reac
     icon: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" />,
   },
   {
+    kind: "cloze",
+    section: "exam",
+    part: 1,
+    icon: <path d="M3 7h5M16 7h5M9.5 5h5v4h-5zM3 13h18M3 19h11" />,
+  },
+  {
     kind: "form",
     section: "exam",
     part: 3,
@@ -64,7 +70,6 @@ type Result = { word: Word; right: boolean };
 
 export default function Recall({ section, progress, setProgress, onExit, onStudy }: Props) {
   const t = useT();
-  const kinds = KINDS.filter((k) => k.section === section);
   const exam = section === "exam";
   const { settings } = progress;
   const langs: TestLang[] = [...(settings.showZh ? ["zh" as const] : []), ...(settings.showEs ? ["es" as const] : [])];
@@ -74,19 +79,28 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
   const [questions, setQuestions] = useState<RecallQuestion[]>();
   const [results, setResults] = useState<Result[]>([]);
   const [added, setAdded] = useState(false);
+  const [cloze, setCloze] = useState<ClozeItem[]>();
 
   useEffect(() => {
     loadAllWords()
       .then(setAll)
       .catch((e: Error) => setError(e.message));
-  }, []);
+    if (exam) loadCloze().then(setCloze, () => setCloze([]));
+  }, [exam]);
+
+  // Only tasks that work are shown: Part 1 once its questions have loaded.
+  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length));
 
   const studied = all?.filter((w) => progress.cards[w.id]).length ?? 0;
 
   const start = (k: RecallKind) => {
     if (!all) return;
     setKind(k);
-    setQuestions(buildRecall(k === "form" ? formPool(all, progress) : recallPool(all, progress), all, k, langs));
+    setQuestions(
+      k === "cloze"
+        ? buildCloze(cloze ?? [], all, settings.level)
+        : buildRecall(k === "form" ? formPool(all, progress) : recallPool(all, progress), all, k, langs),
+    );
     setResults([]);
     setAdded(false);
   };
@@ -96,7 +110,7 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
     return (
       <main className="flex flex-1 flex-col">
         <ScreenHeader title={exam ? t.exam.title : t.recall.title} onBack={onExit} />
-        <p className="mt-3 font-medium text-muted">{exam ? t.exam.intro(ROUND) : t.recall.intro(ROUND)}</p>
+        <p className="mt-3 font-medium text-muted">{exam ? t.exam.intro : t.recall.intro(ROUND)}</p>
 
         {error ? (
           <p className="mt-10 text-center font-semibold text-dontknow">{error}</p>
@@ -267,12 +281,12 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
   const typing = kind === "spell" || kind === "form";
   const answered = typing ? verdict !== undefined : picked !== undefined;
   const right = typing ? verdict === "right" : picked === q.correct;
-  // Listening always waits for "Next", so there is time to read the meaning that appears.
-  const waitForNext = !right || kind === "listen";
+  // Listening and Part 1 always wait for "Next", so there is time to read the meaning or the explanation.
+  const waitForNext = !right || kind === "listen" || kind === "cloze";
 
   useEffect(() => {
     if (kind === "listen") playWord(word.id, word.word);
-    if (next) preloadWord(next.word.id);
+    if (next && !next.word.id.startsWith("part1:")) preloadWord(next.word.id); // stand-ins have no recording
     return () => window.clearTimeout(timer.current);
   }, [kind, word, next]);
 
@@ -331,6 +345,8 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
               </div>
             )}
           </>
+        ) : kind === "cloze" && q.cloze ? (
+          <ClozePrompt item={q.cloze} word={word} langs={langs} answered={answered} />
         ) : kind === "form" && gap ? (
           <>
             <p className="text-sm font-semibold text-muted">{t.recall.formPrompt}</p>
@@ -417,7 +433,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
         </form>
       ) : (
         <>
-          <p className="mt-6 mb-2.5 font-display text-lg font-bold">{kind === "listen" ? t.recall.whichHeard : t.recall.whichIs}</p>
+          <p className="mt-6 mb-2.5 font-display text-lg font-bold">{kind === "listen" ? t.recall.whichHeard : kind === "cloze" ? t.exam.whichFits : t.recall.whichIs}</p>
           <div className="flex flex-col gap-2.5">
             {q.options.map((opt, k) => (
               <button
@@ -446,6 +462,38 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
                 {t.common.next}
               </button>
             )
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+/**
+ * Part 1: the sentence with its gap. Once answered, the gap shows the answer, followed by why it is
+ * right, and its meaning when the answer is a Mempo card.
+ */
+function ClozePrompt({ item, word, langs, answered }: { item: ClozeItem; word: Word; langs: TestLang[]; answered: boolean }) {
+  const t = useT();
+  const [before, after = ""] = item.text.split(GAP);
+  return (
+    <>
+      <p className="text-sm font-semibold text-muted">{t.exam.clozePrompt}</p>
+      <p className="mt-4 text-[19px] leading-relaxed font-medium">
+        {before}
+        {answered ? <span className="rounded-md bg-know/15 px-1 font-bold text-know-ink">{item.answer}</span> : GAP}
+        {after}
+      </p>
+      {answered && (
+        <>
+          <p className="mt-5 rounded-2xl bg-brand-soft px-4 py-3 text-left text-[15px] leading-snug font-medium" lang="en">
+            <span className="font-bold text-brand-ink">{t.exam.why} </span>
+            {item.note}
+          </p>
+          {word.zh.length + word.es.length > 0 && (
+            <div className="mt-5">
+              <MeaningPrompt word={word} langs={langs} revealed />
+            </div>
           )}
         </>
       )}

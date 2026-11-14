@@ -60,7 +60,8 @@ const es: Messages = {
     recall: "Recordar",
     recallSub: "Ponte a prueba con las palabras que has estudiado",
     exam: "Práctica de examen",
-    examSub: "Tareas del examen de Cambridge, como formación de palabras",
+    examSub: "Tareas del examen de Cambridge: opción múltiple, formación de palabras",
+    wotd: "Palabra del día",
     yourLevel: "Tu nivel",
     takeTest: "¿No lo sabes? Haz una prueba",
     levelAria: "Nivel",
@@ -132,6 +133,7 @@ const es: Messages = {
       meaning: { title: "Significado → palabra", sub: "Lee la traducción y elige la palabra en inglés." },
       listen: { title: "Escucha → palabra", sub: "Escucha la palabra y elige cómo se escribe." },
       spell: { title: "Escríbela", sub: "Lee la traducción y escribe la palabra. ¡La más difícil!" },
+      cloze: { title: "Opción múltiple", sub: "Cuatro palabras de significado parecido. Solo una encaja en el hueco." },
       form: { title: "Formación de palabras", sub: "Cambia la palabra en mayúsculas para que encaje en la frase." },
     },
     toPractise: (n: number) => `${plural(n, "palabra estudiada", "palabras estudiadas")} para practicar.`,
@@ -163,8 +165,10 @@ const es: Messages = {
 
   exam: {
     title: "Práctica de examen",
-    intro: (round: number) =>
-      `Tareas del examen Reading and Use of English de Cambridge (B2 First, C1 Advanced, C2 Proficiency). ${round} preguntas por ronda, que pueden incluir palabras que aún no has estudiado. Tu plan de repaso no cambia.`,
+    intro: "Tareas del examen Reading and Use of English de Cambridge (B2 First, C1 Advanced, C2 Proficiency). Pueden incluir palabras que aún no has estudiado. Tu plan de repaso no cambia.",
+    clozePrompt: "Solo una de las cuatro palabras encaja en esta frase.",
+    whichFits: "¿Qué palabra encaja en el hueco?",
+    why: "Por qué:",
     part: (n: number) => `Parte ${n}`,
   },
 

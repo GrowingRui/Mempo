@@ -1,15 +1,19 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { Screen } from "../App";
 import Flame from "../components/Flame";
+import Highlight from "../components/Highlight";
 import { InstallBanner } from "../components/Install";
 import Mascot from "../components/Mascot";
+import SpeakButton from "../components/SpeakButton";
 import { site } from "../config/site";
 import { useT } from "../i18n";
 import { toDay } from "../lib/date";
 import { newWordsLeftToday, sessionParts } from "../lib/session";
 import { streakOf } from "../lib/stats";
-import { LEVELS, type Progress } from "../lib/types";
+import { meaning } from "../lib/leveltest";
+import { LEVELS, type Progress, type Word } from "../lib/types";
 import { loadIndex, loadWords, type LevelIndex } from "../lib/words";
+import { wordOfTheDay } from "../lib/wotd";
 
 const GOALS = [10, 20, 30, 50];
 const MIN_GOAL = 1;
@@ -72,6 +76,41 @@ function NavTile({ onClick, n, label, tone }: { onClick: () => void; n: number |
   );
 }
 
+/** Today's word for the chosen level (src/lib/wotd.ts): the same one the daily reminder shows. */
+function WordOfTheDay({ word, progress }: { word: Word; progress: Progress }) {
+  const t = useT();
+  const { showZh, showEs } = progress.settings;
+  const lines = [
+    ...(showZh ? [{ lang: "zh", text: meaning(word, "zh") }] : []),
+    ...(showEs ? [{ lang: "es", text: meaning(word, "es") }] : []),
+  ].filter((l) => l.text);
+  if (!lines.length && word.en?.[0]) lines.push({ lang: "en", text: word.en[0].gloss[0] });
+  const example = word.examples[0];
+  const terms = [word.word, ...(word.forms ?? []), ...(word.variants ?? []), example?.form ?? ""];
+  return (
+    <section aria-label={t.home.wotd} className="mt-4 rounded-[24px] border-2 border-line bg-card px-4 pt-3 pb-4">
+      <p className="text-xs font-bold tracking-wide text-brand-ink uppercase">{t.home.wotd}</p>
+      <div className="mt-1 flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-[26px] leading-tight font-extrabold [overflow-wrap:anywhere]">{word.word}</p>
+          {word.phonetic && <p className="text-sm font-medium text-muted">/{word.phonetic}/</p>}
+        </div>
+        <SpeakButton id={word.id} text={word.word} className="size-11 shrink-0" />
+      </div>
+      {lines.map((l) => (
+        <p key={l.lang} lang={l.lang} className="mt-1.5 font-bold leading-snug">
+          {l.text}
+        </p>
+      ))}
+      {example && (
+        <p className="mt-2 text-[15px] leading-relaxed text-ink/80">
+          <Highlight text={example.text} terms={terms} />
+        </p>
+      )}
+    </section>
+  );
+}
+
 interface Props {
   progress: Progress;
   setProgress: (fn: (p: Progress) => Progress) => void;
@@ -82,20 +121,22 @@ export default function Home({ progress, setProgress, go }: Props) {
   const t = useT();
   const { settings, cards } = progress;
   const [index, setIndex] = useState<LevelIndex>();
-  const [levelIds, setLevelIds] = useState<string[]>();
+  const [levelWords, setLevelWords] = useState<Word[]>();
 
   useEffect(() => {
     loadIndex().then(setIndex).catch(() => {});
   }, []);
 
   useEffect(() => {
-    setLevelIds(undefined);
+    setLevelWords(undefined);
     loadWords(settings.level)
-      .then((ws) => setLevelIds(ws.map((w) => w.id)))
+      .then(setLevelWords)
       .catch(() => {});
   }, [settings.level]);
 
   const today = toDay();
+  const levelIds = levelWords?.map((w) => w.id);
+  const wotd = levelWords && wordOfTheDay(levelWords, settings.level, today);
   const doneToday = progress.history[today]?.new ?? 0;
   const left = newWordsLeftToday(progress, today);
   const goalPct = Math.min(100, (doneToday / settings.dailyNew) * 100);
@@ -190,6 +231,8 @@ export default function Home({ progress, setProgress, go }: Props) {
         sub={t.home.examSub}
         icon={<path d="M2 9l10-5 10 5-10 5zM6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6" />}
       />
+
+      {wotd && <WordOfTheDay word={wotd} progress={progress} />}
 
       {/* Level */}
       <section className="mt-7">

@@ -8,6 +8,7 @@ import { syncReminder, studyInfo } from "./lib/reminder";
 import { loadProgress, saveProgress } from "./lib/storage";
 import { applyTheme } from "./lib/theme";
 import { countUsage } from "./lib/usage";
+import { savePrefsForReminder } from "./lib/wotd";
 import { toDay } from "./lib/date";
 import type { Progress } from "./lib/types";
 import DontKnow from "./pages/DontKnow";
@@ -50,6 +51,11 @@ export default function App() {
     if (studyInfo(progress.history).lastStudied === toDay()) void countUsage("study");
   }, [progress.history]);
   useEffect(() => applyTheme(progress.settings.theme), [progress.settings.theme]);
+  // The reminder shows the word of the day; the service worker needs the level and languages for it.
+  const { level, showZh, showEs } = progress.settings;
+  useEffect(() => {
+    void savePrefsForReminder(progress.settings).catch(() => {});
+  }, [level, showZh, showEs, progress.settings.lang]);
   const lang = progress.settings.lang;
   useEffect(() => {
     document.documentElement.lang = HTML_LANG[lang];

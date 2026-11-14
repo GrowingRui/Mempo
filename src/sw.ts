@@ -2,10 +2,13 @@
 // Service worker (built by vite-plugin-pwa, "injectManifest" mode). It makes the app work offline:
 //  - the app itself and the word lists (public/data/*.json) are saved on install (precache);
 //  - pronunciation MP3s are saved the first time each one plays, or all at once from Settings.
-import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from "workbox-precaching";
+import { cleanupOutdatedCaches, createHandlerBoundToURL, matchPrecache, precacheAndRoute } from "workbox-precaching";
 import { createPartialResponse } from "workbox-range-requests";
 import { NavigationRoute, registerRoute } from "workbox-routing";
+import { toDay } from "./lib/date";
 import { AUDIO_CACHE } from "./lib/offline-cache";
+import type { Word } from "./lib/types";
+import { readPrefsForReminder, reminderLine, wordOfTheDay } from "./lib/wotd";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -36,7 +39,22 @@ self.addEventListener("message", (e) => {
   if (e.data?.type === "SKIP_WAITING") void self.skipWaiting();
 });
 
-// Daily reminder (sent by api/reminders.ts). Tapping it opens Mempo, or brings an open window to the front.
+/** Today's word line for the reminder (src/lib/wotd.ts), from the word list saved offline. Undefined if anything is missing. */
+async function wordLine(): Promise<string | undefined> {
+  try {
+    const prefs = await readPrefsForReminder();
+    if (!prefs) return undefined; // the app hasn't saved them yet (opened before this version)
+    const path = `/data/${prefs.level.toLowerCase()}.json`;
+    const res = (await matchPrecache(path)) ?? (await fetch(path));
+    const w = wordOfTheDay((await res.json()) as Word[], prefs.level, toDay());
+    return w && reminderLine(w, prefs);
+  } catch {
+    return undefined;
+  }
+}
+
+// Daily reminder (sent by api/reminders.ts). The server's text, with the word of the day as the body when we
+// have it. Tapping it opens Mempo, or brings an open window to the front.
 self.addEventListener("push", (e) => {
   let data: { title?: string; body?: string } = {};
   try {
@@ -45,12 +63,15 @@ self.addEventListener("push", (e) => {
     // not JSON: use the defaults
   }
   e.waitUntil(
-    self.registration.showNotification(data.title || "Time for your words ✨", {
-      body: data.body || "A few minutes today makes them stick.",
-      icon: "/pwa-192x192.png",
-      tag: "daily-reminder", // a new one replaces yesterday's if it's still there
-      data: { url: "/" },
-    }),
+    (async () => {
+      const word = await wordLine();
+      await self.registration.showNotification(data.title || "Time for your words ✨", {
+        body: word || data.body || "A few minutes today makes them stick.",
+        icon: "/pwa-192x192.png",
+        tag: "daily-reminder", // a new one replaces yesterday's if it's still there
+        data: { url: "/" },
+      });
+    })(),
   );
 });
 

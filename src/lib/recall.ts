@@ -3,6 +3,7 @@
 // doesn't move cards between boxes; at the end you can choose to put the missed words on the
 // "Don't know" list (markDontKnow in srs.ts).
 import { toDay } from "./date";
+import type { ClozeItem } from "./exam";
 import { meaning, type TestLang } from "./leveltest";
 import { isDue } from "./srs";
 import type { Progress, Word } from "./types";
@@ -10,8 +11,9 @@ import type { Progress, Word } from "./types";
 /**
  * meaning: read the translation, pick the word. listen: hear it, pick the word. spell: read the translation, type the word.
  * form: word formation (exam practice, Cambridge Use of English Part 3; questions from exam.ts).
+ * cloze: multiple-choice cloze (exam practice, Part 1; hand-written questions, built in exam.ts).
  */
-export type RecallKind = "meaning" | "listen" | "spell" | "form";
+export type RecallKind = "meaning" | "listen" | "spell" | "form" | "cloze";
 
 export const ROUND = 15;
 export const OPTIONS = 4;
@@ -21,6 +23,8 @@ export interface RecallQuestion {
   /** Answer choices (the right word among OPTIONS - 1 others); empty for "spell". */
   options: Word[];
   correct: number;
+  /** Part 1 only: the hand-written question (sentence, answer, why). */
+  cloze?: ClozeItem;
 }
 
 export function shuffle<T>(xs: T[], rnd: () => number): T[] {

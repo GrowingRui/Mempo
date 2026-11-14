@@ -69,7 +69,8 @@ const en = {
     recall: "Recall",
     recallSub: "Test yourself on words you’ve studied",
     exam: "Exam practice",
-    examSub: "Cambridge exam tasks, like word formation",
+    examSub: "Cambridge exam tasks: multiple-choice cloze, word formation",
+    wotd: "Word of the day",
     yourLevel: "Your level",
     takeTest: "Not sure? Take a level test",
     levelAria: "Level",
@@ -139,6 +140,7 @@ const en = {
       meaning: { title: "Meaning → word", sub: "Read the translation, pick the English word." },
       listen: { title: "Listen → word", sub: "Hear the word, pick how it’s written." },
       spell: { title: "Spell it", sub: "Read the translation and type the word. The hardest one!" },
+      cloze: { title: "Multiple-choice cloze", sub: "Four words with a close meaning. Only one fits the gap." },
       form: { title: "Word formation", sub: "Change the word in capitals so it fits the sentence." },
     },
     toPractise: (n: number) => `${plural(n, "studied word", "studied words")} to practise.`,
@@ -170,8 +172,10 @@ const en = {
 
   exam: {
     title: "Exam practice",
-    intro: (round: number) =>
-      `Tasks from the Cambridge Reading and Use of English paper (B2 First, C1 Advanced, C2 Proficiency). ${round} questions a round, which can include words you haven’t studied yet. Your review schedule isn’t changed.`,
+    intro: "Tasks from the Cambridge Reading and Use of English paper (B2 First, C1 Advanced, C2 Proficiency). They can include words you haven’t studied yet. Your review schedule isn’t changed.",
+    clozePrompt: "Only one of the four words fits this sentence.",
+    whichFits: "Which word fits the gap?",
+    why: "Why:",
     part: (n: number) => `Part ${n}`,
   },
 

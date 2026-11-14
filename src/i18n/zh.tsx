@@ -57,7 +57,8 @@ const zh: Messages = {
     recall: "回忆练习",
     recallSub: "检验一下学过的单词",
     exam: "考试练习",
-    examSub: "剑桥考试题型，例如构词",
+    examSub: "剑桥考试题型：选词填空、构词",
+    wotd: "每日一词",
     yourLevel: "你的水平",
     takeTest: "不确定？做个水平测试",
     levelAria: "水平",
@@ -124,6 +125,7 @@ const zh: Messages = {
       meaning: { title: "看释义 → 选单词", sub: "看翻译，选出对应的英文单词。" },
       listen: { title: "听发音 → 选单词", sub: "听单词，选出它的拼写。" },
       spell: { title: "拼写", sub: "看翻译，输入单词。最难的一项！" },
+      cloze: { title: "选词填空", sub: "4 个意思相近的词，只有一个适合空格。" },
       form: { title: "构词", sub: "把大写的词变成适合句子的形式。" },
     },
     toPractise: (n: number) => `可练习的已学单词：${N(n)} 个。`,
@@ -155,8 +157,10 @@ const zh: Messages = {
 
   exam: {
     title: "考试练习",
-    intro: (round: number) =>
-      `剑桥《阅读与英语运用》试卷（B2 First、C1 Advanced、C2 Proficiency）中的题型。每轮 ${N(round)} 题，可能包括还没学过的词。不会改变你的复习计划。`,
+    intro: "剑桥《阅读与英语运用》试卷（B2 First、C1 Advanced、C2 Proficiency）中的题型。可能包括还没学过的词。不会改变你的复习计划。",
+    clozePrompt: "4 个词中只有一个适合这个句子。",
+    whichFits: "哪个词适合空格？",
+    why: "原因：",
     part: (n: number) => `第 ${n} 部分`,
   },
 
