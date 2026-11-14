@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import MatchGame from "../components/MatchGame";
 import Mascot from "../components/Mascot";
 import QuizHeader from "../components/QuizHeader";
@@ -7,7 +7,7 @@ import SpeakButton from "../components/SpeakButton";
 import { useT } from "../i18n";
 import { meaning, type TestLang } from "../lib/leveltest";
 import { buildMatch } from "../lib/match";
-import { buildCloze, checkForm, formGap, formPool, loadCloze, type ClozeItem } from "../lib/exam";
+import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, loadCloze, textLine, type ClozeItem } from "../lib/exam";
 import { buildRecall, checkSpelling, clozeFor, GAP, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
 import { markDontKnow } from "../lib/srs";
@@ -121,7 +121,9 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
     setQuestions(
       k === "cloze"
         ? buildCloze(cloze ?? [], all, settings.level)
-        : buildRecall(k === "form" ? formPool(all, progress) : recallPool(all, progress), all, k, langs),
+        : k === "form"
+          ? buildRecall(formPool(all, progress), all, k, langs, CLOZE_ROUND) // 8 gaps, as in the paper
+          : buildRecall(recallPool(all, progress), all, k, langs),
     );
     setResults([]);
     setAdded(false);
@@ -234,6 +236,13 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
           <p className="mt-2 font-semibold text-muted">{right === questions.length ? t.recall.perfect : t.recall.rightAnswers}</p>
         </div>
 
+        {exam && (
+          <section className="raised mt-6 rounded-[28px] border-2 border-line bg-card p-5">
+            <h2 className="font-display text-lg font-bold">{t.exam.theText}</h2>
+            <ExamText questions={questions} kind={kind} results={results.map((r) => r.right)} current={questions.length} />
+          </section>
+        )}
+
         {missed.length > 0 && (
           <section className="raised mt-6 rounded-[28px] border-2 border-line bg-card p-5">
             <h2 className="font-display text-lg font-bold">{t.recall.missed}</h2>
@@ -296,6 +305,7 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
         next={questions[i + 1]}
         kind={kind}
         langs={langs}
+        round={exam ? { questions, results: results.map((r) => r.right), index: i } : undefined}
         onDone={(right) => setResults((r) => [...r, { word: questions[i].word, right }])}
       />
     </main>
@@ -329,7 +339,22 @@ function MeaningPrompt({ word, langs, revealed = false }: { word: Word; langs: T
 }
 
 /** One question. Its own component (keyed by index) so the answer state resets for the next one. */
-function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: RecallQuestion; kind: RecallKind; langs: TestLang[]; onDone: (right: boolean) => void }) {
+function Question({
+  q,
+  next,
+  kind,
+  langs,
+  round,
+  onDone,
+}: {
+  q: RecallQuestion;
+  next?: RecallQuestion;
+  kind: RecallKind;
+  langs: TestLang[];
+  /** Exam practice: the whole round, shown as one text with numbered gaps. */
+  round?: { questions: RecallQuestion[]; results: boolean[]; index: number };
+  onDone: (right: boolean) => void;
+}) {
   const t = useT();
   const [picked, setPicked] = useState<number | null>(); // undefined = not answered, null = "I don't know"
   const [typed, setTyped] = useState("");
@@ -404,16 +429,23 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
               </div>
             )}
           </>
-        ) : kind === "cloze" && q.cloze ? (
-          <ClozePrompt item={q.cloze} word={word} langs={langs} answered={answered} />
-        ) : kind === "form" && gap ? (
+        ) : round && (kind === "cloze" || kind === "form") ? (
           <>
-            <p className="text-sm font-semibold text-muted">{t.recall.formPrompt}</p>
-            <p className="mt-4 text-[19px] leading-relaxed font-medium">{gap.text}</p>
-            <p className="mt-5 rounded-2xl border-2 border-brand/30 bg-brand-soft px-5 py-2 font-display text-2xl font-extrabold tracking-[0.12em] text-brand-ink uppercase">
-              {word.base}
-            </p>
-            {answered && (
+            <p className="text-sm font-semibold text-muted">{kind === "cloze" ? t.exam.clozePrompt : t.recall.formPrompt}</p>
+            <ExamText questions={round.questions} kind={kind} results={round.results} current={round.index} answered={answered} right={right} scroll />
+            {kind === "form" && (
+              <p className="mt-4 flex items-baseline gap-2 rounded-2xl border-2 border-brand/30 bg-brand-soft px-5 py-2">
+                <span className="text-sm font-bold text-muted">{t.exam.formGap(round.index + 1)}</span>
+                <span className="font-display text-2xl font-extrabold tracking-[0.12em] text-brand-ink uppercase">{word.base}</span>
+              </p>
+            )}
+            {answered && kind === "cloze" && q.cloze && (
+              <p className="mt-5 rounded-2xl bg-brand-soft px-4 py-3 text-left text-[15px] leading-snug font-medium" lang="en">
+                <span className="font-bold text-brand-ink">{t.exam.why} </span>
+                {q.cloze.note}
+              </p>
+            )}
+            {answered && word.zh.length + word.es.length > 0 && (
               <div className="mt-5">
                 <MeaningPrompt word={word} langs={langs} revealed />
               </div>
@@ -493,7 +525,7 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
         </form>
       ) : (
         <>
-          <p className="mt-6 mb-2.5 font-display text-lg font-bold">{kind === "listen" ? t.recall.whichHeard : kind === "cloze" ? t.exam.whichFits : t.recall.whichIs}</p>
+          <p className="mt-6 mb-2.5 font-display text-lg font-bold">{kind === "listen" ? t.recall.whichHeard : kind === "cloze" ? t.exam.whichFits((round?.index ?? 0) + 1) : t.recall.whichIs}</p>
           <div className="flex flex-col gap-2.5">
             {q.options.map((opt, k) => (
               <button
@@ -530,34 +562,74 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
 }
 
 /**
- * Part 1: the sentence with its gap. Once answered, the gap shows the answer, followed by why it is
- * right, and its meaning when the answer is a Mempo card.
+ * Exam practice as in the paper: the round's sentences as one text with numbered gaps (1)-(8); in
+ * Part 3 the word in capitals sits at the end of its line. Gaps before `current` show the answer (green
+ * if right, red if missed); the current gap is highlighted, or filled once `answered`.
+ * `scroll`: the text scrolls inside its box and keeps the current gap in view.
  */
-function ClozePrompt({ item, word, langs, answered }: { item: ClozeItem; word: Word; langs: TestLang[]; answered: boolean }) {
-  const t = useT();
-  const [before, after = ""] = item.text.split(GAP);
+function ExamText({
+  questions,
+  kind,
+  results,
+  current,
+  answered = false,
+  right = false,
+  scroll = false,
+}: {
+  questions: RecallQuestion[];
+  kind: RecallKind;
+  results: boolean[];
+  current: number;
+  answered?: boolean;
+  right?: boolean;
+  scroll?: boolean;
+}) {
+  const box = useRef<HTMLOListElement>(null);
+  const cur = useRef<HTMLLIElement>(null);
+
+  // Keep the current line in view (a third from the top), without scrolling the page.
+  useLayoutEffect(() => {
+    if (scroll && box.current && cur.current) box.current.scrollTop = cur.current.offsetTop - box.current.clientHeight / 3;
+  }, [scroll, current]);
+
   return (
-    <>
-      <p className="text-sm font-semibold text-muted">{t.exam.clozePrompt}</p>
-      <p className="mt-4 text-[19px] leading-relaxed font-medium">
-        {before}
-        {answered ? <span className="rounded-md bg-know/15 px-1 font-bold text-know-ink">{item.answer}</span> : GAP}
-        {after}
-      </p>
-      {answered && (
-        <>
-          <p className="mt-5 rounded-2xl bg-brand-soft px-4 py-3 text-left text-[15px] leading-snug font-medium" lang="en">
-            <span className="font-bold text-brand-ink">{t.exam.why} </span>
-            {item.note}
-          </p>
-          {word.zh.length + word.es.length > 0 && (
-            <div className="mt-5">
-              <MeaningPrompt word={word} langs={langs} revealed />
-            </div>
-          )}
-        </>
-      )}
-    </>
+    <ol
+      ref={box}
+      className={`relative mt-4 w-full text-left text-[16px] leading-relaxed font-medium ${scroll ? "max-h-[38vh] overflow-y-auto overscroll-contain lg:max-h-[52vh]" : ""}`}
+    >
+      {questions.map((q, j) => {
+        const line = textLine(q, kind);
+        if (!line) return null;
+        const [before, after = ""] = line.text.split(GAP);
+        const done = j < current || (j === current && answered);
+        const ok = j < current ? results[j] : right;
+        const isCur = j === current;
+        return (
+          <li
+            key={j}
+            ref={isCur ? cur : undefined}
+            className={`flex items-baseline gap-3 rounded-xl px-2 py-1.5 ${isCur ? "bg-brand-soft/60" : ""} ${j > current ? "text-ink/60" : ""}`}
+          >
+            <p className="min-w-0 flex-1">
+              {before}
+              {done ? (
+                <span className={`rounded-md px-1 font-bold ${ok ? "bg-know/15 text-know-ink" : "bg-dontknow/15 text-dontknow-ink"}`}>
+                  <span className="text-xs opacity-70">({j + 1})</span> {line.answer}
+                </span>
+              ) : (
+                <span className={`rounded-md px-1 font-bold whitespace-nowrap ${isCur ? "bg-card text-brand-ink ring-2 ring-brand" : "text-muted"}`}>
+                  ({j + 1}) {GAP}
+                </span>
+              )}
+              {after}
+            </p>
+            {line.base && (
+              <span className={`shrink-0 font-display text-sm font-extrabold tracking-wide uppercase ${isCur ? "text-brand-ink" : "text-muted"}`}>{line.base}</span>
+            )}
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, loadCloze, type ClozeItem } from "./exam";
+import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, loadCloze, textLine, type ClozeItem } from "./exam";
 import { buildRecall, GAP } from "./recall";
 import { card, progress, TODAY, word } from "./test-helpers";
 import type { Word } from "./types";
@@ -87,5 +87,25 @@ describe("multiple-choice cloze (Part 1)", () => {
       expect(q.note.length, q.id).toBeGreaterThan(10);
       if (q.card) expect(ids.has(q.card), q.id).toBe(true);
     }
+  });
+});
+
+describe("exam-style text", () => {
+  it("gives each question its line: sentence with the gap, the answer, and the word in capitals for Part 3", () => {
+    const decision: Word = { ...word("decision"), base: "decide", forms: ["decisions"], examples: [{ text: "They made two difficult decisions." }] };
+    expect(textLine({ word: decision, options: [], correct: -1 }, "form")).toEqual({
+      text: "They made two difficult _____.",
+      answer: "decisions",
+      base: "decide",
+    });
+    const cloze: ClozeItem = { id: "x", level: "B2", text: "Reach a _____.", answer: "compromise", others: ["a", "b", "c"], note: "A note long enough." };
+    const [q] = buildCloze([cloze], [], "B2");
+    expect(textLine(q, "cloze")).toEqual({ text: "Reach a _____.", answer: "compromise" });
+    expect(textLine(q, "meaning")).toBeUndefined();
+  });
+
+  it("makes a Part 3 round 8 gaps long, like the paper", () => {
+    const words = Array.from({ length: 20 }, (_, i): Word => ({ ...word(`w${i}`), base: "x", examples: [{ text: `A w${i} here.` }] }));
+    expect(buildRecall(formPool(words, progress()), words, "form", [], CLOZE_ROUND)).toHaveLength(8);
   });
 });

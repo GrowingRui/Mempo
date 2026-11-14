@@ -5,7 +5,7 @@
 // Part 3, word formation: an example sentence with a gap and the base word in capitals (DECIDE);
 // type the form that fits. Base words come from scripts/families.ts (`base` on the word).
 import { toDay } from "./date";
-import { accepted, editDistance, escapeRe, normalize, recallPool, shuffle, wordRe, GAP, type RecallQuestion } from "./recall";
+import { accepted, editDistance, escapeRe, normalize, recallPool, shuffle, wordRe, GAP, type RecallKind, type RecallQuestion } from "./recall";
 import type { Level, Progress, Word } from "./types";
 
 /** Word formation: a sentence with one gap, and the exact form that fills it ("decisions" when the sentence needs the plural). */
@@ -100,4 +100,24 @@ export function buildCloze(items: ClozeItem[], words: Word[], level: Level, coun
     const options = texts.map((t, k) => plainWord(`part1:${item.id}:${k}`, t, item.level));
     return { word, options, correct: texts.indexOf(item.answer), cloze: item };
   });
+}
+
+// Exam-style text: as in the paper, a round of Part 1 or Part 3 is shown as one text with 8 numbered
+// gaps, not one sentence at a time. Each line is one question's sentence.
+
+/** One line of the text: the sentence with its gap, the word that fills it, and (Part 3) the word in capitals. */
+export interface TextLine {
+  text: string;
+  answer: string;
+  base?: string;
+}
+
+/** The line for a Part 1 or Part 3 question; undefined for other exercises. */
+export function textLine(q: RecallQuestion, kind: RecallKind): TextLine | undefined {
+  if (kind === "cloze" && q.cloze) return { text: q.cloze.text, answer: q.cloze.answer };
+  if (kind === "form") {
+    const gap = formGap(q.word);
+    if (gap) return { ...gap, base: q.word.base };
+  }
+  return undefined;
 }
