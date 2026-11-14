@@ -13,7 +13,7 @@ const DAYS = 14;
 function Tile({ n, label }: { n: number; label: string }) {
   const t = useT();
   return (
-    <div className="raised rounded-[20px] border-2 border-line bg-card px-3 pt-2.5 pb-3">
+    <div className="raised flex flex-col justify-center rounded-[20px] border-2 border-line bg-card px-3 pt-2.5 pb-3">
       <div className="font-display text-[26px] leading-tight font-extrabold tabular-nums">{t.num(n)}</div>
       <div className="text-[13px] leading-tight font-semibold text-muted">{label}</div>
     </div>
@@ -32,10 +32,10 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
   const max = Math.max(1, ...bars.map((b) => b.new + b.reviewed));
   const sel = bars.find((b) => b.day === picked);
   const total = bars.reduce((s, b) => s + b.new + b.reviewed, 0);
-  const H = 120; // px, plot height
+  const H = 120; // px, smallest plot height (it grows to fill the card next to "By level" on wider screens)
 
   return (
-    <section className="raised mt-4 rounded-[28px] border-2 border-line bg-card p-5">
+    <section className="raised flex flex-col rounded-[28px] border-2 border-line bg-card p-5">
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="font-display text-lg font-bold">{t.stats.lastDays(DAYS)}</h2>
         <div className="flex gap-3 text-xs font-semibold text-muted">
@@ -60,7 +60,7 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
         )}
       </p>
 
-      <div className="relative" style={{ height: H }} aria-hidden>
+      <div className="relative flex-1" style={{ minHeight: H }} aria-hidden>
         {/* recessive top gridline with the scale */}
         <div className="absolute inset-x-0 top-0 border-t border-dashed border-line" />
         <span className="absolute -top-4.5 right-0 text-[11px] font-semibold text-muted tabular-nums">{max}</span>
@@ -81,13 +81,13 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
                 {b.reviewed > 0 && (
                   <span
                     className="block w-full rounded-t-[4px]"
-                    style={{ height: (b.reviewed / max) * (H - 4), background: "var(--color-bar-reviewed)" }}
+                    style={{ height: `${(b.reviewed / max) * 96}%`, background: "var(--color-bar-reviewed)" }}
                   />
                 )}
                 {b.new > 0 && (
                   <span
                     className={`block w-full ${b.reviewed > 0 ? "" : "rounded-t-[4px]"}`}
-                    style={{ height: (b.new / max) * (H - 4), background: "var(--color-bar-new)" }}
+                    style={{ height: `${(b.new / max) * 96}%`, background: "var(--color-bar-new)" }}
                   />
                 )}
                 {n === 0 && <span className="block h-[3px] w-full rounded-full bg-line" />}
@@ -173,7 +173,7 @@ function LevelRow({ level, b }: { level: Level; b: LevelBreakdown | undefined })
   );
 }
 
-export default function Stats({ progress, onBack }: { progress: Progress; onBack: () => void }) {
+export default function Stats({ progress }: { progress: Progress }) {
   const t = useT();
   const { history, cards } = progress;
   const streak = streakOf(history);
@@ -189,10 +189,11 @@ export default function Stats({ progress, onBack }: { progress: Progress; onBack
 
   return (
     <main className="flex flex-1 flex-col pb-4">
-      <ScreenHeader title={t.stats.title} onBack={onBack} />
+      <ScreenHeader title={t.stats.title} />
 
+      <div className="mt-6 grid gap-4 md:grid-cols-2 md:gap-5">
       {/* Streak */}
-      <section aria-label={t.stats.streakAria} className="raised mt-6 flex items-center gap-4 rounded-[28px] border-2 border-line bg-card p-5">
+      <section aria-label={t.stats.streakAria} className="raised flex items-center gap-4 rounded-[28px] border-2 border-line bg-card p-5">
         <Flame lit={streak.current > 0} className="size-16 shrink-0" />
         <div>
           <p className="flex items-baseline gap-2">
@@ -206,7 +207,7 @@ export default function Stats({ progress, onBack }: { progress: Progress; onBack
         </div>
       </section>
 
-      <div className="mt-4 grid grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-3 gap-2.5">
         <Tile n={all.length} label={t.stats.wordsSeen} />
         <Tile n={mastered} label={t.stats.mastered} />
         <Tile n={streak.daysStudied} label={t.stats.daysStudied} />
@@ -215,7 +216,7 @@ export default function Stats({ progress, onBack }: { progress: Progress; onBack
       <DailyChart bars={lastDays(history, DAYS)} />
 
       {/* Per level */}
-      <section className="raised mt-4 rounded-[28px] border-2 border-line bg-card p-5">
+      <section className="raised rounded-[28px] border-2 border-line bg-card p-5">
         <h2 className="font-display text-lg font-bold">{t.stats.byLevel}</h2>
         <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-muted">
           {SEGMENTS.map((s) => (
@@ -234,6 +235,7 @@ export default function Stats({ progress, onBack }: { progress: Progress; onBack
         </ul>
         <p className="mt-4 text-xs font-semibold text-muted">{t.stats.reviewsTotal(reviews)}</p>
       </section>
+      </div>
     </main>
   );
 }

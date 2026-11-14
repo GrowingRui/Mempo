@@ -125,6 +125,8 @@ Buttons and arrow keys also work.
 
 ## 4. Screens
 
+> **Layout since 2026-11-14 (see I below):** phones have a bottom tab bar (Today · Practice · Words · Stats; Settings is the gear on Today); tablets and computers have a sidebar (Today · Practice · Words · Stats · Settings). Study, quizzes and the level test are full-screen, without tabs or sidebar.
+
 1. **Home:** choose level, today's progress (new / reviews / don't know), streak, "Start" button
 2. **Study (cards):**
    - Front: word, 🔊 button, example sentence.
@@ -400,6 +402,17 @@ Recall checks words you've already studied; exam tasks train a skill and may use
 - [ ] **Part 2: Open cloze** (later, with Phase 7). A gap with no options; the answer is a grammar word (*which, despite, unless*). Not really vocabulary, and needs our own texts
 - [ ] **Part 4: Key word transformation** (later, with Phase 7). Rewrite a sentence with a given word in 2–5 words. Needs hand-written questions or AI to check the answers
 - [ ] **Later idea: exam-style texts.** In the real exam each part is one short text with 8 gaps, not single sentences. Join 8 example sentences into one set so it feels closer to the paper
+
+**I. Phone and web layout** ✅ (done 2026-11-14, approved by the user)
+Before, every screen was one narrow column (max ~450 px) on every device, and on phones the Start button sat ~1,400 px down Home. Like Duolingo, Quizlet, Busuu and Memrise, the navigation now changes shape with the screen. Colours unchanged.
+- [x] **Phones (< 768 px):** bottom tab bar **Today · Practice · Words · Stats** (`TabBar` in `src/components/AppNav.tsx`). Today shows only today: the progress card with Start / Keep going inside it (on the first screen), the 3 counters, Word of the day, and **Your plan** (level + daily goal), open for someone new and folded to one line ("B2 · Upper-intermediate · 20 new a day", **Change**) once they've started
+- [x] **New Practice tab** (`src/pages/Practice.tsx`, screen `{ name: "practice" }`): "Don't know" list (red count), Recall, Exam practice, Skip words you know (until the level is all seen), Level test. Cards in one column on phones, 2 columns wider
+- [x] **Tablets (768–1279 px):** sidebar with icons only (`Sidebar`), one content column; Today also shows Recall / Exam practice / Skip as 3 cards
+- [x] **Computers (≥ 1280 px):** sidebar with names (Today · Practice · Words · Stats · Settings); Today has the main column (progress, counters, practice cards) and a **right column** (streak card, Word of the day, Your plan always open). Settings: learning preferences left, device + data right. Stats: 2 × 2 (streak | tiles, chart | by level; the chart grows to fill its card). Word list and "Don't know": 2 columns
+- [x] Study, Recall, Exam practice, Skip and the level test stay one narrow column, without tab bar or sidebar. The "Don't know" list has the sidebar but no tab bar (its Practise button sits there)
+- [x] **Back button:** `nav().tab()` in `src/lib/nav.ts`. Switching tabs replaces the entry instead of adding one, so Back from any tab goes to Today and Back on Today leaves the app; a screen opened from a tab goes back to that tab. Tests in `nav.test.ts`
+- [x] Texts `nav`, `practice`, `home.morePractice` / `yourPlan` / `change` / `planGoal` in en / zh / es. Checked at 320 / 360 / 390 / 820 / 1100 / 1440 px, all three languages, light and dark
+- Noticed, not fixed yet: in dark mode the highlighted word in example sentences is light text on the yellow marker (hard to read)
 
 **Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
 

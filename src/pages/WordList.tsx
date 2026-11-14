@@ -27,7 +27,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
 /** Lower-case, accents removed, so "accion" finds "acción". */
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
 
-export default function WordList({ progress, onBack }: { progress: Progress; onBack: () => void }) {
+export default function WordList({ progress }: { progress: Progress }) {
   const t = useT();
   const [words, setWords] = useState<Word[]>();
   const [error, setError] = useState<string>();
@@ -86,7 +86,7 @@ export default function WordList({ progress, onBack }: { progress: Progress; onB
 
   return (
     <main className="flex flex-1 flex-col">
-      <ScreenHeader title={t.wordList.title} onBack={onBack} />
+      <ScreenHeader title={t.wordList.title} />
 
       <input
         type="search"
@@ -128,7 +128,7 @@ export default function WordList({ progress, onBack }: { progress: Progress; onB
           {list.length === 0 ? (
             <p className="mt-10 text-center font-semibold text-muted">{t.wordList.noMatch}</p>
           ) : (
-            <ul className="mt-2 space-y-3">
+            <ul className="mt-2 grid grid-cols-1 items-start gap-3 md:grid-cols-2">
               {list.slice(0, shown).map((w) => (
                 <WordRow key={w.id} word={w} card={cards[w.id]} settings={progress.settings} />
               ))}

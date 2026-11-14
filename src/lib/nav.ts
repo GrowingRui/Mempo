@@ -10,6 +10,7 @@ import type { SessionMode } from "./session";
 
 export type Screen =
   | { name: "home" }
+  | { name: "practice" }
   | { name: "study"; mode: SessionMode }
   | { name: "dontknow" }
   | { name: "words" }
@@ -127,6 +128,26 @@ export function createNav<S extends { name: string }>(host: NavHost, home: S) {
           else show(next);
         } else {
           push({ mempo: 1, screen: next, i: current.i + 1, prev: current.screen });
+          show(next);
+        }
+      });
+    },
+
+    /**
+     * Switch tab (bottom tab bar on phones, sidebar on computers). From Home it opens the tab like any screen;
+     * from another tab it takes that tab's place, so Back from any tab goes to Home, and Back on Home leaves.
+     */
+    tab(next: S) {
+      run(() => {
+        if (same(next, home)) {
+          if (current.i > 0) back(current.i);
+          else show(next);
+        } else if (current.i === 0) {
+          push({ mempo: 1, screen: next, i: 1, prev: home });
+          show(next);
+        } else {
+          current = { mempo: 1, screen: next, i: current.i, prev: current.prev };
+          h.replaceState(current, "");
           show(next);
         }
       });

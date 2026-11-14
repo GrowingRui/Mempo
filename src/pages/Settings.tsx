@@ -130,7 +130,10 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
 
   return (
     <main className="flex flex-1 flex-col pb-4">
-      <ScreenHeader title={t.settings.title} onBack={onBack} />
+      <ScreenHeader title={t.settings.title} onBack={onBack} backOnPhoneOnly />
+
+      <div className="md:grid md:grid-cols-2 md:gap-x-10">
+      <div>
 
       <Section title={t.settings.language} icon={<GlobeIcon />} hint={t.settings.languageHint}>
         <Segmented
@@ -194,6 +197,8 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
         />
       </Section>
 
+      </div>
+      <div>
       <Section title={t.settings.reminder}>
         <ReminderRow history={progress.history} lang={settings.lang} />
       </Section>
@@ -279,6 +284,9 @@ export default function Settings({ progress, setProgress, moveCode = null, onBac
           />
         </div>
       </Section>
+
+      </div>
+      </div>
 
       {feedback && (
         <FeedbackDialog<FeedbackKind>

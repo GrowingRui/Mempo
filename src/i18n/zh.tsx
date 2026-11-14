@@ -41,6 +41,23 @@ const zh: Messages = {
     interj: "感叹词", num: "数词", det: "限定词", phr: "短语", abbr: "缩写",
   },
 
+  nav: {
+    aria: "主菜单",
+    today: "今天",
+    practice: "练习",
+    words: "词库",
+    stats: "统计",
+    settings: "设置",
+  },
+
+  practice: {
+    title: "练习",
+    intro: "每日学习之外的更多练习方式。",
+    dontKnowSub: "继续练习你没记住的词",
+    testTitle: "水平测试",
+    testSub: "不确定自己的水平？几分钟就能知道",
+  },
+
   home: {
     tagline: "让单词记牢！",
     statsAria: (streak: number) => `统计。连续学习：${streak} 天`,
@@ -61,6 +78,10 @@ const zh: Messages = {
     skip: "跳过已认识的词",
     skipSub: "勾掉简单的词，学习时就不再出现",
     wotd: "每日一词",
+    morePractice: "更多练习",
+    yourPlan: "你的计划",
+    change: "修改",
+    planGoal: (goal: number) => `每天 ${N(goal)} 个新词`,
     yourLevel: "你的水平",
     takeTest: "不确定？做个水平测试",
     levelAria: "水平",

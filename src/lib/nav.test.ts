@@ -180,3 +180,45 @@ describe("phone Back button", () => {
     expect(b.pressBack()).toBe("left the app");
   });
 });
+
+describe("tabs (bottom tab bar / sidebar)", () => {
+  it("switching tabs doesn't pile up: Back from any tab goes Home, then leaves", () => {
+    const { b, nav, now } = setup();
+    nav.tab({ name: "practice" });
+    nav.tab({ name: "words" });
+    nav.tab({ name: "stats" });
+    expect(now()).toEqual({ name: "stats" });
+    expect(b.length).toBe(2);
+    b.pressBack();
+    expect(now()).toEqual({ name: "home" });
+    expect(b.pressBack()).toBe("left the app");
+  });
+
+  it("a screen opened from a tab goes back to that tab", () => {
+    const { b, nav, now } = setup();
+    nav.tab({ name: "practice" });
+    nav.go({ name: "recall" });
+    b.pressBack();
+    expect(now()).toEqual({ name: "practice" });
+    b.pressBack();
+    expect(now()).toEqual({ name: "home" });
+  });
+
+  it("the Today tab goes back to Home's entry", () => {
+    const { b, nav, now } = setup();
+    nav.tab({ name: "words" });
+    nav.tab({ name: "home" });
+    b.flush();
+    expect(now()).toEqual({ name: "home" });
+    expect(b.index).toBe(0);
+  });
+
+  it("a tab reloaded stays, with Home below it", () => {
+    const { b, nav } = setup();
+    nav.tab({ name: "practice" });
+    nav.tab({ name: "stats" });
+    const again = createNav<Screen>(b.host, { name: "home" });
+    expect(again.start()).toEqual({ name: "stats" });
+    expect(again.previous()).toEqual({ name: "home" });
+  });
+});

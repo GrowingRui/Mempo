@@ -53,6 +53,23 @@ const en = {
     interj: "interjection", num: "number", det: "determiner", phr: "phrase", abbr: "abbreviation",
   } as Record<string, string>,
 
+  nav: {
+    aria: "Main",
+    today: "Today",
+    practice: "Practice",
+    words: "Words",
+    stats: "Stats",
+    settings: "Settings",
+  },
+
+  practice: {
+    title: "Practice",
+    intro: "Extra ways to learn, next to your daily session.",
+    dontKnowSub: "Keep practising the words you missed",
+    testTitle: "Level test",
+    testSub: "Not sure about your level? Find out in a few minutes",
+  },
+
   home: {
     tagline: site.tagline as string,
     statsAria: (streak: number) => `Stats. Streak: ${plural(streak, "day", "days")}`,
@@ -73,6 +90,10 @@ const en = {
     skip: "Skip words you know",
     skipSub: "Tick off easy words so they don’t come up",
     wotd: "Word of the day",
+    morePractice: "More practice",
+    yourPlan: "Your plan",
+    change: "Change",
+    planGoal: (goal: number) => `${N(goal)} new a day`,
     yourLevel: "Your level",
     takeTest: "Not sure? Take a level test",
     levelAria: "Level",

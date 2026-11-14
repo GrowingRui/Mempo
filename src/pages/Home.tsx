@@ -4,6 +4,8 @@ import Flame from "../components/Flame";
 import Highlight from "../components/Highlight";
 import { InstallBanner } from "../components/Install";
 import Mascot from "../components/Mascot";
+import type { Tab } from "../components/AppNav";
+import { PRACTICE_ICONS, PracticeCard } from "./Practice";
 import SpeakButton from "../components/SpeakButton";
 import { site } from "../config/site";
 import { useT } from "../i18n";
@@ -31,30 +33,6 @@ function GoalChip({ active, onClick, children, wide }: { active: boolean; onClic
       }`}
     >
       {children}
-    </button>
-  );
-}
-
-/** A full-width link to another screen: icon, title, one line of explanation, arrow (Recall, Exam practice, Skip words you know). */
-function LinkRow({ onClick, title, sub, icon }: { onClick: () => void; title: string; sub: string; icon: ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="press mt-2.5 flex items-center gap-3 rounded-[20px] border-2 border-line bg-card px-3 py-2.5 text-left hover:border-brand/40"
-    >
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand-ink">
-        <svg viewBox="0 0 24 24" className="size-[22px]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          {icon}
-        </svg>
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block font-display text-lg leading-tight font-extrabold">{title}</span>
-        <span className="block text-[13px] font-semibold text-muted">{sub}</span>
-      </span>
-      <svg viewBox="0 0 24 24" className="size-4 shrink-0 text-muted" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M9 5l7 7-7 7" />
-      </svg>
     </button>
   );
 }
@@ -88,7 +66,7 @@ function WordOfTheDay({ word, progress }: { word: Word; progress: Progress }) {
   const example = word.examples[0];
   const terms = [word.word, ...(word.forms ?? []), ...(word.variants ?? []), example?.form ?? ""];
   return (
-    <section aria-label={t.home.wotd} className="mt-4 rounded-[24px] border-2 border-line bg-card px-4 pt-3 pb-4">
+    <section aria-label={t.home.wotd} className="rounded-[24px] border-2 border-line bg-card px-4 pt-3 pb-4">
       <p className="text-xs font-bold tracking-wide text-brand-ink uppercase">{t.home.wotd}</p>
       <div className="mt-1 flex items-center gap-3">
         <div className="min-w-0 flex-1">
@@ -115,9 +93,11 @@ interface Props {
   progress: Progress;
   setProgress: (fn: (p: Progress) => Progress) => void;
   go: (s: Screen) => void;
+  /** Switch tab (Stats, Words), as the tab bar / sidebar does. */
+  tab: (t: Tab) => void;
 }
 
-export default function Home({ progress, setProgress, go }: Props) {
+export default function Home({ progress, setProgress, go, tab }: Props) {
   const t = useT();
   const { settings, cards } = progress;
   const [index, setIndex] = useState<LevelIndex>();
@@ -159,21 +139,25 @@ export default function Home({ progress, setProgress, go }: Props) {
   const goalValid = Number.isInteger(goalNum) && goalNum >= MIN_GOAL && goalNum <= MAX_GOAL;
   const isCustomGoal = !GOALS.includes(settings.dailyNew);
 
+  // Level and daily goal: open for someone new, folded into one line on phones once they've started (always open on wider screens).
+  const [planOpen, setPlanOpen] = useState(() => Object.keys(cards).length === 0);
+
   const update = (patch: Partial<Progress["settings"]>) =>
     setProgress((p) => ({ ...p, settings: { ...p.settings, ...patch } }));
 
   return (
     <main className="flex flex-1 flex-col">
       <header className="flex items-center gap-2.5 min-[360px]:gap-3">
-        <Mascot className="size-11 shrink-0 min-[360px]:size-14" />
-        <div className="min-w-0">
+        <Mascot className="size-11 shrink-0 min-[360px]:size-14 md:hidden" />
+        <div className="min-w-0 md:hidden">
           <h1 className="font-display text-[26px] leading-none font-extrabold tracking-tight min-[360px]:text-[32px]">{site.name}</h1>
           <p className="mt-1 text-sm leading-tight font-semibold text-muted min-[360px]:text-base">{t.home.tagline}</p>
         </div>
-        <div className="ml-auto flex shrink-0 gap-1.5 min-[360px]:gap-2">
+        <h1 className="hidden font-display text-3xl font-extrabold tracking-tight md:block">{t.nav.today}</h1>
+        <div className="ml-auto flex shrink-0 gap-1.5 min-[360px]:gap-2 xl:hidden">
           <button
             type="button"
-            onClick={() => go({ name: "stats" })}
+            onClick={() => tab("stats")}
             aria-label={t.home.statsAria(streak.current)}
             className="press flex h-11 items-center gap-1 rounded-2xl border-2 border-line bg-card pr-3 pl-2 [--depth:4px] hover:border-brand/40"
           >
@@ -184,7 +168,7 @@ export default function Home({ progress, setProgress, go }: Props) {
             type="button"
             onClick={() => go({ name: "settings" })}
             aria-label={t.settings.title}
-            className="press grid size-11 place-items-center rounded-2xl border-2 border-line bg-card [--depth:4px] hover:border-brand/40"
+            className="press grid size-11 place-items-center rounded-2xl border-2 border-line bg-card [--depth:4px] hover:border-brand/40 md:hidden"
           >
             <svg viewBox="0 0 24 24" className="size-[22px]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
@@ -195,179 +179,231 @@ export default function Home({ progress, setProgress, go }: Props) {
         </div>
       </header>
 
-      {/* Today */}
-      <section aria-label={t.home.todayAria} className="raised mt-7 rounded-[28px] border-2 border-line bg-card p-5">
-        <p className="flex items-baseline gap-2">
-          <span className="font-display text-6xl leading-none font-extrabold text-brand-ink tabular-nums">{doneToday}</span>
-          <span className="font-display text-xl font-bold text-ink">{t.home.ofNewToday(settings.dailyNew)}</span>
-        </p>
-        <div className="mt-4 h-5 overflow-hidden rounded-full bg-brand-soft p-1">
-          <div
-            className="relative h-full rounded-full bg-brand transition-[width] duration-500 after:absolute after:inset-x-2 after:top-[3px] after:h-[3px] after:rounded-full after:bg-white/35"
-            style={{ width: goalPct > 0 ? `max(${goalPct}%, 1.5rem)` : 0 }}
-          />
-        </div>
-        <p className="mt-3 text-sm font-semibold text-muted">
-          {t.home.seenIn(settings.level, <span className="text-ink tabular-nums">{levelIds ? t.num(seen) : "…"}</span>, total)}
-        </p>
-      </section>
-
-      {/* Other screens */}
-      <nav className="mt-4 grid grid-cols-3 gap-2 min-[360px]:gap-2.5" aria-label={t.home.practiceAria}>
-        <NavTile onClick={() => go({ name: "study", mode: "review" })} n={parts.allDue} label={t.home.reviewsDue} tone="text-brand-ink" />
-        <NavTile onClick={() => go({ name: "dontknow" })} n={parts.dontKnowTotal} label={t.answer.dontknow} tone="text-dontknow" />
-        <NavTile onClick={() => go({ name: "words" })} n={index?.counts.total} label={t.home.allWords} tone="text-ink" />
-      </nav>
-
-      <LinkRow
-        onClick={() => go({ name: "recall" })}
-        title={t.home.recall}
-        sub={t.home.recallSub}
-        icon={<path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 19.5h5M10.5 22h3" />}
-      />
-      <LinkRow
-        onClick={() => go({ name: "exam" })}
-        title={t.home.exam}
-        sub={t.home.examSub}
-        icon={<path d="M2 9l10-5 10 5-10 5zM6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6" />}
-      />
-
-      {levelIds && seen < levelIds.length && (
-        <LinkRow
-          onClick={() => go({ name: "skip" })}
-          title={t.home.skip}
-          sub={t.home.skipSub}
-          icon={<path d="M5 6l6 6-6 6M13 6l6 6-6 6" />}
-        />
-      )}
-
-      {wotd && <WordOfTheDay word={wotd} progress={progress} />}
-
-      {/* Level */}
-      <section className="mt-7">
-        <div className="mb-2.5 flex items-baseline justify-between gap-2">
-          <h2 className="font-display text-lg font-bold">{t.home.yourLevel}</h2>
-          <button
-            type="button"
-            onClick={() => go({ name: "test" })}
-            className="text-right text-sm font-bold text-brand-ink underline decoration-2 underline-offset-2 hover:text-ink"
-          >
-            {t.home.takeTest}
-          </button>
-        </div>
-        <div className="grid grid-cols-3 gap-2 min-[360px]:gap-2.5" role="radiogroup" aria-label={t.home.levelAria}>
-          {LEVELS.map((lv) => {
-            const active = lv === settings.level;
-            return (
-              <button
-                key={lv}
-                type="button"
-                role="radio"
-                aria-checked={active}
-                onClick={() => update({ level: lv })}
-                className={`press min-w-0 rounded-[20px] border-2 px-2 py-2.5 text-left min-[360px]:px-3 ${
-                  active ? "border-brand bg-brand text-white [--edge:var(--color-brand-edge)]" : "border-line bg-card hover:border-brand/40"
-                }`}
-              >
-                <span className="block font-display text-2xl font-extrabold">{lv}</span>
-                <span className={`block text-[11px] leading-tight font-semibold min-[360px]:text-xs ${active ? "text-white/80" : "text-muted"}`}>{t.levelName[lv]}</span>
-                {index && (
-                  <span className={`mt-0.5 block text-xs tabular-nums ${active ? "text-white/70" : "text-muted"}`}>
-                    {t.common.words(index.counts[lv])}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Daily goal */}
-      <section className="mt-6">
-        <h2 className="mb-2.5 font-display text-lg font-bold">{t.home.goalTitle}</h2>
-        <div className="flex gap-1.5 min-[360px]:gap-2" role="radiogroup" aria-label={t.home.goalTitle}>
-          {GOALS.map((g) => (
-            <GoalChip
-              key={g}
-              active={!editingGoal && g === settings.dailyNew}
-              onClick={() => {
-                setEditingGoal(false);
-                update({ dailyNew: g });
-              }}
-            >
-              {g}
-            </GoalChip>
-          ))}
-          <GoalChip
-            wide
-            active={editingGoal || isCustomGoal}
-            onClick={() => {
-              setGoalDraft(String(settings.dailyNew));
-              setEditingGoal(true);
-            }}
-          >
-            {isCustomGoal && !editingGoal ? settings.dailyNew : <span className="text-sm min-[360px]:text-base">{t.home.custom}</span>}
-          </GoalChip>
-        </div>
-        {editingGoal && (
-          <form
-            className="mt-3 flex items-center gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (goalValid) {
-                update({ dailyNew: goalNum });
-                setEditingGoal(false);
-              }
-            }}
-          >
-            <input
-              type="number"
-              inputMode="numeric"
-              min={MIN_GOAL}
-              max={MAX_GOAL}
-              autoFocus
-              value={goalDraft}
-              onChange={(e) => setGoalDraft(e.target.value)}
-              aria-label={t.home.goalInputAria}
-              className="w-24 rounded-2xl border-2 border-line bg-card px-4 py-2.5 text-center font-display text-lg font-bold tabular-nums outline-none focus:border-brand"
-            />
-            <span className="font-semibold text-muted">{t.home.wordsADay}</span>
-            <button
-              type="submit"
-              disabled={!goalValid}
-              className="press ml-auto rounded-2xl bg-brand px-5 py-2.5 font-bold text-white [--edge:var(--color-brand-edge)] disabled:opacity-40"
-            >
-              {t.common.save}
-            </button>
-          </form>
-        )}
-        {editingGoal && !goalValid && goalDraft !== "" && (
-          <p className="mt-2 text-sm font-semibold text-dontknow">{t.home.goalRange(MIN_GOAL, MAX_GOAL)}</p>
-        )}
-      </section>
-
-      <div className="mt-auto pt-8">
-        {sessionSize > 0 ? (
-          <button
-            type="button"
-            onClick={() => go({ name: "study", mode: "today" })}
-            disabled={!levelIds}
-            className="press w-full rounded-3xl bg-brand py-3.5 text-white [--depth:6px] [--edge:var(--color-brand-edge)] hover:bg-brand-dark disabled:opacity-60"
-          >
-            <span className="block font-display text-2xl font-extrabold">{started ? t.home.keepGoing : t.home.start}</span>
-            <span className="block text-sm font-semibold text-white/85">{breakdown}</span>
-          </button>
-        ) : (
-          <div className="flex items-center gap-3 rounded-3xl border-2 border-know/30 bg-know/10 px-4 py-3">
-            <Mascot mood="cheer" className="size-12 shrink-0" />
-            <p className="font-display text-lg leading-snug font-bold text-know-ink">
-              {allSeen && left > 0 ? t.home.allSeen(settings.level) : t.home.allDone}
+      <div className="mt-6 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:gap-8">
+        <div className="flex flex-col gap-4">
+          {/* Today, with the main button inside, so it's on the first screen of a phone */}
+          <section aria-label={t.home.todayAria} className="raised rounded-[28px] border-2 border-line bg-card p-5 md:p-6">
+            <p className="flex items-baseline gap-2">
+              <span className="font-display text-6xl leading-none font-extrabold text-brand-ink tabular-nums">{doneToday}</span>
+              <span className="font-display text-xl font-bold text-ink">{t.home.ofNewToday(settings.dailyNew)}</span>
             </p>
-          </div>
-        )}
-        {parts.heldBack > 0 && sessionSize > 0 && (
-          <p className="mt-2 text-center text-xs font-semibold text-muted">{t.home.heldBack(parts.heldBack, settings.maxReviews)}</p>
-        )}
+            <div className="mt-4 h-5 overflow-hidden rounded-full bg-brand-soft p-1">
+              <div
+                className="relative h-full rounded-full bg-brand transition-[width] duration-500 after:absolute after:inset-x-2 after:top-[3px] after:h-[3px] after:rounded-full after:bg-white/35"
+                style={{ width: goalPct > 0 ? `max(${goalPct}%, 1.5rem)` : 0 }}
+              />
+            </div>
+            <p className="mt-3 text-sm font-semibold text-muted">
+              {t.home.seenIn(settings.level, <span className="text-ink tabular-nums">{levelIds ? t.num(seen) : "…"}</span>, total)}
+            </p>
+            <div className="mt-5">
+              {sessionSize > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => go({ name: "study", mode: "today" })}
+                  disabled={!levelIds}
+                  className="press w-full rounded-3xl bg-brand py-3 text-white [--depth:6px] [--edge:var(--color-brand-edge)] hover:bg-brand-dark disabled:opacity-60"
+                >
+                  <span className="block font-display text-2xl font-extrabold">{started ? t.home.keepGoing : t.home.start}</span>
+                  <span className="block text-sm font-semibold text-white/85">{breakdown}</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-3 rounded-3xl border-2 border-know/30 bg-know/10 px-4 py-3">
+                  <Mascot mood="cheer" className="size-12 shrink-0" />
+                  <p className="font-display text-lg leading-snug font-bold text-know-ink">
+                    {allSeen && left > 0 ? t.home.allSeen(settings.level) : t.home.allDone}
+                  </p>
+                </div>
+              )}
+              {parts.heldBack > 0 && sessionSize > 0 && (
+                <p className="mt-3 text-center text-xs font-semibold text-muted">{t.home.heldBack(parts.heldBack, settings.maxReviews)}</p>
+              )}
+            </div>
+          </section>
+
+          {/* Other screens */}
+          <nav className="grid grid-cols-3 gap-2 min-[360px]:gap-2.5" aria-label={t.home.practiceAria}>
+            <NavTile onClick={() => go({ name: "study", mode: "review" })} n={parts.allDue} label={t.home.reviewsDue} tone="text-brand-ink" />
+            <NavTile onClick={() => go({ name: "dontknow" })} n={parts.dontKnowTotal} label={t.answer.dontknow} tone="text-dontknow" />
+            <NavTile onClick={() => tab("words")} n={index?.counts.total} label={t.home.allWords} tone="text-ink" />
+          </nav>
+
+          <section aria-labelledby="more-practice" className="mt-2 hidden md:block">
+            <div className="mb-3 flex items-baseline justify-between gap-2">
+              <h2 id="more-practice" className="font-display text-xl font-bold">
+                {t.home.morePractice}
+              </h2>
+              <button
+                type="button"
+                onClick={() => tab("practice")}
+                className="text-sm font-bold text-brand-ink underline decoration-2 underline-offset-2 hover:text-ink"
+              >
+                {t.nav.practice} ›
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <PracticeCard onClick={() => go({ name: "recall" })} title={t.home.recall} sub={t.home.recallSub} icon={PRACTICE_ICONS.recall} />
+              <PracticeCard onClick={() => go({ name: "exam" })} title={t.home.exam} sub={t.home.examSub} icon={PRACTICE_ICONS.exam} />
+              {levelIds && seen < levelIds.length ? (
+                <PracticeCard onClick={() => go({ name: "skip" })} title={t.home.skip} sub={t.home.skipSub} icon={PRACTICE_ICONS.skip} />
+              ) : (
+                <PracticeCard onClick={() => go({ name: "test" })} title={t.practice.testTitle} sub={t.practice.testSub} icon={PRACTICE_ICONS.test} />
+              )}
+            </div>
+          </section>
+        </div>
+
+        {/* Right column on wide screens (below the rest on tablets and phones) */}
+        <div className="flex flex-col gap-4">
+          <button
+            type="button"
+            onClick={() => tab("stats")}
+            aria-label={t.home.statsAria(streak.current)}
+            className="press hidden items-center gap-3 rounded-[24px] border-2 border-line bg-card px-4 py-3.5 text-left hover:border-brand/40 xl:flex"
+          >
+            <Flame lit={streak.doneToday} className="size-11 shrink-0" />
+            <span className="min-w-0">
+              <span className="flex items-baseline gap-1.5">
+                <span className="font-display text-3xl leading-none font-extrabold tabular-nums">{streak.current}</span>
+                <span className="font-display text-lg font-bold">{t.stats.dayStreak(streak.current)}</span>
+              </span>
+              <span className="mt-1 block text-sm leading-snug font-semibold text-muted">
+                {streak.doneToday ? t.stats.studiedToday : streak.current > 0 ? t.stats.keepItGoing : t.stats.startStreak}
+              </span>
+            </span>
+          </button>
+          {wotd && <WordOfTheDay word={wotd} progress={progress} />}
+
+          {/* Level and daily goal */}
+          <section aria-labelledby="your-plan" className="rounded-[24px] border-2 border-line bg-card px-4 pt-3 pb-4">
+            <div className="flex items-center justify-between gap-2">
+              <h2 id="your-plan" className="text-xs font-bold tracking-wide text-brand-ink uppercase">
+                {t.home.yourPlan}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setPlanOpen((o) => !o)}
+                aria-expanded={planOpen}
+                aria-controls="plan-body"
+                className="text-sm font-bold text-brand-ink underline decoration-2 underline-offset-2 hover:text-ink md:hidden"
+              >
+                {planOpen ? t.common.done : t.home.change}
+              </button>
+            </div>
+
+            {!planOpen && (
+              <button type="button" onClick={() => setPlanOpen(true)} className="mt-1.5 flex w-full items-center gap-3 text-left md:hidden">
+                <span className="rounded-xl bg-brand px-2.5 py-1 font-display text-xl font-extrabold text-white">{settings.level}</span>
+                <span className="min-w-0">
+                  <span className="block leading-tight font-bold">{t.levelName[settings.level]}</span>
+                  <span className="block text-sm font-semibold text-muted">{t.home.planGoal(settings.dailyNew)}</span>
+                </span>
+              </button>
+            )}
+
+            <div id="plan-body" className={planOpen ? "" : "hidden md:block"}>
+              <div className="mt-2 mb-2 flex items-baseline justify-between gap-2">
+                <h3 className="font-display text-lg font-bold">{t.home.yourLevel}</h3>
+                <button
+                  type="button"
+                  onClick={() => go({ name: "test" })}
+                  className="text-right text-sm font-bold text-brand-ink underline decoration-2 underline-offset-2 hover:text-ink"
+                >
+                  {t.home.takeTest}
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label={t.home.levelAria}>
+                {LEVELS.map((lv) => {
+                  const active = lv === settings.level;
+                  return (
+                    <button
+                      key={lv}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => update({ level: lv })}
+                      className={`press min-w-0 rounded-[18px] border-2 px-2 py-2 text-left min-[360px]:px-2.5 ${
+                        active ? "border-brand bg-brand text-white [--edge:var(--color-brand-edge)]" : "border-line bg-card hover:border-brand/40"
+                      }`}
+                    >
+                      <span className="block font-display text-2xl font-extrabold">{lv}</span>
+                      <span className={`block text-[11px] leading-tight font-semibold min-[360px]:text-xs ${active ? "text-white/80" : "text-muted"}`}>{t.levelName[lv]}</span>
+                      {index && (
+                        <span className={`mt-0.5 block text-xs tabular-nums ${active ? "text-white/70" : "text-muted"}`}>
+                          {t.common.words(index.counts[lv])}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <h3 className="mt-5 mb-2 font-display text-lg font-bold">{t.home.goalTitle}</h3>
+              <div className="flex gap-1.5 min-[360px]:gap-2" role="radiogroup" aria-label={t.home.goalTitle}>
+                {GOALS.map((g) => (
+                  <GoalChip
+                    key={g}
+                    active={!editingGoal && g === settings.dailyNew}
+                    onClick={() => {
+                      setEditingGoal(false);
+                      update({ dailyNew: g });
+                    }}
+                  >
+                    {g}
+                  </GoalChip>
+                ))}
+                <GoalChip
+                  wide
+                  active={editingGoal || isCustomGoal}
+                  onClick={() => {
+                    setGoalDraft(String(settings.dailyNew));
+                    setEditingGoal(true);
+                  }}
+                >
+                  {isCustomGoal && !editingGoal ? settings.dailyNew : <span className="text-sm min-[360px]:text-base">{t.home.custom}</span>}
+                </GoalChip>
+              </div>
+              {editingGoal && (
+                <form
+                  className="mt-3 flex items-center gap-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (goalValid) {
+                      update({ dailyNew: goalNum });
+                      setEditingGoal(false);
+                    }
+                  }}
+                >
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={MIN_GOAL}
+                    max={MAX_GOAL}
+                    autoFocus
+                    value={goalDraft}
+                    onChange={(e) => setGoalDraft(e.target.value)}
+                    aria-label={t.home.goalInputAria}
+                    className="w-24 rounded-2xl border-2 border-line bg-card px-4 py-2.5 text-center font-display text-lg font-bold tabular-nums outline-none focus:border-brand"
+                  />
+                  <span className="font-semibold text-muted">{t.home.wordsADay}</span>
+                  <button
+                    type="submit"
+                    disabled={!goalValid}
+                    className="press ml-auto rounded-2xl bg-brand px-5 py-2.5 font-bold text-white [--edge:var(--color-brand-edge)] disabled:opacity-40"
+                  >
+                    {t.common.save}
+                  </button>
+                </form>
+              )}
+              {editingGoal && !goalValid && goalDraft !== "" && (
+                <p className="mt-2 text-sm font-semibold text-dontknow">{t.home.goalRange(MIN_GOAL, MAX_GOAL)}</p>
+              )}
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div className="mt-auto pt-6">
         <InstallBanner />
         <p className="mt-4 text-center text-xs font-semibold text-muted">{t.home.savedHere}</p>
       </div>

@@ -44,6 +44,23 @@ const es: Messages = {
     interj: "interjección", num: "número", det: "determinante", phr: "expresión", abbr: "abreviatura",
   },
 
+  nav: {
+    aria: "Principal",
+    today: "Hoy",
+    practice: "Práctica",
+    words: "Palabras",
+    stats: "Estadísticas",
+    settings: "Ajustes",
+  },
+
+  practice: {
+    title: "Práctica",
+    intro: "Más formas de aprender, además de tu sesión diaria.",
+    dontKnowSub: "Sigue practicando las palabras que fallaste",
+    testTitle: "Prueba de nivel",
+    testSub: "¿No sabes tu nivel? Descúbrelo en unos minutos",
+  },
+
   home: {
     tagline: "¡Que se te queden!",
     statsAria: (streak: number) => `Estadísticas. Racha: ${plural(streak, "día", "días")}`,
@@ -64,6 +81,10 @@ const es: Messages = {
     skip: "Saltar palabras que ya sabes",
     skipSub: "Marca las fáciles para que no te salgan",
     wotd: "Palabra del día",
+    morePractice: "Más práctica",
+    yourPlan: "Tu plan",
+    change: "Cambiar",
+    planGoal: (goal: number) => `${N(goal)} nuevas al día`,
     yourLevel: "Tu nivel",
     takeTest: "¿No lo sabes? Haz una prueba",
     levelAria: "Nivel",

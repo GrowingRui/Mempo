@@ -47,13 +47,13 @@ export default function DontKnow({ progress, onPractise, onBack }: Props) {
         </div>
       ) : (
         <>
-          <ul className="mt-5 space-y-3 pb-28">
+          <ul className="mt-5 grid grid-cols-1 items-start gap-3 pb-28 md:grid-cols-2">
             {list.map((w) => (
               <WordRow key={w.id} word={w} card={cards[w.id]} settings={progress.settings} />
             ))}
           </ul>
-          <div className="pointer-events-none fixed inset-x-0 bottom-0 bg-gradient-to-t from-paper-2 via-paper-2/90 to-transparent pt-10 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-            <div className="pointer-events-auto mx-auto max-w-md px-5">
+          <div className="pointer-events-none fixed inset-x-0 bottom-0 md:left-[88px] lg:left-60 bg-gradient-to-t from-paper-2 via-paper-2/90 to-transparent pt-10 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+            <div className="pointer-events-auto mx-auto max-w-md px-5 md:max-w-sm">
               <button
                 type="button"
                 onClick={onPractise}

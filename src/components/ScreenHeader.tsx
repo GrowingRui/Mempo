@@ -17,11 +17,28 @@ export function CloseButton({ onClick, label }: { onClick: () => void; label?: s
   );
 }
 
-/** Back button + title, for the screens reached from Home. */
-export default function ScreenHeader({ title, onBack, children }: { title: string; onBack: () => void; children?: ReactNode }) {
+/**
+ * Back button + title. Tabs (Practice, Words, Stats) have no back button; `backOnPhoneOnly` hides it where the
+ * sidebar is shown (Settings, which is a tab on computers but opened from Today on phones).
+ */
+export default function ScreenHeader({
+  title,
+  onBack,
+  backOnPhoneOnly,
+  children,
+}: {
+  title: string;
+  onBack?: () => void;
+  backOnPhoneOnly?: boolean;
+  children?: ReactNode;
+}) {
   return (
-    <header className="flex items-center gap-3">
-      <CloseButton onClick={onBack} />
+    <header className="flex min-h-11 items-center gap-3">
+      {onBack && (
+        <span className={backOnPhoneOnly ? "shrink-0 md:hidden" : "shrink-0"}>
+          <CloseButton onClick={onBack} />
+        </span>
+      )}
       <h1 className="font-display text-3xl font-extrabold tracking-tight">{title}</h1>
       <div className="ml-auto">{children}</div>
     </header>
