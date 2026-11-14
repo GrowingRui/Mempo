@@ -114,8 +114,17 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
 
   const studied = all?.filter((w) => progress.cards[w.id]).length ?? 0;
 
+  // Exam tasks are listed before the word lists arrive; a task tapped meanwhile waits here and starts once they're in.
+  const [pending, setPending] = useState<RecallKind>();
+  useEffect(() => {
+    if (all && pending) {
+      setPending(undefined);
+      start(pending);
+    }
+  }, [all, pending]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const start = (k: RecallKind) => {
-    if (!all) return;
+    if (!all) return setPending(k);
     setKind(k);
     if (k === "match") return; // MatchGame makes its own boards
     setQuestions(
@@ -143,7 +152,7 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
 
         {error ? (
           <p className="mt-10 text-center font-semibold text-dontknow">{error}</p>
-        ) : !all ? (
+        ) : !all && !exam ? (
           <p className="mt-10 text-center font-semibold text-muted">{t.common.loadingWords}</p>
         ) : studied === 0 && !exam ? (
           <div className="mt-14 flex flex-col items-center text-center">
@@ -175,7 +184,9 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
                 <span className="min-w-0">
                   {k.part && <span className="block text-xs font-bold tracking-wide text-brand-ink uppercase">{t.exam.part(k.part)}</span>}
                   <span className="block font-display text-xl font-extrabold">{t.recall.kinds[k.kind].title}</span>
-                  <span className="block text-sm font-medium text-muted">{t.recall.kinds[k.kind].sub}</span>
+                  <span className="block text-sm font-medium text-muted">
+                    {pending === k.kind ? t.common.loadingWords : t.recall.kinds[k.kind].sub}
+                  </span>
                 </span>
               </button>
             ))}

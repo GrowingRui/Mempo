@@ -17,7 +17,7 @@ import { streakOf } from "../lib/stats";
 import { streakLine } from "./Stats";
 import { meaning } from "../lib/leveltest";
 import { LEVELS, type Progress, type Word } from "../lib/types";
-import { loadIndex, loadWords, type LevelIndex } from "../lib/words";
+import { loadAllWords, loadIndex, loadWords, type LevelIndex } from "../lib/words";
 import { wordOfTheDay } from "../lib/wotd";
 
 const GOALS = [10, 20, 30, 50];
@@ -114,7 +114,13 @@ export default function Home({ progress, setProgress, go, tab }: Props) {
   useEffect(() => {
     setLevelWords(undefined);
     loadWords(settings.level)
-      .then(setLevelWords)
+      .then((ws) => {
+        setLevelWords(ws);
+        // Then fetch the other levels quietly, so Study, Recall and Exam practice open without waiting.
+        const warm = () => loadAllWords().catch(() => {});
+        if ("requestIdleCallback" in window) requestIdleCallback(warm, { timeout: 3000 });
+        else setTimeout(warm, 1500);
+      })
       .catch(() => {});
   }, [settings.level]);
 
