@@ -158,6 +158,7 @@ const es: Messages = {
       spell: { title: "Escríbela", sub: "Lee la traducción y escribe la palabra. ¡La más difícil!" },
       cloze: { title: "Opción múltiple", sub: "Cuatro palabras de significado parecido. Solo una encaja en el hueco." },
       form: { title: "Formación de palabras", sub: "Cambia la palabra en mayúsculas para que encaje en la frase." },
+      match: { title: "Empareja", sub: "Une cada palabra con su significado contra el reloj." },
     },
     toPractise: (n: number) => `${plural(n, "palabra estudiada", "palabras estudiadas")} para practicar.`,
     roundDone: "Ronda terminada",
@@ -184,6 +185,20 @@ const es: Messages = {
     formPrompt: "Usa la palabra en mayúsculas para formar la que encaja en el hueco.",
     formAria: "Escribe la palabra que encaja en el hueco",
     wrongForm: "Palabra correcta, forma incorrecta. El hueco necesita:",
+  },
+
+  match: {
+    howTo: "Toca una palabra y luego su significado. El reloj empieza con tu primer toque. Cada pareja incorrecta suma 2 segundos.",
+    howToShort: "Toca una palabra y luego su significado.",
+    clockAria: "Tiempo",
+    seconds: (s: string) => `${s.replace(".", ",")} s`,
+    newBest: "¡Nuevo récord!",
+    best: (s: string) => `Tu récord: ${s.replace(".", ",")} s`,
+    smallBoard: "Estudia más palabras para jugar con el tablero completo y guardar un récord.",
+    noMistakes: "¡Ninguna pareja incorrecta!",
+    mistakes: (n: number, s: number) => `${plural(n, "pareja incorrecta", "parejas incorrectas")} (+${s} s)`,
+    mixedUp: "Confundidas",
+    playAgain: "Jugar otra vez",
   },
 
   exam: {

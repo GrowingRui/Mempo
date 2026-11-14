@@ -150,6 +150,7 @@ const zh: Messages = {
       spell: { title: "拼写", sub: "看翻译，输入单词。最难的一项！" },
       cloze: { title: "选词填空", sub: "4 个意思相近的词，只有一个适合空格。" },
       form: { title: "构词", sub: "把大写的词变成适合句子的形式。" },
+      match: { title: "配对", sub: "限时把单词和释义配成对。" },
     },
     toPractise: (n: number) => `可练习的已学单词：${N(n)} 个。`,
     roundDone: "本轮完成",
@@ -176,6 +177,20 @@ const zh: Messages = {
     formPrompt: "用大写的词变出适合空格的词。",
     formAria: "输入适合空格的词",
     wrongForm: "词对了，形式不对。空格需要：",
+  },
+
+  match: {
+    howTo: "先点一个单词，再点它的释义。第一次点击时开始计时。配错一次加 2 秒。",
+    howToShort: "先点单词，再点它的释义。",
+    clockAria: "用时",
+    seconds: (s: string) => `${s} 秒`,
+    newBest: "新纪录！",
+    best: (s: string) => `最佳成绩：${s} 秒`,
+    smallBoard: "多学一些单词，就能玩完整的一局并记录最佳成绩。",
+    noMistakes: "一次都没配错！",
+    mistakes: (n: number, s: number) => `配错 ${N(n)} 次（+${s} 秒）`,
+    mixedUp: "配错的词",
+    playAgain: "再玩一次",
   },
 
   exam: {

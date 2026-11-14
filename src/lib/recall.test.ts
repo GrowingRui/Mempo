@@ -67,6 +67,19 @@ describe("promptMeanings", () => {
     expect(promptMeanings(secular, ["zh", "es"]).map((l) => l.lang)).toEqual(["zh"]);
     expect(promptMeanings(secular, ["es"]).map((l) => l.lang)).toEqual(["es"]);
   });
+
+  it("drops only the look-alike gloss, keeping the rest of the Spanish line", () => {
+    const abolish = w({ id: "abolish", zh: [{ pos: "v", gloss: ["废除"] }], es: [{ pos: "v", gloss: ["abolir", "suprimir"] }] });
+    expect(promptMeanings(abolish, ["zh", "es"])).toEqual([
+      { lang: "zh", text: "废除" },
+      { lang: "es", text: "suprimir" },
+    ]);
+  });
+
+  it("keeps Spanish meanings that don't look like the word", () => {
+    const anticipate = w({ id: "anticipate", zh: [{ pos: "v", gloss: ["预期"] }], es: [{ pos: "v", gloss: ["prever", "esperar"] }] });
+    expect(promptMeanings(anticipate, ["zh", "es"]).map((l) => l.text)).toEqual(["预期", "prever; esperar"]);
+  });
 });
 
 describe("recallPool", () => {

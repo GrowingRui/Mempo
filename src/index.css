@@ -183,12 +183,30 @@ body {
   animation: blink 4.5s infinite;
 }
 
+/* Match: a wrong pair shakes; the "+2s" penalty floats up from the clock. */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+@keyframes float-up {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-18px); }
+}
+.float-up {
+  animation: float-up 0.9s ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .flip-inner,
   .press {
     transition: none;
   }
-  .mascot-eye {
+  .mascot-eye,
+  .shake {
     animation: none;
   }
 }

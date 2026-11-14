@@ -12,8 +12,9 @@ import type { Progress, Word } from "./types";
  * meaning: read the translation, pick the word. listen: hear it, pick the word. spell: read the translation, type the word.
  * form: word formation (exam practice, Cambridge Use of English Part 3; questions from exam.ts).
  * cloze: multiple-choice cloze (exam practice, Part 1; hand-written questions, built in exam.ts).
+ * match: words and meanings on a board, against the clock (boards from match.ts, played in MatchGame).
  */
-export type RecallKind = "meaning" | "listen" | "spell" | "form" | "cloze";
+export type RecallKind = "meaning" | "listen" | "spell" | "form" | "cloze" | "match";
 
 export const ROUND = 15;
 export const OPTIONS = 4;
@@ -117,19 +118,41 @@ export function looksLike(gloss: string, word: string): boolean {
   return editDistance(gloss.slice(0, need), word.slice(0, need)) <= 1;
 }
 
+/** True if a translation spells out the word (one of its words looks like it: "accesibilidad" for accessibility). */
+export function givesAway(gloss: string, w: Word): boolean {
+  const target = normalize(w.word);
+  return normalize(gloss).split(/[;,\s]+/).some((g) => looksLike(g, target));
+}
+
 /**
- * Meaning lines for the question, in the languages the user shows. A Spanish meaning that is
- * just the English word ("secular" = "secular") would give the answer away, so it's dropped
- * when another language is available.
+ * The meaning as in meaning() (first two glosses of the first part of speech), but skipping the glosses
+ * that give the word away: abolish = "abolir; suprimir" becomes "suprimir". Undefined if none is left.
+ */
+export function safeMeaning(w: Word, lang: TestLang): string | undefined {
+  const text = w[lang][0]?.gloss
+    .map((x) => x.replace(/^(?:[a-z]+\.\s*)+/, "").trim()) // drop leftover "vt. " style labels, as meaning() does
+    .filter((x) => x && !givesAway(x, w))
+    .slice(0, 2)
+    .join(lang === "zh" ? "；" : "; ");
+  return text || undefined;
+}
+
+/**
+ * Meaning lines for a question, in the languages the user shows. Look-alike translations would give
+ * the answer away, so only those glosses are left out ("suprimir" stays for abolish); a language whose
+ * every gloss looks alike (accessibility = "accesibilidad") is left out of the question. If that leaves
+ * nothing at all, the full meanings are shown. Once answered, the app shows the full meanings again.
  */
 export function promptMeanings(w: Word, langs: TestLang[]): { lang: TestLang; text: string }[] {
-  const lines = langs.flatMap((lang) => {
+  const safe = langs.flatMap((lang) => {
+    const text = safeMeaning(w, lang);
+    return text ? [{ lang, text }] : [];
+  });
+  if (safe.length) return safe;
+  return langs.flatMap((lang) => {
     const text = meaning(w, lang);
     return text ? [{ lang, text }] : [];
   });
-  const giveaway = (t: string) => normalize(t).split(/[;,\s]+/).some((g) => looksLike(g, normalize(w.word)));
-  const safe = lines.filter((l) => !giveaway(l.text));
-  return safe.length ? safe : lines;
 }
 
 /**

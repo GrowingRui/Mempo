@@ -165,6 +165,7 @@ const en = {
       spell: { title: "Spell it", sub: "Read the translation and type the word. The hardest one!" },
       cloze: { title: "Multiple-choice cloze", sub: "Four words with a close meaning. Only one fits the gap." },
       form: { title: "Word formation", sub: "Change the word in capitals so it fits the sentence." },
+      match: { title: "Match", sub: "Match words to their meanings against the clock." },
     },
     toPractise: (n: number) => `${plural(n, "studied word", "studied words")} to practise.`,
     roundDone: "Round done",
@@ -191,6 +192,20 @@ const en = {
     formPrompt: "Use the word in capitals to make a word that fits the gap.",
     formAria: "Type the word that fits the gap",
     wrongForm: "Right word, wrong form. The gap needs:",
+  },
+
+  match: {
+    howTo: "Tap a word, then its meaning. The clock starts at your first tap. A wrong pair adds 2 seconds.",
+    howToShort: "Tap a word, then its meaning.",
+    clockAria: "Time",
+    seconds: (s: string) => `${s}s`,
+    newBest: "New best time!",
+    best: (s: string) => `Your best: ${s}s`,
+    smallBoard: "Study more words for a full board and a best time.",
+    noMistakes: "No wrong pairs!",
+    mistakes: (n: number, s: number) => `${plural(n, "wrong pair", "wrong pairs")} (+${s}s)`,
+    mixedUp: "Mixed up",
+    playAgain: "Play again",
   },
 
   exam: {

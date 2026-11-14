@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import MatchGame from "../components/MatchGame";
 import Mascot from "../components/Mascot";
 import QuizHeader from "../components/QuizHeader";
 import ScreenHeader from "../components/ScreenHeader";
 import SpeakButton from "../components/SpeakButton";
 import { useT } from "../i18n";
 import { meaning, type TestLang } from "../lib/leveltest";
+import { buildMatch } from "../lib/match";
 import { buildCloze, checkForm, formGap, formPool, loadCloze, type ClozeItem } from "../lib/exam";
 import { buildRecall, checkSpelling, clozeFor, GAP, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
@@ -54,6 +56,19 @@ const KINDS: { kind: RecallKind; section: QuizSection; part?: number; icon: Reac
     icon: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" />,
   },
   {
+    kind: "match",
+    section: "recall",
+    icon: (
+      <>
+        <rect x="3" y="4" width="7" height="6" rx="1.5" />
+        <rect x="14" y="14" width="7" height="6" rx="1.5" />
+        <path d="M10 7h2.5a1.5 1.5 0 0 1 1.5 1.5V14" />
+        <circle cx="17.5" cy="7" r="3.5" />
+        <path d="M17.5 5.5V7l1 1" />
+      </>
+    ),
+  },
+  {
     kind: "cloze",
     section: "exam",
     part: 1,
@@ -89,14 +104,20 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
     if (exam) loadCloze().then(setCloze, () => setCloze([]));
   }, [exam]);
 
-  // Only tasks that work are shown: Part 1 once its questions have loaded.
-  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length));
+  // Match: meanings on the tiles in every shown language, like the other exercises.
+  const newBoard = () => (all ? buildMatch(recallPool(all, progress), langs) : undefined);
+  // Checked once per change of words or progress, not on every render (recallPool shuffles).
+  const matchReady = useMemo(() => !exam && !!newBoard(), [all, progress, langs.join(), exam]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Only tasks that work are shown: Part 1 once its questions have loaded, Match once a board can be made.
+  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length) && (k.kind !== "match" || matchReady));
 
   const studied = all?.filter((w) => progress.cards[w.id]).length ?? 0;
 
   const start = (k: RecallKind) => {
     if (!all) return;
     setKind(k);
+    if (k === "match") return; // MatchGame makes its own boards
     setQuestions(
       k === "cloze"
         ? buildCloze(cloze ?? [], all, settings.level)
@@ -105,6 +126,11 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
     setResults([]);
     setAdded(false);
   };
+
+  // ---------- Match (its own board and result screen) ----------
+  if (kind === "match") {
+    return <MatchGame newBoard={newBoard} progress={progress} setProgress={setProgress} onClose={() => setKind(undefined)} />;
+  }
 
   // ---------- Pick an exercise ----------
   if (!questions || !kind) {
@@ -394,7 +420,8 @@ function Question({ q, next, kind, langs, onDone }: { q: RecallQuestion; next?: 
             )}
           </>
         ) : (
-          <MeaningPrompt word={word} langs={langs} />
+          // Once answered, the full meanings in every language, look-alikes too (accesibilidad).
+          <MeaningPrompt word={word} langs={langs} revealed={answered} />
         )}
         {kind === "spell" && (
           <>
