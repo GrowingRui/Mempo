@@ -35,6 +35,11 @@
   --marker-top: 45%;
   --color-cheek: #ff9bb3;
 
+  /* Streak freeze: icy blue (fill, soft background, readable text). */
+  --color-ice: #38a8f0;
+  --color-ice-soft: #e2f3ff;
+  --color-ice-ink: #1677c4;
+
   /* Text versions of the colours above. Same as the fills in light mode, lighter in dark mode
      so they stay readable on dark cards. */
   --color-brand-ink: #6b4ef5;
@@ -76,6 +81,10 @@
   --color-brand-ink: #b3a3ff;
   --color-know-ink: #45d996;
   --color-dontknow-ink: #ff8589;
+
+  --color-ice: #5cc2ff;
+  --color-ice-soft: #1f3566;
+  --color-ice-ink: #8fd4ff;
 
   --marker-top: 4%;
 

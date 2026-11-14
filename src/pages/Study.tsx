@@ -1,13 +1,15 @@
 import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { NewBadges } from "../components/Badges";
 import Mascot from "../components/Mascot";
 import { CloseButton } from "../components/ScreenHeader";
 import SwipeCard, { answerDir, dirAnswers, type SwipeDir } from "../components/SwipeCard";
 import { useT } from "../i18n";
+import { badgesOf, byLevel, newBadges } from "../lib/badges";
 import { toDay } from "../lib/date";
 import { buildSession, requeue, type SessionMode } from "../lib/session";
 import { answer, nextReview } from "../lib/srs";
-import type { Answer, Progress, Word } from "../lib/types";
+import type { Answer, Level, Progress, Word } from "../lib/types";
 import { loadAllWords } from "../lib/words";
 
 interface Props {
@@ -35,12 +37,16 @@ export default function Study({ mode, progress, setProgress, onExit, backToHome 
   const [exitDir, setExitDir] = useState<SwipeDir>("left");
   const [firstAnswer, setFirstAnswer] = useState<Record<string, Answer>>({});
   const nextKey = useRef(0);
+  const levels = useRef<Partial<Record<Level, Word[]>>>({});
 
   // Build the session once, from progress as it was when the screen opened.
   const startProgress = useRef(progress);
   useEffect(() => {
     loadAllWords()
-      .then((ws) => setQueue(buildSession(ws, startProgress.current, mode).map((word) => ({ word, key: nextKey.current++ }))))
+      .then((ws) => {
+        levels.current = byLevel(ws);
+        setQueue(buildSession(ws, startProgress.current, mode).map((word) => ({ word, key: nextKey.current++ })));
+      })
       .catch((e: Error) => setError(e.message));
   }, [mode]);
 
@@ -123,6 +129,7 @@ export default function Study({ mode, progress, setProgress, onExit, backToHome 
               <Tally tone="bg-dontknow text-white [--edge:var(--color-dontknow-edge)]" n={tally.dontknow} label={t.study.didntKnow} />
             </div>
             {tally.know < unique && <p className="mt-5 max-w-xs font-medium text-muted">{t.study.cameBack}</p>}
+            <NewBadges badges={newBadges(badgesOf(startProgress.current, levels.current), badgesOf(progress, levels.current))} />
           </>
         )}
         {next && (

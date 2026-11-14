@@ -278,6 +278,21 @@ const es: Messages = {
     // "1 dominada", "10 dominadas"; "aprendiendo", "repasando" and "no lo sé" don't change.
     segment: (n: number, label: string) => `${N(n)} ${(n !== 1 && label.endsWith("a") ? `${label}s` : label).toLocaleLowerCase(locale)}`,
     reviewsTotal: (n: number) => `${plural(n, "repaso", "repasos")} en total.`,
+    freezes: (n: number, max: number) => `Protectores de racha: ${n} de ${max}`,
+    freezeHelp: (every: number) => `Un protector mantiene tu racha si un día no estudias. Ganas uno por cada ${every} días seguidos.`,
+    freezeSaved: "Ayer un protector salvó tu racha. Estudia hoy para mantenerla.",
+    frozenDay: "Protector usado",
+  },
+
+  badges: {
+    title: "Insignias",
+    earnedOf: (n: number, total: number) => `${N(n)} de ${N(total)} conseguidas`,
+    earned: "Conseguida",
+    progress: (have: number, goal: number) => `${N(have)} / ${N(goal)}`,
+    streak: (n: number) => `${N(n)} días seguidos`,
+    words: (n: number) => words(n),
+    level: (level: string) => `${level} completo`,
+    newTitle: (n: number) => (n === 1 ? "¡Nueva insignia!" : "¡Nuevas insignias!"),
   },
 
   dontKnow: {

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { BadgeGrid, Snowflake } from "../components/Badges";
 import Flame from "../components/Flame";
 import ScreenHeader from "../components/ScreenHeader";
 import { useT } from "../i18n";
-import { toDay } from "../lib/date";
-import { breakdown, lastDays, streakOf, type DayBar, type LevelBreakdown } from "../lib/stats";
+import { badgesOf } from "../lib/badges";
+import { addDays, toDay } from "../lib/date";
+import { breakdown, FREEZE_EVERY, lastDays, MAX_FREEZES, streakOf, type DayBar, type LevelBreakdown, type Streak } from "../lib/stats";
 import type { WordStatus } from "../lib/srs";
 import { LEVELS, type Level, type Progress, type Word } from "../lib/types";
 import { loadWords } from "../lib/words";
@@ -25,33 +27,47 @@ function Swatch({ color }: { color: string }) {
 }
 
 /** Daily activity: one column per day, new words at the bottom and reviews stacked on top. Tap a day for its numbers. */
-function DailyChart({ bars }: { bars: DayBar[] }) {
+/** The line under the streak: studied today, a freeze saved it, keep going, or start one. Home uses it too. */
+export function streakLine(t: ReturnType<typeof useT>, s: Streak, today = toDay()) {
+  if (s.doneToday) return t.stats.studiedToday;
+  if (s.frozen.includes(addDays(today, -1))) return t.stats.freezeSaved;
+  return s.current > 0 ? t.stats.keepItGoing : t.stats.startStreak;
+}
+
+function DailyChart({ bars, frozen }: { bars: DayBar[]; frozen: string[] }) {
   const t = useT();
   const today = toDay();
   const [picked, setPicked] = useState<string>();
   const max = Math.max(1, ...bars.map((b) => b.new + b.reviewed));
   const sel = bars.find((b) => b.day === picked);
   const total = bars.reduce((s, b) => s + b.new + b.reviewed, 0);
+  const anyFrozen = bars.some((b) => frozen.includes(b.day));
   const H = 120; // px, smallest plot height (it grows to fill the card next to "By level" on wider screens)
 
   return (
     <section className="raised flex flex-col rounded-[28px] border-2 border-line bg-card p-5">
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-display text-lg font-bold">{t.stats.lastDays(DAYS)}</h2>
-        <div className="flex gap-3 text-xs font-semibold text-muted">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+        <h2 className="font-display text-lg font-bold whitespace-nowrap">{t.stats.lastDays(DAYS)}</h2>
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-muted">
           <span className="flex items-center gap-1.5">
             <Swatch color="--color-bar-new" /> {t.stats.new}
           </span>
           <span className="flex items-center gap-1.5">
             <Swatch color="--color-bar-reviewed" /> {t.stats.reviewed}
           </span>
+          {anyFrozen && (
+            <span className="flex items-center gap-1">
+              <Snowflake className="size-3.5" /> {t.stats.frozenDay}
+            </span>
+          )}
         </div>
       </div>
 
       <p className="mt-1 mb-6 h-5 text-sm font-semibold text-muted" aria-live="polite">
         {sel ? (
           <>
-            <span className="text-ink">{t.pastDay(sel.day, today)}</span>: {t.stats.dayLine(sel.new, sel.reviewed)}
+            <span className="text-ink">{t.pastDay(sel.day, today)}</span>:{" "}
+            {frozen.includes(sel.day) ? t.stats.frozenDay : t.stats.dayLine(sel.new, sel.reviewed)}
           </>
         ) : total ? (
           t.stats.tapDay
@@ -75,7 +91,7 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
                 tabIndex={-1}
                 onClick={() => setPicked(active ? undefined : b.day)}
                 onPointerEnter={(e) => e.pointerType === "mouse" && setPicked(b.day)}
-                title={`${t.pastDay(b.day, today)}: ${t.stats.dayLine(b.new, b.reviewed)}`}
+                title={`${t.pastDay(b.day, today)}: ${frozen.includes(b.day) ? t.stats.frozenDay : t.stats.dayLine(b.new, b.reviewed)}`}
                 className={`flex h-full min-w-0 flex-1 flex-col justify-end gap-[2px] transition-opacity ${picked && !active ? "opacity-35" : ""}`}
               >
                 {b.reviewed > 0 && (
@@ -90,7 +106,12 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
                     style={{ height: `${(b.new / max) * 96}%`, background: "var(--color-bar-new)" }}
                   />
                 )}
-                {n === 0 && <span className="block h-[3px] w-full rounded-full bg-line" />}
+                {n === 0 &&
+                  (frozen.includes(b.day) ? (
+                    <Snowflake className="mx-auto block size-4 max-w-full" />
+                  ) : (
+                    <span className="block h-[3px] w-full rounded-full bg-line" />
+                  ))}
               </button>
             );
           })}
@@ -119,7 +140,7 @@ function DailyChart({ bars }: { bars: DayBar[] }) {
             <tr key={b.day}>
               <td>{t.pastDay(b.day, today)}</td>
               <td>{b.new}</td>
-              <td>{b.reviewed}</td>
+              <td>{frozen.includes(b.day) ? `${b.reviewed} (${t.stats.frozenDay})` : b.reviewed}</td>
             </tr>
           ))}
         </tbody>
@@ -200,10 +221,17 @@ export default function Stats({ progress }: { progress: Progress }) {
             <span className="font-display text-5xl leading-none font-extrabold tabular-nums">{streak.current}</span>
             <span className="font-display text-xl font-bold">{t.stats.dayStreak(streak.current)}</span>
           </p>
-          <p className="mt-1.5 text-sm font-semibold text-muted">
-            {streak.doneToday ? t.stats.studiedToday : streak.current > 0 ? t.stats.keepItGoing : t.stats.startStreak}
-          </p>
+          <p className="mt-1.5 text-sm font-semibold text-muted">{streakLine(t, streak)}</p>
           <p className="mt-0.5 text-sm font-semibold text-muted">{t.stats.longest(<span className="text-ink">{t.common.days(streak.longest)}</span>)}</p>
+          <div className="mt-2.5 rounded-[14px] bg-ice-soft px-3 py-2">
+            <p className="flex items-center gap-1.5 text-sm font-bold text-ice-ink">
+              {Array.from({ length: MAX_FREEZES }, (_, i) => (
+                <Snowflake key={i} on={i < streak.freezes} className="size-4.5" />
+              ))}
+              <span className="ml-0.5">{t.stats.freezes(streak.freezes, MAX_FREEZES)}</span>
+            </p>
+            <p className="mt-0.5 text-xs leading-snug font-semibold text-muted">{t.stats.freezeHelp(FREEZE_EVERY)}</p>
+          </div>
         </div>
       </section>
 
@@ -213,7 +241,7 @@ export default function Stats({ progress }: { progress: Progress }) {
         <Tile n={streak.daysStudied} label={t.stats.daysStudied} />
       </div>
 
-      <DailyChart bars={lastDays(history, DAYS)} />
+      <DailyChart bars={lastDays(history, DAYS)} frozen={streak.frozen} />
 
       {/* Per level */}
       <section className="raised rounded-[28px] border-2 border-line bg-card p-5">
@@ -235,6 +263,8 @@ export default function Stats({ progress }: { progress: Progress }) {
         </ul>
         <p className="mt-4 text-xs font-semibold text-muted">{t.stats.reviewsTotal(reviews)}</p>
       </section>
+
+      <BadgeGrid badges={badgesOf(progress, words)} />
       </div>
     </main>
   );

@@ -284,6 +284,21 @@ const en = {
     ),
     segment: (n: number, label: string) => `${N(n)} ${label.toLocaleLowerCase(locale)}`,
     reviewsTotal: (n: number) => `${plural(n, "review", "reviews")} done in total.`,
+    freezes: (n: number, max: number) => `Streak freezes: ${n} of ${max}`,
+    freezeHelp: (every: number) => `A freeze keeps your streak when you miss a day. You get one for every ${every} days in a row.`,
+    freezeSaved: "A streak freeze saved your streak yesterday. Study today to keep it going.",
+    frozenDay: "Freeze used",
+  },
+
+  badges: {
+    title: "Badges",
+    earnedOf: (n: number, total: number) => `${N(n)} of ${N(total)} earned`,
+    earned: "Earned",
+    progress: (have: number, goal: number) => `${N(have)} / ${N(goal)}`,
+    streak: (n: number) => `${N(n)}-day streak`,
+    words: (n: number) => words(n),
+    level: (level: string) => `${level} finished`,
+    newTitle: (n: number): string => (n === 1 ? "New badge!" : "New badges!"),
   },
 
   dontKnow: {

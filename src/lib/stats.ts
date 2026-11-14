@@ -5,27 +5,56 @@ import type { DayHistory, Progress, Word } from "./types";
 /** A day counts towards the streak if at least one card was answered (new or review). */
 export const studied = (h: DayHistory | undefined) => !!h && h.new + h.reviewed > 0;
 
+/** Streak freezes: you start with one, can hold this many, and earn one for every FREEZE_EVERY days studied in a row. */
+export const MAX_FREEZES = 2;
+export const FREEZE_EVERY = 7;
+
 export interface Streak {
-  /** Days in a row up to today. Today not done yet doesn't break it: it ends at yesterday until midnight. */
+  /** Days studied in the current streak. Today not done yet doesn't break it: it ends at yesterday until midnight. */
   current: number;
   longest: number;
   doneToday: boolean;
   daysStudied: number;
+  /** Freezes ready to use. */
+  freezes: number;
+  /** Days off that a freeze covered (the streak went on), oldest first. */
+  frozen: string[];
 }
 
+/**
+ * Works the streak out from the history alone, day by day from the first day studied, so it needs no stored state
+ * (backups and Move keep it). A missed day uses a freeze if the streak is running and one is ready; a frozen day
+ * keeps the streak but doesn't add to it. With no freeze left a missed day ends it. Freezes are kept across streaks.
+ */
 export function streakOf(history: Progress["history"], today = toDay()): Streak {
   const doneToday = studied(history[today]);
+  const days = Object.keys(history).filter((d) => studied(history[d]) && d <= today).sort();
   let current = 0;
-  for (let d = doneToday ? today : addDays(today, -1); studied(history[d]); d = addDays(d, -1)) current++;
-
-  const days = Object.keys(history).filter((d) => studied(history[d])).sort();
   let longest = 0;
-  let run = 0;
-  days.forEach((d, i) => {
-    run = i > 0 && addDays(days[i - 1], 1) === d ? run + 1 : 1;
-    longest = Math.max(longest, run);
-  });
-  return { current, longest: Math.max(longest, current), doneToday, daysStudied: days.length };
+  let freezes = 1;
+  const frozen: string[] = [];
+
+  if (days.length) {
+    // Every day from the first one studied up to yesterday; today only counts once it's done.
+    for (let d = days[0]; d < today; d = addDays(d, 1)) {
+      if (studied(history[d])) {
+        current++;
+        if (current % FREEZE_EVERY === 0) freezes = Math.min(MAX_FREEZES, freezes + 1);
+      } else if (current > 0 && freezes > 0) {
+        freezes--;
+        frozen.push(d);
+      } else {
+        current = 0;
+      }
+      longest = Math.max(longest, current);
+    }
+    if (doneToday) {
+      current++;
+      if (current % FREEZE_EVERY === 0) freezes = Math.min(MAX_FREEZES, freezes + 1);
+      longest = Math.max(longest, current);
+    }
+  }
+  return { current, longest, doneToday, daysStudied: days.length, freezes, frozen };
 }
 
 export interface DayBar {

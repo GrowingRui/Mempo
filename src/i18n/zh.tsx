@@ -268,6 +268,21 @@ const zh: Messages = {
     ),
     segment: (n: number, label: string) => `${label} ${N(n)}`,
     reviewsTotal: (n: number) => `累计复习 ${N(n)} 次。`,
+    freezes: (n: number, max: number) => `保护卡：${n} / ${max}`,
+    freezeHelp: (every: number) => `漏学一天时，保护卡会保住你的连续记录。每连续学习 ${every} 天得一张。`,
+    freezeSaved: "昨天用了一张保护卡，连续记录还在。今天学一下，继续保持！",
+    frozenDay: "用了保护卡",
+  },
+
+  badges: {
+    title: "徽章",
+    earnedOf: (n: number, total: number) => `已获得 ${N(n)} / ${N(total)}`,
+    earned: "已获得",
+    progress: (have: number, goal: number) => `${N(have)} / ${N(goal)}`,
+    streak: (n: number) => `连续 ${N(n)} 天`,
+    words: (n: number) => words(n),
+    level: (level: string) => `完成 ${level}`,
+    newTitle: (_n: number) => "获得新徽章！",
   },
 
   dontKnow: {

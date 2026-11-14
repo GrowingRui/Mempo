@@ -12,6 +12,7 @@ import { useT } from "../i18n";
 import { toDay } from "../lib/date";
 import { newWordsLeftToday, sessionParts } from "../lib/session";
 import { streakOf } from "../lib/stats";
+import { streakLine } from "./Stats";
 import { meaning } from "../lib/leveltest";
 import { LEVELS, type Progress, type Word } from "../lib/types";
 import { loadIndex, loadWords, type LevelIndex } from "../lib/words";
@@ -268,7 +269,7 @@ export default function Home({ progress, setProgress, go, tab }: Props) {
                 <span className="font-display text-lg font-bold">{t.stats.dayStreak(streak.current)}</span>
               </span>
               <span className="mt-1 block text-sm leading-snug font-semibold text-muted">
-                {streak.doneToday ? t.stats.studiedToday : streak.current > 0 ? t.stats.keepItGoing : t.stats.startStreak}
+                {streakLine(t, streak, today)}
               </span>
             </span>
           </button>
