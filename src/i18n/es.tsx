@@ -193,6 +193,10 @@ const es: Messages = {
     whichFits: "¿Qué palabra encaja en el hueco?",
     why: "Por qué:",
     part: (n: number) => `Parte ${n}`,
+    papers: "Exámenes de muestra oficiales",
+    papersSub: "Exámenes de práctica gratis de Cambridge English, en línea o para descargar. Se abre su web.",
+    paperNames: { B2: "B2 First", C1: "C1 Advanced", C2: "C2 Proficiency" },
+    yourLevel: "tu nivel",
   },
 
   test: {

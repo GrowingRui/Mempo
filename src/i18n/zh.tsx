@@ -185,6 +185,10 @@ const zh: Messages = {
     whichFits: "哪个词适合空格？",
     why: "原因：",
     part: (n: number) => `第 ${n} 部分`,
+    papers: "官方样题",
+    papersSub: "剑桥英语提供的免费模拟题，可在线做或下载。会打开他们的网站。",
+    paperNames: { B2: "B2 First", C1: "C1 Advanced", C2: "C2 Proficiency" },
+    yourLevel: "你的级别",
   },
 
   test: {

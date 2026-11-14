@@ -200,6 +200,10 @@ const en = {
     whichFits: "Which word fits the gap?",
     why: "Why:",
     part: (n: number) => `Part ${n}`,
+    papers: "Official sample papers",
+    papersSub: "Free practice tests from Cambridge English, online or to download. Opens their website.",
+    paperNames: { B2: "B2 First", C1: "C1 Advanced", C2: "C2 Proficiency" },
+    yourLevel: "your level",
   },
 
   test: {

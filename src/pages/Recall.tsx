@@ -9,7 +9,8 @@ import { buildCloze, checkForm, formGap, formPool, loadCloze, type ClozeItem } f
 import { buildRecall, checkSpelling, clozeFor, GAP, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
 import { markDontKnow } from "../lib/srs";
-import type { Progress, Word } from "../lib/types";
+import { site } from "../config/site";
+import { LEVELS, type Progress, type Word } from "../lib/types";
 import { loadAllWords } from "../lib/words";
 
 /**
@@ -152,6 +153,38 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
             ))}
             {!exam && <p className="mt-2 text-center text-xs font-semibold text-muted">{t.recall.toPractise(studied)}</p>}
           </div>
+        )}
+
+        {exam && (
+          <section className="mt-6 rounded-[24px] border-2 border-dashed border-line px-4 py-4">
+            <h2 className="font-display text-lg font-extrabold">{t.exam.papers}</h2>
+            <p className="mt-0.5 text-sm font-medium text-muted">{t.exam.papersSub}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {/* Your level first and highlighted; the other two after it. */}
+              {LEVELS.slice()
+                .sort((a, b) => Number(b === settings.level) - Number(a === settings.level))
+                .map((lv) => {
+                  const mine = lv === settings.level;
+                  return (
+                    <a
+                      key={lv}
+                      href={site.samplePapers[lv]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1.5 rounded-full border-2 px-3.5 py-1.5 text-sm font-bold ${
+                        mine ? "border-brand bg-brand-soft text-brand-ink" : "border-line text-ink hover:border-brand/40"
+                      }`}
+                    >
+                      {t.exam.paperNames[lv]}
+                      {mine && <span className="font-semibold opacity-80">· {t.exam.yourLevel}</span>}
+                      <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+                      </svg>
+                    </a>
+                  );
+                })}
+            </div>
+          </section>
         )}
       </main>
     );

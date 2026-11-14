@@ -12,6 +12,13 @@ export const site = {
   // Where "Send feedback" goes. Kept in two parts so bots reading the page don't find the address.
   // The server has its own copy (api/feedback.ts).
   feedbackMail: ["xiarui091", "gmail.com"],
+  // Exam practice → "Official sample papers": Cambridge's free preparation pages (sample tests online
+  // and to download). We link to them; their papers are copyrighted, so we never copy them.
+  samplePapers: {
+    B2: "https://www.cambridgeenglish.org/exams-and-tests/qualifications/first/preparation/",
+    C1: "https://www.cambridgeenglish.org/exams-and-tests/qualifications/advanced/preparation/",
+    C2: "https://www.cambridgeenglish.org/exams-and-tests/qualifications/proficiency/preparation/",
+  },
   // Prefix for localStorage keys. Changing it starts everyone with empty progress.
   storageKey: "mempo",
 } as const;
