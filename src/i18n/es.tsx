@@ -41,7 +41,7 @@ const es: Messages = {
   levelName: { B2: "Intermedio alto", C1: "Avanzado", C2: "Dominio" },
   pos: {
     n: "sustantivo", v: "verbo", adj: "adjetivo", adv: "adverbio", prep: "preposición", conj: "conjunción", pron: "pronombre",
-    interj: "interjección", num: "número", det: "determinante", phr: "expresión", abbr: "abreviatura",
+    interj: "interjección", num: "número", det: "determinante", phr: "expresión", abbr: "abreviatura", phrasal: "phrasal verb",
   },
 
   nav: {
@@ -61,6 +61,8 @@ const es: Messages = {
     testSub: "¿No sabes tu nivel? Descúbrelo en unos minutos",
     myListTitle: "Mi lista",
     myListSub: "Las palabras que marcaste con estrella, para practicar cuando quieras",
+    phrasalTitle: "Phrasal verbs",
+    phrasalSub: "Give up, put off, carry out… los de tu nivel",
   },
 
   home: {
@@ -115,6 +117,7 @@ const es: Messages = {
       review: "No hay repasos pendientes ahora.",
       dontknow: "Tu lista “No lo sé” está vacía. ¡Bien hecho!",
       mylist: "Tu lista está vacía. Toca ☆ en una palabra para añadirla.",
+      phrasal: "No hay phrasal verbs en tu nivel.",
     },
     niceWork: "¡Buen trabajo!",
     wentThrough: (n: number) => `Has repasado ${words(n)}.`,
@@ -317,6 +320,15 @@ const es: Messages = {
     newTitle: (n: number) => (n === 1 ? "¡Nueva insignia!" : "¡Nuevas insignias!"),
   },
 
+  phrasal: {
+    title: "Phrasal verbs",
+    intro: "Un verbo seguido de una palabra corta, como give up o put off. Su significado suele ser difícil de adivinar por las dos partes, y salen mucho en el examen. También aparecen entre tus palabras nuevas de cada día.",
+    count: (level: string, n: number) => `${level} · ${N(n)} phrasal verbs`,
+    studied: (n: number, total: number) => `${N(n)} de ${N(total)} estudiados`,
+    practise: (n: number) => (n === 1 ? "Practicar 1 phrasal verb" : `Practicar ${N(n)} phrasal verbs`),
+    others: "Los phrasal verbs de otros niveles están en Palabras.",
+  },
+
   myList: {
     title: "Mi lista",
     intro: "Palabras que quieres practicar. Toca ☆ en una tarjeta o en la lista de palabras para añadir una, o búscala aquí.",
@@ -340,6 +352,7 @@ const es: Messages = {
     searchAria: "Buscar palabras",
     allLevels: "Todos los niveles",
     anyStatus: "Cualquier estado",
+    phrasal: "Phrasal verbs",
     levelAria: "Nivel",
     statusAria: "Estado",
     noMatch: "Ninguna palabra coincide. Prueba con menos letras u otro filtro.",

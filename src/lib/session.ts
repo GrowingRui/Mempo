@@ -18,9 +18,29 @@ const byHash = (a: string, b: string) => hash(a) - hash(b);
 
 /**
  * today: due reviews (capped) → "Don't know" words → new words. review: every due card, no cap. dontknow: the whole list.
- * mylist: every word on My list, weakest first.
+ * mylist: every word on My list, weakest first. phrasal: up to PHRASAL_ROUND phrasal verbs of your level, weakest first.
  */
-export type SessionMode = "today" | "review" | "dontknow" | "mylist";
+export type SessionMode = "today" | "review" | "dontknow" | "mylist" | "phrasal";
+
+/** How many phrasal verbs one "Practise phrasal verbs" session holds. */
+export const PHRASAL_ROUND = 20;
+
+/**
+ * The phrasal verbs of your level in practice order: "Don't know" first, then due reviews, then new ones
+ * (in the daily-session order), then the rest by next review. Mastered ones come last.
+ */
+export function phrasalOrder(words: Word[], p: Progress, today = toDay()): Word[] {
+  const rank = (id: string) => {
+    const c = p.cards[id];
+    if (!c) return 2;
+    if (c.inDontKnow) return 0;
+    if (isDue(c, today)) return 1;
+    return c.state === "mastered" ? 4 : 3;
+  };
+  return words
+    .filter((w) => w.phrasal && w.level === p.settings.level)
+    .sort((a, b) => rank(a.id) - rank(b.id) || (p.cards[a.id]?.due ?? "").localeCompare(p.cards[b.id]?.due ?? "") || byHash(a.id, b.id));
+}
 
 export function newWordsLeftToday(p: Progress, today = toDay()): number {
   const done = p.history[today]?.new ?? 0;
@@ -83,6 +103,7 @@ export function buildSession(words: Word[], p: Progress, mode: SessionMode, toda
       myListIds(p).sort((a, b) => rank(a) - rank(b) || (p.cards[a]?.due ?? "").localeCompare(p.cards[b]?.due ?? "") || byHash(a, b)),
     );
   }
+  if (mode === "phrasal") return phrasalOrder(words, p, today).slice(0, PHRASAL_ROUND);
   if (mode === "review") {
     return pick(
       Object.entries(p.cards)

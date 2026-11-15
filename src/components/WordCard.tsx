@@ -129,7 +129,9 @@ export default function WordCard({ word, flipped, onFlip, settings, star }: Prop
               {word.sensitive?.level === "offensive" && <SensitiveBadge />}
             </span>
             <span className="flex min-w-0 items-center gap-2">
-              <span className="truncate text-sm font-semibold text-muted">{word.pos.map((p) => t.pos[p] ?? p).join(t.locale === "zh-CN" ? "、" : ", ")}</span>
+              <span className="truncate text-sm font-semibold text-muted">
+                {word.phrasal ? t.pos.phrasal : word.pos.map((p) => t.pos[p] ?? p).join(t.locale === "zh-CN" ? "、" : ", ")}
+              </span>
               {star && <StarButton word={word.word} starred={star.starred} onToggle={star.onToggle} className="shrink-0" />}
             </span>
           </div>

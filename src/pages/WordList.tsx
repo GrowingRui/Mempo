@@ -32,6 +32,7 @@ export default function WordList({ progress, setProgress }: { progress: Progress
   const [error, setError] = useState<string>();
   const [level, setLevel] = useState<Level | "all">("all");
   const [status, setStatus] = useState<WordStatus | "all">("all");
+  const [phrasal, setPhrasal] = useState(false);
   const [query, setQuery] = useState("");
   const [shown, setShown] = useState(PAGE);
   const q = norm(useDeferredValue(query).trim());
@@ -44,12 +45,12 @@ export default function WordList({ progress, setProgress }: { progress: Progress
 
   useEffect(() => {
     setShown(PAGE);
-  }, [level, status, q]);
+  }, [level, status, phrasal, q]);
 
   const searchable = useMemo(() => searchIndex(words ?? []), [words]);
 
   const { cards } = progress;
-  const inLevel = (words ?? []).filter((w) => level === "all" || w.level === level);
+  const inLevel = (words ?? []).filter((w) => (level === "all" || w.level === level) && (!phrasal || w.phrasal));
   const counts = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<WordStatus, number>;
   for (const w of inLevel) counts[statusOf(cards[w.id])]++;
 
@@ -78,6 +79,9 @@ export default function WordList({ progress, setProgress }: { progress: Progress
             {lv}
           </Chip>
         ))}
+        <Chip active={phrasal} onClick={() => setPhrasal((on) => !on)}>
+          {t.wordList.phrasal}
+        </Chip>
       </div>
       <div className="mt-2.5 flex flex-wrap gap-2" role="group" aria-label={t.wordList.statusAria}>
         <Chip active={status === "all"} onClick={() => setStatus("all")}>

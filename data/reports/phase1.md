@@ -1,15 +1,15 @@
 # Phase 1 report
 
-Generated 2026-11-07T19:35:08.004Z
+Generated 2026-11-15T20:31:39.862Z
 
 ## Coverage
 
 | | Cards | Share |
 |---|---|---|
-| Chinese translation | 6128 / 6128 | 100.0% |
-| Spanish translation | 6128 / 6128 | 100.0% |
-| At least one example | 6128 / 6128 | 100.0% |
-| English definition | 6066 / 6128 | 99.0% |
+| Chinese translation | 6318 / 6318 | 100.0% |
+| Spanish translation | 6318 / 6318 | 100.0% |
+| At least one example | 6318 / 6318 | 100.0% |
+| English definition | 6256 / 6318 | 99.0% |
 
 - Notes for sensitive words (scripts/sensitive.ts): 26 (4 offensive, the rest "use with care")
 
@@ -18,8 +18,9 @@ Generated 2026-11-07T19:35:08.004Z
 - Spanish found through an "alternative spelling of" link: 53
 - Spanish found from the Spanish side of Wiktionary ("ocultar: to hide, conceal"): 504
 - Spanish adverbs built as adjective + -mente: 37 (listed below; check them)
-- Hand-written entries used from scripts/manual.ts: 398
-- Output: b2.json 1472 KB, c1.json 941 KB, c2.json 788 KB
+- Hand-written entries used from scripts/manual.ts: 400
+- Phrasal verbs added from scripts/phrasal.ts: 190 (plus 4 already in the lists, tagged)
+- Output: b2.json 1506 KB, c1.json 962 KB, c2.json 802 KB
 
 ## No Chinese translation (0)
 

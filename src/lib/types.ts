@@ -30,6 +30,8 @@ export interface Word {
   en?: Gloss[];
   /** Warning for an offensive or sensitive word: what it means, why it hurts, what to say instead. */
   sensitive?: Sensitive;
+  /** A phrasal verb (give up, put off): its own filter, practice set and label on the card. */
+  phrasal?: true;
   variants?: string[];
   forms?: string[];
   lemma?: string;

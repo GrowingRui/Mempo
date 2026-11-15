@@ -50,7 +50,7 @@ const en = {
   levelName: { B2: "Upper-intermediate", C1: "Advanced", C2: "Proficiency" },
   pos: {
     n: "noun", v: "verb", adj: "adjective", adv: "adverb", prep: "preposition", conj: "conjunction", pron: "pronoun",
-    interj: "interjection", num: "number", det: "determiner", phr: "phrase", abbr: "abbreviation",
+    interj: "interjection", num: "number", det: "determiner", phr: "phrase", abbr: "abbreviation", phrasal: "phrasal verb",
   } as Record<string, string>,
 
   nav: {
@@ -70,6 +70,8 @@ const en = {
     testSub: "Not sure about your level? Find out in a few minutes",
     myListTitle: "My list",
     myListSub: "Words you starred, to practise any time",
+    phrasalTitle: "Phrasal verbs",
+    phrasalSub: "Give up, put off, carry out… the ones for your level",
   },
 
   home: {
@@ -123,6 +125,7 @@ const en = {
       review: "No reviews due right now.",
       dontknow: "Your “Don’t know” list is empty. Nice!",
       mylist: "Your list is empty. Tap ☆ on a word to add it.",
+      phrasal: "No phrasal verbs at your level.",
     },
     niceWork: "Nice work!",
     wentThrough: (n: number) => `You went through ${words(n)}.`,
@@ -323,6 +326,15 @@ const en = {
     newTitle: (n: number): string => (n === 1 ? "New badge!" : "New badges!"),
   },
 
+  phrasal: {
+    title: "Phrasal verbs",
+    intro: "A verb with a small word after it, like give up or put off. The meaning is often hard to guess from the two parts, and the exam loves them. They also come up among your daily new words.",
+    count: (level: string, n: number) => `${level} · ${N(n)} phrasal verbs`,
+    studied: (n: number, total: number) => `${N(n)} of ${N(total)} studied`,
+    practise: (n: number) => (n === 1 ? "Practise 1 phrasal verb" : `Practise ${N(n)} phrasal verbs`),
+    others: "Phrasal verbs of other levels are under Words.",
+  },
+
   myList: {
     title: "My list",
     intro: "Words you want to practise. Tap ☆ on a card or in the word list to add a word, or search for it here.",
@@ -346,6 +358,7 @@ const en = {
     searchAria: "Search words",
     allLevels: "All levels",
     anyStatus: "Any status",
+    phrasal: "Phrasal verbs",
     levelAria: "Level",
     statusAria: "Status",
     noMatch: "No words match. Try fewer letters or another filter.",

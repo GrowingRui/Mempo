@@ -442,6 +442,11 @@ export const MANUAL: Record<string, ManualEntry> = {
   'retard': { en: { v: ['To slow down the development or progress of something (formal)'], n: ['A very offensive word for a person with an intellectual disability, or for a stupid person'] } },
   'tinker': { en: { v: ['To make small changes to something to repair or improve it'], n: ['A person who travelled from place to place mending pots and pans (old-fashioned)'] } },
   'tramp': { en: { n: ['A person with no home or job who travels from place to place (old-fashioned)', 'A long walk, especially a tiring one'], v: ['To walk with slow, heavy steps', 'To walk a long way'] } },
+
+  // ---------------------------------------------------------------- phrasal verbs from the minddory lists (2026-11-15)
+  // ECDICT gave "mull over" the noun 岬 (from "mull", a headland) and "bulk up" vague glosses.
+  'mull-over': { zh: { v: ['反复思考', '仔细琢磨'] } },
+  'bulk-up': { zh: { v: ['增肌', '变壮', '增大', '扩充'] }, es: { v: ['ganar masa muscular', 'aumentar', 'engrosar'] } },
 };
 
 /** Example sentences for cards with no example from minddory or Tatoeba. Written by hand, no source. */

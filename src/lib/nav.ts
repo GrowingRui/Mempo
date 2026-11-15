@@ -14,6 +14,7 @@ export type Screen =
   | { name: "study"; mode: SessionMode }
   | { name: "dontknow" }
   | { name: "mylist" }
+  | { name: "phrasal" }
   | { name: "words" }
   | { name: "test" }
   | { name: "skip" }

@@ -38,7 +38,7 @@ const zh: Messages = {
   levelName: { B2: "中高级", C1: "高级", C2: "精通" },
   pos: {
     n: "名词", v: "动词", adj: "形容词", adv: "副词", prep: "介词", conj: "连词", pron: "代词",
-    interj: "感叹词", num: "数词", det: "限定词", phr: "短语", abbr: "缩写",
+    interj: "感叹词", num: "数词", det: "限定词", phr: "短语", abbr: "缩写", phrasal: "短语动词",
   },
 
   nav: {
@@ -58,6 +58,8 @@ const zh: Messages = {
     testSub: "不确定自己的水平？几分钟就能知道",
     myListTitle: "我的单词本",
     myListSub: "你加星标的单词，随时练习",
+    phrasalTitle: "短语动词",
+    phrasalSub: "give up、put off、carry out……你这一级的短语动词",
   },
 
   home: {
@@ -108,6 +110,7 @@ const zh: Messages = {
       review: "现在没有要复习的单词。",
       dontknow: "“不认识”列表是空的，真棒！",
       mylist: "单词本是空的。点单词上的 ☆ 就能加入。",
+      phrasal: "你这一级没有短语动词。",
     },
     niceWork: "干得好！",
     wentThrough: (n: number) => `你学完了 ${words(n)}。`,
@@ -307,6 +310,15 @@ const zh: Messages = {
     newTitle: (_n: number) => "获得新徽章！",
   },
 
+  phrasal: {
+    title: "短语动词",
+    intro: "动词后面加一个小词，比如 give up、put off。意思往往很难从两部分猜出来，考试也很爱考。它们也会出现在你每天的新词里。",
+    count: (level: string, n: number) => `${level} · ${N(n)} 个短语动词`,
+    studied: (n: number, total: number) => `已学 ${N(n)} / ${N(total)}`,
+    practise: (n: number) => `练习 ${N(n)} 个短语动词`,
+    others: "其他级别的短语动词可以在词库里找到。",
+  },
+
   myList: {
     title: "我的单词本",
     intro: "你想练习的单词。在卡片或单词列表里点 ☆ 加入，也可以在这里搜索。",
@@ -330,6 +342,7 @@ const zh: Messages = {
     searchAria: "搜索单词",
     allLevels: "全部级别",
     anyStatus: "全部状态",
+    phrasal: "短语动词",
     levelAria: "级别",
     statusAria: "状态",
     noMatch: "没有匹配的单词。试试少输几个字母，或换个筛选条件。",

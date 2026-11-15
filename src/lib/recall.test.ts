@@ -155,3 +155,24 @@ describe("looksLike (cognates that give the answer away)", () => {
     expect(looksLike(gloss, word)).toBe(expected);
   });
 });
+
+describe("phrasal verbs", () => {
+  const breakDown = w({ id: "break-down", word: "break down", phrasal: true, pos: ["v"], examples: [{ text: "Our car broke down on the way.", form: "broke down" }] });
+
+  it("the form used in the example counts as the word", () => {
+    expect(checkSpelling("broke down", breakDown)).toBe("right");
+    expect(clozeFor(breakDown)).toBe("Our car _____ on the way.");
+  });
+
+  it("wrong choices for a phrasal verb are other phrasal verbs, and plain words get plain words", () => {
+    const pv = (id: string) => w({ id, word: id.replace(/-/g, " "), phrasal: true, pos: ["v"] });
+    const verb = (id: string) => w({ id, pos: ["v"] });
+    const all = [breakDown, pv("give-up"), pv("put-off"), pv("set-off"), verb("abandon"), verb("abolish"), verb("accept"), verb("achieve")];
+    for (let i = 0; i < 10; i++) {
+      const [q] = buildRecall([breakDown], all, "meaning", ["zh"]);
+      expect(q.options.every((o) => o.phrasal)).toBe(true);
+      const [r] = buildRecall([all[4]], all, "meaning", ["zh"]);
+      expect(r.options.some((o) => o.phrasal)).toBe(false);
+    }
+  });
+});

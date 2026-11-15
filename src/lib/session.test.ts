@@ -171,3 +171,31 @@ describe("requeue", () => {
     expect(requeue(["a", "b"], 0, "a", "unsure")).toEqual(["a", "b", "a"]);
   });
 });
+
+describe("buildSession: phrasal", () => {
+  const pv = (id: string, level: "B2" | "C1" = "B2") => ({ ...word(id, level), word: id.replace(/-/g, " "), phrasal: true as const });
+  const words = [pv("give-up"), pv("put-off"), pv("set-off"), pv("take-on"), pv("bank-on", "C1"), word("plain"), pv("look-up"), pv("go-on")];
+  const p = progress({
+    settings: { level: "B2" },
+    cards: {
+      "give-up": card({ state: "mastered", box: 6, due: addDays(TODAY, 60) }),
+      "put-off": card({ due: addDays(TODAY, 9) }),
+      "set-off": card({ due: addDays(TODAY, -1) }),
+      "take-on": card({ box: 1, inDontKnow: true, due: addDays(TODAY, 3) }),
+      plain: card({ inDontKnow: true }),
+    },
+  });
+
+  it("has only phrasal verbs of your level: Don't know, due, new, the rest, mastered last", () => {
+    const s = ids(buildSession(words, p, "phrasal", TODAY));
+    expect(s.slice(0, 2)).toEqual(["take-on", "set-off"]);
+    expect(new Set(s.slice(2, 4))).toEqual(new Set(["look-up", "go-on"]));
+    expect(s.slice(4)).toEqual(["put-off", "give-up"]);
+  });
+
+  it("holds at most PHRASAL_ROUND words", async () => {
+    const { PHRASAL_ROUND } = await import("./session");
+    const many = Array.from({ length: PHRASAL_ROUND + 5 }, (_, i) => pv(`pv-${i}`));
+    expect(buildSession(many, progress(), "phrasal", TODAY)).toHaveLength(PHRASAL_ROUND);
+  });
+});

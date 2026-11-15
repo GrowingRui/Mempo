@@ -16,6 +16,7 @@ import DontKnow from "./pages/DontKnow";
 import Home from "./pages/Home";
 import LevelTest from "./pages/LevelTest";
 import MyList from "./pages/MyList";
+import Phrasal from "./pages/Phrasal";
 import Practice from "./pages/Practice";
 import Recall from "./pages/Recall";
 import Settings from "./pages/Settings";
@@ -36,9 +37,10 @@ const WIDTH: Partial<Record<Screen["name"], string>> = {
   words: "max-w-md md:max-w-4xl",
   dontknow: "max-w-md md:max-w-4xl",
   mylist: "max-w-md md:max-w-4xl",
+  phrasal: "max-w-md md:max-w-4xl",
 };
-/** Screens with the sidebar (tablets, computers) and the bottom tab bar (phones; not on "Don't know" and My list, which have their own button there). */
-const WITH_SIDEBAR = new Set<Screen["name"]>(["home", "practice", "words", "stats", "settings", "dontknow", "mylist"]);
+/** Screens with the sidebar (tablets, computers) and the bottom tab bar (phones; not on "Don't know", My list and Phrasal verbs, which have their own button there). */
+const WITH_SIDEBAR = new Set<Screen["name"]>(["home", "practice", "words", "stats", "settings", "dontknow", "mylist", "phrasal"]);
 const WITH_TABBAR = new Set<Screen["name"]>(["home", "practice", "words", "stats", "settings"]);
 
 export default function App() {
@@ -107,6 +109,8 @@ export default function App() {
           <DontKnow progress={progress} setProgress={setProgress} onPractise={() => go({ name: "study", mode: "dontknow" })} onBack={back} />
         ) : screen.name === "mylist" ? (
           <MyList progress={progress} setProgress={setProgress} onPractise={() => go({ name: "study", mode: "mylist" })} onBack={back} />
+        ) : screen.name === "phrasal" ? (
+          <Phrasal progress={progress} setProgress={setProgress} onPractise={() => go({ name: "study", mode: "phrasal" })} onBack={back} />
         ) : screen.name === "test" ? (
           <LevelTest progress={progress} setProgress={setProgress} onExit={back} />
         ) : screen.name === "skip" ? (

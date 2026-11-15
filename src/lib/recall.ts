@@ -48,9 +48,9 @@ export function normalize(s: string): string {
     .trim();
 }
 
-/** Every spelling that counts as the word: the headword, its variants and its forms. */
+/** Every spelling that counts as the word: the headword, its variants, its forms and the forms its examples use ("broke down"). */
 export function accepted(w: Word): Set<string> {
-  return new Set([w.word, ...(w.variants ?? []), ...(w.forms ?? [])].map(normalize));
+  return new Set([w.word, ...(w.variants ?? []), ...(w.forms ?? []), ...w.examples.flatMap((e) => (e.form ? [e.form] : []))].map(normalize));
 }
 
 /** How many single-letter edits turn a into b (stops counting above 2). */
@@ -172,7 +172,10 @@ export function recallPool(words: Word[], p: Progress, today = toDay(), rnd = Ma
   return keyed.sort((a, b) => a.r - b.r).map((x) => x.w);
 }
 
-/** Wrong choices that look like fair answers: same level and part of speech first, never the same word or meaning. */
+/**
+ * Wrong choices that look like fair answers: same level and part of speech first, never the same word or meaning.
+ * Phrasal verbs get other phrasal verbs first, and other words get no phrasal verbs first, so the shape doesn't give it away.
+ */
 function distractors(target: Word, all: Word[], kind: RecallKind, langs: TestLang[], rnd: () => number): Word[] {
   const right = accepted(target);
   const rightMeanings = new Set(promptMeanings(target, langs).map((l) => l.text));
@@ -182,6 +185,8 @@ function distractors(target: Word, all: Word[], kind: RecallKind, langs: TestLan
     rnd,
   );
   const tiers = [
+    pool.filter((w) => w.level === target.level && w.pos[0] === pos && !w.phrasal === !target.phrasal),
+    pool.filter((w) => w.pos[0] === pos && !w.phrasal === !target.phrasal),
     pool.filter((w) => w.level === target.level && w.pos[0] === pos),
     pool.filter((w) => w.pos[0] === pos),
     pool,
