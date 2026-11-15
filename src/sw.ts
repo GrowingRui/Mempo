@@ -6,7 +6,7 @@ import { cleanupOutdatedCaches, createHandlerBoundToURL, matchPrecache, precache
 import { createPartialResponse } from "workbox-range-requests";
 import { NavigationRoute, registerRoute } from "workbox-routing";
 import { toDay } from "./lib/date";
-import { AUDIO_CACHE } from "./lib/offline-cache";
+import { AUDIO_CACHE, REMADE_AUDIO, REMADE_AUDIO_DATE } from "./lib/offline-cache";
 import type { Word } from "./lib/types";
 import { readPrefsForReminder, reminderLine, wordOfTheDay } from "./lib/wotd";
 
@@ -33,6 +33,19 @@ registerRoute(
     return request.headers.has("range") ? createPartialResponse(request, res) : res;
   },
 );
+
+// Re-made recordings: drop the old copies once (a marker in the cache remembers it), so the next play fetches the new file.
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    (async () => {
+      const cache = await caches.open(AUDIO_CACHE);
+      const marker = `/audio-remade/${REMADE_AUDIO_DATE}`;
+      if (await cache.match(marker)) return;
+      await Promise.all(REMADE_AUDIO.map((name) => cache.delete(`/audio/${name}.mp3`)));
+      await cache.put(marker, new Response("done"));
+    })(),
+  );
+});
 
 // The page tells a waiting new version to take over (after the user taps "Update").
 self.addEventListener("message", (e) => {
