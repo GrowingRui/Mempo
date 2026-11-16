@@ -5,6 +5,7 @@ import { site } from "../config/site";
 import { addDays, toDay } from "./date";
 import { askable, shuffle, type TestLang } from "./leveltest";
 import { hash } from "./session";
+import { first } from "./fsrs";
 import { INTERVALS, MAX_BOX } from "./srs";
 import type { CardProgress, Level, Progress, Settings, Word } from "./types";
 
@@ -97,6 +98,8 @@ export function markKnown(p: Progress, ids: string[], today = toDay()): Progress
     cards[id] = {
       state: "review",
       box: MAX_BOX,
+      s: INTERVALS[MAX_BOX - 1],
+      d: first(4).d,
       due: addDays(today, INTERVALS[MAX_BOX - 1]),
       streak: 1,
       lapses: 0,

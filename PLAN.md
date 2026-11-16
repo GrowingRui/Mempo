@@ -114,9 +114,9 @@ Each file is an array of words, one per line. `public/data/index.json` holds the
 - The card is added to the **"Don't know" list** and its review box resets to 1.
 
 **Swipe "know":**
-- The card moves up one box (Leitner system). Review intervals by box: **1 → 3 → 7 → 14 → 30 → 60 days**.
+- ~~Leitner boxes 1 → 3 → 7 → 14 → 30 → 60 days~~ replaced by **FSRS** on 2026-11-16 (Backlog G.8): every card gets its own wait, from how well *you* know it.
 - A card leaves the "Don't know" list after **2 "know" answers in a row on different days**.
-- After the 60-day box the card counts as `mastered`.
+- A "know" that makes the card stick for 180 days or more makes it `mastered`.
 
 **Swipe direction:** a setting. Default is **left = know, right = don't know**, as requested.
 Buttons and arrow keys also work.
@@ -399,7 +399,14 @@ Compared with Anki, Quizlet, Memrise, Duolingo, WordUp, Vocabulary.com, Drops an
   - Saved in progress as `myList` (word id → day added; `src/lib/mylist.ts`), so backups and "Move to another device" carry it. Older progress and backups load with an empty list. "Start over" keeps the list
   - Only Mempo's own words for now. Words that aren't in Mempo (with your own meaning) could come later
 - [ ] **7. Speak it** (Memrise, Duolingo). Say the word, the browser's free speech recognition checks it (good in Chrome / Android, weaker on iPhone). ~½ day
-- [ ] **8. Better scheduling (FSRS)** (Anki). The modern spaced repetition method; invisible to users, fewer wasted reviews. ~1 day
+- [x] **8. Better scheduling (FSRS)** (Anki). (done 2026-11-16, checked by the user on localhost)
+  - FSRS-6 with the default parameters, written out in `src/lib/fsrs.ts` (~70 lines, no new package), whole days only. Each card keeps two numbers: **stability `s`** (days until the chance of remembering falls to 90 %) and **difficulty `d`** (1–10)
+  - Answers: **know** = Good, next review when the chance falls to 90 %. A brand-new word you already know = **Easy**, back in 8 days (was 3). **Not sure** = Hard: the word gets harder, its stability doesn't grow, due tomorrow (no longer drops a box). **Don't know** = Again: stability drops, due tomorrow, onto the "Don't know" list. Only the first answer of the day moves a card up, as before
+  - **Mastered** when a "know" makes the stability 180+ days. Longest wait 365 days
+  - Typical waits: a word that's easy for you 8 → 39 → 153 days → mastered (3 reviews; was 5); a word you missed 1 → 2 → 6 → 17 → 44 → 102 → mastered
+  - **Old progress carries on**: a card saved before FSRS has no `s` / `d`; `memoryOf` in `src/lib/srs.ts` takes its box's interval as the stability and works out a difficulty from its lapses. "Skip words you know" gives s = 60
+  - `box` stays as a **memory level 1–6** worked out from the stability (same day limits 1 / 3 / 7 / 14 / 30 / 60), so the word list ("memory level 3 of 6"), Recall's weakest-first order and older backups still work
+  - Tests: `srs.test.ts` (formulas, waits grow, easy words need fewer reviews, late reviews grow more, the 365-day limit, mastered, not sure / don't know, old cards)
 - [ ] **9. Topics** (Drops, Memrise): work, health, environment… Every word needs a topic tag first. ~1 day
 - [ ] **10. Short stories with your words**: part of Phase 7 (needs a paid AI API)
 - [x] **11. Phrasal verbs** (started on request 2026-11-15; shown on localhost, waiting for the user's check). The minddory lists had almost none (*bulk up, dole out, eke out, mull over*), so **190 new cards**: B2 94 · C1 58 · C2 38 (6,318 cards in all)

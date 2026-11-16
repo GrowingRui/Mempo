@@ -46,7 +46,12 @@ export type CardState ="new" | "learning" | "review" | "mastered";
 
 export interface CardProgress {
   state: CardState;
+  /** Strength level 1–6, from the stability (see srs.ts). */
   box: number;
+  /** FSRS stability: days until the chance of remembering falls to 90 %. Missing on cards saved before FSRS. */
+  s?: number;
+  /** FSRS difficulty, 1 (easy) … 10 (hard). Missing on cards saved before FSRS. */
+  d?: number;
   due: string; // YYYY-MM-DD
   streak: number;
   lapses: number;

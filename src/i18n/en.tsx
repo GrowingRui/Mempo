@@ -158,7 +158,7 @@ const en = {
     tapToFlip: "Tap the card to see the meaning",
     reportLink: "Wrong translation? Report it",
     hear: (w: string) => `Hear “${w}”`,
-    nextReviewStep: (when: string, box: number, max: number) => `Next review ${when}, step ${box} of ${max}`,
+    nextReviewStep: (when: string, box: number, max: number) => `Next review ${when}, memory level ${box} of ${max}`,
   },
 
   recall: {

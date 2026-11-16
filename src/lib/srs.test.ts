@@ -1,22 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { addDays } from "./date";
-import { answer, INTERVALS, isDue, MAX_BOX, nextReview, statusOf } from "./srs";
+import { addDays, daysBetween } from "./date";
+import { first, retrievability } from "./fsrs";
+import { answer, boxFor, isDue, MASTERED_AT, MAX_INTERVAL, memoryOf, nextReview, statusOf } from "./srs";
 import { card, progress, TODAY } from "./test-helpers";
+import type { Progress } from "./types";
 
 const TOMORROW = addDays(TODAY, 1);
 
 describe("answer: brand-new words", () => {
-  it("'know' on a new word starts it in box 2, due in 3 days", () => {
+  it("'know' on a new word counts as Easy: due in about 8 days", () => {
     const p = answer(progress(), "w", "know", TODAY);
-    expect(p.cards.w).toMatchObject({ state: "review", box: 2, due: addDays(TODAY, 3), streak: 1, inDontKnow: false, lastSeen: TODAY });
+    expect(p.cards.w).toMatchObject({ state: "review", s: 8.3, d: 1, box: 3, due: addDays(TODAY, 8), streak: 1, inDontKnow: false, lastSeen: TODAY });
   });
 
-  it("'don't know' on a new word: box 1, due tomorrow, on the Don't know list, no lapse", () => {
+  it("'don't know' on a new word: learning, due tomorrow, on the Don't know list, no lapse", () => {
     const p = answer(progress(), "w", "dontknow", TODAY);
-    expect(p.cards.w).toMatchObject({ state: "learning", box: 1, due: TOMORROW, streak: 0, lapses: 0, inDontKnow: true });
+    expect(p.cards.w).toMatchObject({ state: "learning", box: 1, s: 0.21, due: TOMORROW, streak: 0, lapses: 0, inDontKnow: true });
   });
 
-  it("'not sure' on a new word: box 1, due tomorrow, NOT on the Don't know list", () => {
+  it("'not sure' on a new word: learning, due tomorrow, NOT on the Don't know list", () => {
     const p = answer(progress(), "w", "unsure", TODAY);
     expect(p.cards.w).toMatchObject({ state: "learning", box: 1, due: TOMORROW, inDontKnow: false });
   });
@@ -27,35 +29,105 @@ describe("answer: brand-new words", () => {
   });
 });
 
-describe("answer: Leitner boxes", () => {
-  it.each(INTERVALS.slice(0, -1).map((_, i) => i + 1))("'know' in box %i moves up one box with the right interval", (box) => {
-    const p = answer(progress({ cards: { w: card({ box, lastSeen: "2026-01-01" }) } }), "w", "know", TODAY);
-    expect(p.cards.w.box).toBe(box + 1);
-    expect(p.cards.w.due).toBe(addDays(TODAY, INTERVALS[box]));
-    expect(p.cards.w.state).toBe("review");
+describe("FSRS formulas", () => {
+  it("the chance of remembering is 90 % after S days and falls with time", () => {
+    expect(retrievability(10, 10)).toBeCloseTo(0.9, 5);
+    expect(retrievability(0, 10)).toBe(1);
+    expect(retrievability(30, 10)).toBeLessThan(retrievability(20, 10));
   });
 
-  it("intervals are 1, 3, 7, 14, 30, 60 days", () => {
-    expect(INTERVALS).toEqual([1, 3, 7, 14, 30, 60]);
+  it("first answers: harder grades give lower stability and higher difficulty", () => {
+    const [again, hard, good, easy] = ([1, 2, 3, 4] as const).map(first);
+    expect(again.s).toBeLessThan(hard.s);
+    expect(hard.s).toBeLessThan(good.s);
+    expect(good.s).toBeLessThan(easy.s);
+    expect(again.d).toBeGreaterThan(good.d);
+  });
+});
+
+describe("answer: FSRS scheduling", () => {
+  /** Answers "know" on each due day and returns the waits between reviews. */
+  function waits(start: Progress, n: number): number[] {
+    let p = start;
+    let day = TODAY;
+    const out: number[] = [];
+    for (let i = 0; i < n; i++) {
+      p = answer(p, "w", "know", day);
+      out.push(daysBetween(day, p.cards.w.due));
+      day = p.cards.w.due;
+    }
+    return out;
+  }
+
+  it("each 'know' on time makes the next wait longer", () => {
+    const w = waits(answer(progress(), "w", "dontknow", addDays(TODAY, -1)), 6);
+    for (let i = 1; i < w.length; i++) expect(w[i]).toBeGreaterThan(w[i - 1]);
+    expect(w[0]).toBeLessThanOrEqual(3);
   });
 
-  it("'know' in the last box makes the card mastered", () => {
-    const p = answer(progress({ cards: { w: card({ box: MAX_BOX }) } }), "w", "know", TODAY);
+  it("a word that's easy for you needs fewer reviews than one you missed", () => {
+    const easy = waits(progress(), 3);
+    const hard = waits(answer(progress(), "w", "dontknow", addDays(TODAY, -1)), 3);
+    expect(easy[2]).toBeGreaterThan(hard[2] * 2);
+  });
+
+  it("knowing a word you were late to review grows it more than knowing it early", () => {
+    const base = { s: 10, d: 5, box: 3, lastSeen: addDays(TODAY, -10) };
+    const onTime = answer(progress({ cards: { w: card(base) } }), "w", "know", TODAY).cards.w;
+    const late = answer(progress({ cards: { w: card({ ...base, lastSeen: addDays(TODAY, -30) }) } }), "w", "know", TODAY).cards.w;
+    expect(late.s!).toBeGreaterThan(onTime.s!);
+  });
+
+  it("waits are at most MAX_INTERVAL days", () => {
+    const p = answer(progress({ cards: { w: card({ s: 2000, d: 1, box: 6, lastSeen: addDays(TODAY, -900) }) } }), "w", "know", TODAY);
+    expect(daysBetween(TODAY, p.cards.w.due)).toBe(MAX_INTERVAL);
+  });
+
+  it("'know' that makes a card stick for MASTERED_AT days makes it mastered", () => {
+    const p = answer(progress({ cards: { w: card({ s: 150, d: 2, box: 6, lastSeen: addDays(TODAY, -150) }) } }), "w", "know", TODAY);
+    expect(p.cards.w.s!).toBeGreaterThanOrEqual(MASTERED_AT);
     expect(p.cards.w.state).toBe("mastered");
   });
 
-  it("'not sure' moves down one box (never below 1) and is due tomorrow", () => {
-    let p = answer(progress({ cards: { w: card({ box: 4, streak: 3 }) } }), "w", "unsure", TODAY);
-    expect(p.cards.w).toMatchObject({ box: 3, due: TOMORROW, streak: 0 });
-    p = answer(progress({ cards: { w: card({ box: 1 }) } }), "w", "unsure", TODAY);
-    expect(p.cards.w.box).toBe(1);
+  it("'not sure' is due tomorrow, makes the word harder, and doesn't grow its stability", () => {
+    const p = answer(progress({ cards: { w: card({ s: 14, d: 4, box: 4, streak: 3, lastSeen: addDays(TODAY, -14) }) } }), "w", "unsure", TODAY);
+    expect(p.cards.w).toMatchObject({ s: 14, box: 4, due: TOMORROW, streak: 0, inDontKnow: false });
+    expect(p.cards.w.d!).toBeGreaterThan(4);
   });
 
-  it("'don't know' always goes back to box 1", () => {
-    const p = answer(progress({ cards: { w: card({ box: 5 }) } }), "w", "dontknow", TODAY);
+  it("'don't know' drops the stability, back to level 1, due tomorrow", () => {
+    const p = answer(progress({ cards: { w: card({ s: 40, d: 3, box: 5, lastSeen: addDays(TODAY, -40) }) } }), "w", "dontknow", TODAY);
     expect(p.cards.w).toMatchObject({ box: 1, state: "learning", due: TOMORROW, inDontKnow: true });
+    expect(p.cards.w.s!).toBeLessThan(10);
+    expect(p.cards.w.d!).toBeGreaterThan(3);
   });
 
+  it("the level shown follows the stability", () => {
+    expect([0.2, 1, 3, 7, 14, 30, 60, 500].map(boxFor)).toEqual([1, 1, 2, 3, 4, 5, 6, 6]);
+  });
+});
+
+describe("cards saved before FSRS", () => {
+  it("get their stability from the box and a difficulty from their lapses", () => {
+    expect(memoryOf(card({ box: 4 })).s).toBe(14);
+    expect(memoryOf(card({ box: 1 })).s).toBe(1);
+    expect(memoryOf(card({ box: 3, lapses: 2 })).d).toBeGreaterThan(memoryOf(card({ box: 3 })).d);
+    expect(memoryOf(card({ box: 3, s: 9, d: 4 }))).toEqual({ s: 9, d: 4 });
+  });
+
+  it("carry on from where they were: a box 4 card known on time waits longer than 14 days", () => {
+    const p = answer(progress({ cards: { w: card({ box: 4, lastSeen: addDays(TODAY, -14) }) } }), "w", "know", TODAY);
+    expect(daysBetween(TODAY, p.cards.w.due)).toBeGreaterThan(14);
+    expect(p.cards.w.s).toBeDefined();
+  });
+
+  it("a card without lastSeen is treated as reviewed on time", () => {
+    const p = answer(progress({ cards: { w: card({ box: 6 }) } }), "w", "know", TODAY);
+    expect(p.cards.w.state).toBe("mastered");
+  });
+});
+
+describe("answer: history", () => {
   it("counts a review (not a new word) in history", () => {
     const p = answer(progress({ cards: { w: card() } }), "w", "know", TODAY);
     expect(p.history[TODAY]).toEqual({ new: 0, reviewed: 1 });
@@ -87,7 +159,7 @@ describe("answer: only the first answer of the day moves a card up", () => {
     expect(p.cards.w).toEqual(after);
   });
 
-  it("missing a card and then knowing it later the same day keeps it in box 1, due tomorrow", () => {
+  it("missing a card and then knowing it later the same day keeps it at level 1, due tomorrow", () => {
     let p = answer(progress({ cards: { w: card({ box: 4 }) } }), "w", "dontknow", TODAY);
     p = answer(p, "w", "know", TODAY);
     expect(p.cards.w).toMatchObject({ box: 1, due: TOMORROW, inDontKnow: true });

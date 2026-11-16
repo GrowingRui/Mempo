@@ -51,6 +51,10 @@ function cleanCard(c: unknown): CardProgress | null {
     inDontKnow: c.inDontKnow === true,
   };
   if (typeof c.lastSeen === "string" && DAY.test(c.lastSeen)) card.lastSeen = c.lastSeen;
+  // FSRS memory: kept only when both numbers make sense, otherwise worked out again from the box (srs.ts memoryOf).
+  const s = num(c.s, NaN);
+  const d = num(c.d, NaN);
+  if (s > 0 && s <= 36500 && d >= 1 && d <= 10) Object.assign(card, { s, d });
   return card;
 }
 
