@@ -11,7 +11,7 @@ export type Tab = "home" | "practice" | "words" | "stats" | "settings";
 
 /** Which tab is lit on a screen (the "Don't know" list, My list and Phrasal verbs belong to Practice). */
 export function tabOf(screen: Screen): Tab | undefined {
-  if (screen.name === "dontknow" || screen.name === "mylist" || screen.name === "phrasal") return "practice";
+  if (screen.name === "dontknow" || screen.name === "mylist" || screen.name === "phrasal" || screen.name === "reader") return "practice";
   return (["home", "practice", "words", "stats", "settings"] as const).find((n) => n === screen.name);
 }
 

@@ -319,6 +319,28 @@ const zh: Messages = {
     others: "其他级别的短语动词可以在词库里找到。",
   },
 
+  reader: {
+    title: "读一篇文章",
+    sub: "粘贴任意英文文章，看看哪些词要学",
+    intro: "粘贴一篇文章、考试原文或歌词。Mempo 会标出其中所有 B2–C2 词汇，让你一眼看出哪些已经会了、哪些还要学。",
+    placeholder: "在这里粘贴或输入英文文章…",
+    paste: "粘贴",
+    example: "试试示例",
+    mark: "标出词汇",
+    edit: "更换文章",
+    private: "文章只保存在这台设备上。",
+    tooLong: (n: number) => `只使用前 ${N(n)} 个字符。`,
+    none: "这篇文章里没有 B2–C2 词汇。换一篇更长或更难的试试。",
+    found: (n: number) => `文中有 ${N(n)} 个 Mempo 词汇`,
+    legendAria: "显示或隐藏标记",
+    groups: { new: "未学", dontknow: "不认识", learning: "学习中", known: "已掌握" },
+    listTitle: "文中的词",
+    starNew: (n: number) => `把 ${N(n)} 个未学的词加入我的单词本`,
+    starred: "所有未学的词都已在我的单词本里。",
+    times: (n: number) => `文中出现 ${N(n)} 次`,
+    close: "关闭",
+  },
+
   myList: {
     title: "我的单词本",
     intro: "你想练习的单词。在卡片或单词列表里点 ☆ 加入，也可以在这里搜索。",

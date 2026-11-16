@@ -11,7 +11,7 @@ import { loadAllWords } from "../lib/words";
 const PAGE = 50;
 const STATUSES: WordStatus[] = ["new", "learning", "review", "mastered", "dontknow"];
 
-function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+export function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <button
       type="button"

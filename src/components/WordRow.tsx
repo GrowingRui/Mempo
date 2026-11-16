@@ -22,14 +22,17 @@ export default function WordRow({
   card,
   settings,
   star,
+  defaultOpen = false,
 }: {
   word: Word;
   card?: CardProgress;
   settings: Settings;
   star?: { starred: boolean; onToggle: () => void };
+  /** Start with the meanings shown (the word panel in "Read a text"). */
+  defaultOpen?: boolean;
 }) {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const status = statusOf(card);
   const summary = [settings.showZh && word.zh[0]?.gloss.slice(0, 2).join("；"), settings.showEs && word.es[0]?.gloss.slice(0, 2).join(", ")]
     .filter(Boolean)

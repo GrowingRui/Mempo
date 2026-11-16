@@ -335,6 +335,28 @@ const en = {
     others: "Phrasal verbs of other levels are under Words.",
   },
 
+  reader: {
+    title: "Read a text",
+    sub: "Paste any English text and see which words to learn",
+    intro: "Paste an article, an exam text or song lyrics. Mempo marks every B2–C2 word in it, so you see which ones you know and which to learn.",
+    placeholder: "Paste or type an English text here…",
+    paste: "Paste",
+    example: "Try an example",
+    mark: "Mark the words",
+    edit: "Change text",
+    private: "Your text stays on this device.",
+    tooLong: (n: number) => `Only the first ${N(n)} characters are used.`,
+    none: "No B2–C2 words in this text. Try a longer or harder one.",
+    found: (n: number) => (n === 1 ? "1 Mempo word in this text" : `${N(n)} Mempo words in this text`),
+    legendAria: "Show or hide the marks",
+    groups: { new: "Not studied", dontknow: "Don’t know", learning: "Learning", known: "Mastered" },
+    listTitle: "Words in this text",
+    starNew: (n: number) => (n === 1 ? "Add the new word to My list" : `Add the ${N(n)} new words to My list`),
+    starred: "All new words are on My list.",
+    times: (n: number) => `${N(n)}× in this text`,
+    close: "Close",
+  },
+
   myList: {
     title: "My list",
     intro: "Words you want to practise. Tap ☆ on a card or in the word list to add a word, or search for it here.",

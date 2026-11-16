@@ -329,6 +329,28 @@ const es: Messages = {
     others: "Los phrasal verbs de otros niveles están en Palabras.",
   },
 
+  reader: {
+    title: "Leer un texto",
+    sub: "Pega cualquier texto en inglés y mira qué palabras aprender",
+    intro: "Pega un artículo, un texto de examen o la letra de una canción. Mempo marca todas las palabras B2–C2, para que veas cuáles ya sabes y cuáles te faltan.",
+    placeholder: "Pega o escribe aquí un texto en inglés…",
+    paste: "Pegar",
+    example: "Probar un ejemplo",
+    mark: "Marcar las palabras",
+    edit: "Cambiar el texto",
+    private: "Tu texto se queda en este dispositivo.",
+    tooLong: (n: number) => `Solo se usan los primeros ${N(n)} caracteres.`,
+    none: "No hay palabras B2–C2 en este texto. Prueba con uno más largo o más difícil.",
+    found: (n: number) => (n === 1 ? "1 palabra de Mempo en este texto" : `${N(n)} palabras de Mempo en este texto`),
+    legendAria: "Mostrar u ocultar las marcas",
+    groups: { new: "Sin estudiar", dontknow: "No lo sé", learning: "Aprendiendo", known: "Dominadas" },
+    listTitle: "Palabras del texto",
+    starNew: (n: number) => (n === 1 ? "Añadir la palabra nueva a Mi lista" : `Añadir las ${N(n)} palabras nuevas a Mi lista`),
+    starred: "Todas las palabras nuevas están en Mi lista.",
+    times: (n: number) => `${N(n)} veces en el texto`,
+    close: "Cerrar",
+  },
+
   myList: {
     title: "Mi lista",
     intro: "Palabras que quieres practicar. Toca ☆ en una tarjeta o en la lista de palabras para añadir una, o búscala aquí.",

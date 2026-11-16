@@ -446,6 +446,13 @@ Before, every screen was one narrow column (max ~450 px) on every device, and on
 - [x] Texts `nav`, `practice`, `home.morePractice` / `yourPlan` / `change` / `planGoal` in en / zh / es. Checked at 320 / 360 / 390 / 820 / 1100 / 1440 px, all three languages, light and dark
 - Fixed 2026-11-14: in dark mode the yellow marker behind the word in example sentences covered only the lower half, so the dark word sat half on the dark card. Now it covers the whole word in dark mode (`--marker-top` in `src/index.css`); light mode unchanged
 
+**J. Read a text** ✅ (done 2026-11-16, checked by the user on localhost)
+- [x] Practice → **Read a text** (`src/pages/Reader.tsx`, logic in `src/lib/reader.ts`, tests in `reader.test.ts`). Paste any English text (or "Try an example"); Mempo marks every B2–C2 word in it. $0, no server: the text is kept only in this browser (`mempo:reader-text`), up to 20,000 characters
+- [x] Matching: the word as written, then a guessed base form that must be a Mempo word (*abandoned, studies, making, stopped*; common irregular pasts like *gave*). Phrases longest first, with the first or last word inflected (*gave up, carries out, carbon footprints*), never across punctuation. Past forms that are often other words (*left, found, bit*) only count inside a phrase (*found out*)
+- [x] Colours by how well you know the word: **Not studied** (yellow highlighter), **Don't know** (red), **Learning** (Learning + Reviewing, purple), **Mastered** (green underline). The legend chips show counts and hide or show each colour
+- [x] Tap a word: a panel at the bottom with its meanings, example, ☆ and pronunciation (Back / Esc / × closes it). Under the text, **Words in this text** (Not studied first, then Don't know, Learning, Mastered) with ☆, and "Add the N new words to My list"
+- Texts in en / zh / es
+
 **Not needed for now (decided by the user 2026-11-07):** credits / licences (About screen, minddory terms). Keep things as they are.
 
 ---
