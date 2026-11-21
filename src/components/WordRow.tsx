@@ -6,6 +6,7 @@ import type { CardProgress, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import SpeakButton from "./SpeakButton";
 import StarButton from "./StarButton";
+import WordFamily from "./WordFamily";
 import { GlossList, SensitiveNote } from "./WordCard";
 
 const STATUS_CLASS: Record<WordStatus, string> = {
@@ -63,6 +64,7 @@ export default function WordRow({
           {settings.showZh && <GlossList label="中文" glosses={word.zh} lang="zh" />}
           {settings.showEs && <GlossList label="Español" glosses={word.es} lang="es" />}
           {settings.showEn && word.en && <GlossList label="English" glosses={word.en} lang="en" />}
+          <WordFamily word={word} />
           {word.examples[0] && (
             <p className="rounded-2xl bg-paper px-3.5 py-2.5 text-[15px] leading-relaxed text-ink/80">
               <Highlight text={word.examples[0].text} terms={terms} />

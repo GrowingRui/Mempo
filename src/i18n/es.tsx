@@ -145,6 +145,7 @@ const es: Messages = {
     useWithCare: "Úsala con cuidado",
     alsoSpelled: (v: string) => `También se escribe ${v}.`,
     forms: (f: string) => `Formas: ${f}`,
+    family: "Familia de palabras",
     showWord: "Mostrar la palabra",
     showMeaning: "Mostrar el significado",
     tapToFlip: "Toca la tarjeta para ver el significado",

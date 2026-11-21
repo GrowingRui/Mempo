@@ -138,6 +138,7 @@ const zh: Messages = {
     useWithCare: "慎用",
     alsoSpelled: (v: string) => `也拼作 ${v}。`,
     forms: (f: string) => `词形：${f}`,
+    family: "词族",
     showWord: "显示单词",
     showMeaning: "显示释义",
     tapToFlip: "点击卡片查看释义",

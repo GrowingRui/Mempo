@@ -5,6 +5,7 @@ import Highlight from "./Highlight";
 import ReportDialog from "./ReportDialog";
 import SpeakButton from "./SpeakButton";
 import StarButton from "./StarButton";
+import WordFamily from "./WordFamily";
 
 /** Meanings in one language. The label is the language's own name (中文, Español, English) in every app language. */
 export function GlossList({ label, glosses, lang }: { label: string; glosses: Gloss[]; lang?: string }) {
@@ -172,6 +173,8 @@ export default function WordCard({ word, flipped, onFlip, settings, star }: Prop
             {settings.showEs && <GlossList label="Español" glosses={word.es} lang="es" />}
             {settings.showEn && word.en && <GlossList label="English" glosses={word.en} lang="en" />}
           </div>
+
+          <WordFamily word={word} className="mt-5" />
 
           {extra.length > 0 && <p className="mt-5 text-sm font-medium text-muted">{extra.join(" ")}</p>}
 

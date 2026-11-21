@@ -153,6 +153,7 @@ const en = {
     useWithCare: "Use with care",
     alsoSpelled: (v: string) => `Also spelled ${v}.`,
     forms: (f: string) => `Forms: ${f}`,
+    family: "Word family",
     showWord: "Show the word",
     showMeaning: "Show the meaning",
     tapToFlip: "Tap the card to see the meaning",
