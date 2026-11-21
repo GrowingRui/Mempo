@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, isClozeKind, loadCloze, loadPrepositions, textLine, type ClozeItem } from "./exam";
+import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, isClozeKind, loadCloze, loadConfused, loadPrepositions, textLine, type ClozeItem } from "./exam";
 import { buildRecall, GAP } from "./recall";
 import { card, progress, TODAY, word } from "./test-helpers";
 import type { Word } from "./types";
@@ -90,9 +90,12 @@ describe("multiple-choice cloze (Part 1)", () => {
   });
 });
 
-describe("dependent prepositions", () => {
+describe.each([
+  ["dependent prepositions", loadPrepositions],
+  ["easily confused words", loadConfused],
+])("%s", (_name, load) => {
   it("has well-formed hand-written questions, 20 or more per level", async () => {
-    const items = await loadPrepositions();
+    const items = await load();
     const dir = join(__dirname, "../../public/data");
     const ids = new Set(["b2", "c1", "c2"].flatMap((l) => (JSON.parse(readFileSync(join(dir, `${l}.json`), "utf8")) as Word[]).map((w) => w.id)));
     expect(new Set(items.map((q) => q.id)).size).toBe(items.length);
@@ -108,6 +111,7 @@ describe("dependent prepositions", () => {
 
   it("is played like Part 1", () => {
     expect(isClozeKind("prep")).toBe(true);
+    expect(isClozeKind("confused")).toBe(true);
     expect(isClozeKind("cloze")).toBe(true);
     expect(isClozeKind("form")).toBe(false);
   });

@@ -7,7 +7,7 @@ import SpeakButton from "../components/SpeakButton";
 import { useT } from "../i18n";
 import { meaning, type TestLang } from "../lib/leveltest";
 import { buildMatch } from "../lib/match";
-import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, isClozeKind, loadCloze, loadPrepositions, textLine, type ClozeItem } from "../lib/exam";
+import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, isClozeKind, loadCloze, loadConfused, loadPrepositions, textLine, type ClozeItem } from "../lib/exam";
 import { buildRecall, checkSpelling, clozeFor, GAP, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
 import { markDontKnow } from "../lib/srs";
@@ -85,6 +85,11 @@ const KINDS: { kind: RecallKind; section: QuizSection; part?: number; icon: Reac
     section: "exam",
     icon: <path d="M3 12h14M13 7l5 5-5 5M20 5v14" />,
   },
+  {
+    kind: "confused",
+    section: "exam",
+    icon: <path d="M4 7h6M14 7h6M4 17h6M14 17h6M7 7l10 10M17 7 7 17" />,
+  },
 ];
 
 type Result = { word: Word; right: boolean };
@@ -102,6 +107,7 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
   const [added, setAdded] = useState(false);
   const [cloze, setCloze] = useState<ClozeItem[]>();
   const [preps, setPreps] = useState<ClozeItem[]>();
+  const [confused, setConfused] = useState<ClozeItem[]>();
 
   useEffect(() => {
     loadAllWords()
@@ -110,6 +116,7 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
     if (exam) {
       loadCloze().then(setCloze, () => setCloze([]));
       loadPrepositions().then(setPreps, () => setPreps([]));
+      loadConfused().then(setConfused, () => setConfused([]));
     }
   }, [exam]);
 
@@ -119,7 +126,7 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
   const matchReady = useMemo(() => !exam && !!newBoard(), [all, progress, langs.join(), exam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Only tasks that work are shown: Part 1 once its questions have loaded, Match once a board can be made.
-  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length) && (k.kind !== "prep" || preps?.length) && (k.kind !== "match" || matchReady));
+  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length) && (k.kind !== "prep" || preps?.length) && (k.kind !== "confused" || confused?.length) &&(k.kind !== "match" || matchReady));
 
   const studied = all?.filter((w) => progress.cards[w.id]).length ?? 0;
 
@@ -141,7 +148,9 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
         ? buildCloze(cloze ?? [], all, settings.level)
         : k === "prep"
           ? buildCloze(preps ?? [], all, settings.level)
-          : k === "form"
+          : k === "confused"
+            ? buildCloze(confused ?? [], all, settings.level)
+            : k === "form"
           ? buildRecall(formPool(all, progress), all, k, langs, CLOZE_ROUND) // 8 gaps, as in the paper
           : buildRecall(recallPool(all, progress), all, k, langs),
     );
@@ -453,7 +462,7 @@ function Question({
           </>
         ) : round && (isClozeKind(kind) || kind === "form") ? (
           <>
-            <p className="text-sm font-semibold text-muted">{kind === "cloze" ? t.exam.clozePrompt : kind === "prep" ? t.exam.prepPrompt : t.recall.formPrompt}</p>
+            <p className="text-sm font-semibold text-muted">{kind === "cloze" ? t.exam.clozePrompt : kind === "prep" ? t.exam.prepPrompt : kind === "confused" ? t.exam.confusedPrompt : t.recall.formPrompt}</p>
             <ExamText questions={round.questions} kind={kind} results={round.results} current={round.index} answered={answered} right={right} scroll />
             {kind === "form" && (
               <p className="mt-4 flex items-baseline gap-2 rounded-2xl border-2 border-brand/30 bg-brand-soft px-5 py-2">

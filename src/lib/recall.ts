@@ -13,9 +13,10 @@ import type { Progress, Word } from "./types";
  * form: word formation (exam practice, Cambridge Use of English Part 3; questions from exam.ts).
  * cloze: multiple-choice cloze (exam practice, Part 1; hand-written questions, built in exam.ts).
  * prep: dependent prepositions (exam practice; hand-written questions in src/data/prepositions.json, played like cloze).
+ * confused: easily confused words (affect / effect; hand-written, src/data/confused.json, played like cloze).
  * match: words and meanings on a board, against the clock (boards from match.ts, played in MatchGame).
  */
-export type RecallKind = "meaning" | "listen" | "spell" | "form" | "cloze" | "prep" | "match";
+export type RecallKind = "meaning" | "listen" | "spell" | "form" | "cloze" | "prep" | "confused" | "match";
 
 export const ROUND = 15;
 export const OPTIONS = 4;

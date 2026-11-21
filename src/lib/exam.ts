@@ -85,8 +85,13 @@ export function loadPrepositions(): Promise<ClozeItem[]> {
   return import("../data/prepositions.json").then((m) => m.default as ClozeItem[]);
 }
 
-/** Part 1 and the prepositions task are played the same way: pick one of four for a gap, then read why. */
-export const isClozeKind = (kind: RecallKind): boolean => kind === "cloze" || kind === "prep";
+/** Easily confused words (economic / economical): the same kind of question, from src/data/confused.json. */
+export function loadConfused(): Promise<ClozeItem[]> {
+  return import("../data/confused.json").then((m) => m.default as ClozeItem[]);
+}
+
+/** Part 1, the prepositions task and confused words are played the same way: pick one of four for a gap, then read why. */
+export const isClozeKind = (kind: RecallKind): boolean => kind === "cloze" || kind === "prep" || kind === "confused";
 
 /** A stand-in word for a choice or answer that isn't a Mempo card: shown and spoken, never saved. */
 function plainWord(id: string, text: string, level: Level): Word {
