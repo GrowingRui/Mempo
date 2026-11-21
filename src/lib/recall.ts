@@ -12,9 +12,10 @@ import type { Progress, Word } from "./types";
  * meaning: read the translation, pick the word. listen: hear it, pick the word. spell: read the translation, type the word.
  * form: word formation (exam practice, Cambridge Use of English Part 3; questions from exam.ts).
  * cloze: multiple-choice cloze (exam practice, Part 1; hand-written questions, built in exam.ts).
+ * prep: dependent prepositions (exam practice; hand-written questions in src/data/prepositions.json, played like cloze).
  * match: words and meanings on a board, against the clock (boards from match.ts, played in MatchGame).
  */
-export type RecallKind = "meaning" | "listen" | "spell" | "form" | "cloze" | "match";
+export type RecallKind = "meaning" | "listen" | "spell" | "form" | "cloze" | "prep" | "match";
 
 export const ROUND = 15;
 export const OPTIONS = 4;

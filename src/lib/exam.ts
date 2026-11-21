@@ -80,6 +80,14 @@ export function loadCloze(): Promise<ClozeItem[]> {
   return import("../data/part1.json").then((m) => m.default as ClozeItem[]);
 }
 
+/** Dependent prepositions (rely ON, accused OF): the same kind of question, from src/data/prepositions.json. */
+export function loadPrepositions(): Promise<ClozeItem[]> {
+  return import("../data/prepositions.json").then((m) => m.default as ClozeItem[]);
+}
+
+/** Part 1 and the prepositions task are played the same way: pick one of four for a gap, then read why. */
+export const isClozeKind = (kind: RecallKind): boolean => kind === "cloze" || kind === "prep";
+
 /** A stand-in word for a choice or answer that isn't a Mempo card: shown and spoken, never saved. */
 function plainWord(id: string, text: string, level: Level): Word {
   return { id, word: text, level, pos: [], zh: [], es: [], examples: [] };
@@ -114,7 +122,7 @@ export interface TextLine {
 
 /** The line for a Part 1 or Part 3 question; undefined for other exercises. */
 export function textLine(q: RecallQuestion, kind: RecallKind): TextLine | undefined {
-  if (kind === "cloze" && q.cloze) return { text: q.cloze.text, answer: q.cloze.answer };
+  if (isClozeKind(kind) && q.cloze) return { text: q.cloze.text, answer: q.cloze.answer };
   if (kind === "form") {
     const gap = formGap(q.word);
     if (gap) return { ...gap, base: q.word.base };

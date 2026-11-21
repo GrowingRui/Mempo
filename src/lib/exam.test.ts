@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, loadCloze, textLine, type ClozeItem } from "./exam";
+import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, isClozeKind, loadCloze, loadPrepositions, textLine, type ClozeItem } from "./exam";
 import { buildRecall, GAP } from "./recall";
 import { card, progress, TODAY, word } from "./test-helpers";
 import type { Word } from "./types";
@@ -87,6 +87,29 @@ describe("multiple-choice cloze (Part 1)", () => {
       expect(q.note.length, q.id).toBeGreaterThan(10);
       if (q.card) expect(ids.has(q.card), q.id).toBe(true);
     }
+  });
+});
+
+describe("dependent prepositions", () => {
+  it("has well-formed hand-written questions, 20 or more per level", async () => {
+    const items = await loadPrepositions();
+    const dir = join(__dirname, "../../public/data");
+    const ids = new Set(["b2", "c1", "c2"].flatMap((l) => (JSON.parse(readFileSync(join(dir, `${l}.json`), "utf8")) as Word[]).map((w) => w.id)));
+    expect(new Set(items.map((q) => q.id)).size).toBe(items.length);
+    for (const lv of ["B2", "C1", "C2"]) expect(items.filter((q) => q.level === lv).length, lv).toBeGreaterThanOrEqual(20);
+    for (const q of items) {
+      expect(q.text.split(GAP), q.id).toHaveLength(2);
+      const choices = [q.answer, ...q.others].map((c) => c.toLowerCase());
+      expect(new Set(choices).size, q.id).toBe(4);
+      expect(q.note.length, q.id).toBeGreaterThan(10);
+      if (q.card) expect(ids.has(q.card), q.id).toBe(true);
+    }
+  });
+
+  it("is played like Part 1", () => {
+    expect(isClozeKind("prep")).toBe(true);
+    expect(isClozeKind("cloze")).toBe(true);
+    expect(isClozeKind("form")).toBe(false);
   });
 });
 

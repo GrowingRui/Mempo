@@ -7,7 +7,7 @@ import SpeakButton from "../components/SpeakButton";
 import { useT } from "../i18n";
 import { meaning, type TestLang } from "../lib/leveltest";
 import { buildMatch } from "../lib/match";
-import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, loadCloze, textLine, type ClozeItem } from "../lib/exam";
+import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, isClozeKind, loadCloze, loadPrepositions, textLine, type ClozeItem } from "../lib/exam";
 import { buildRecall, checkSpelling, clozeFor, GAP, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
 import { markDontKnow } from "../lib/srs";
@@ -80,6 +80,11 @@ const KINDS: { kind: RecallKind; section: QuizSection; part?: number; icon: Reac
     part: 3,
     icon: <path d="M3 5h7v5H3zM14 14h7v5h-7zM6.5 10v6.5H11M9 14l2 2.5-2 2.5" />,
   },
+  {
+    kind: "prep",
+    section: "exam",
+    icon: <path d="M3 12h14M13 7l5 5-5 5M20 5v14" />,
+  },
 ];
 
 type Result = { word: Word; right: boolean };
@@ -96,12 +101,16 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
   const [results, setResults] = useState<Result[]>([]);
   const [added, setAdded] = useState(false);
   const [cloze, setCloze] = useState<ClozeItem[]>();
+  const [preps, setPreps] = useState<ClozeItem[]>();
 
   useEffect(() => {
     loadAllWords()
       .then(setAll)
       .catch((e: Error) => setError(e.message));
-    if (exam) loadCloze().then(setCloze, () => setCloze([]));
+    if (exam) {
+      loadCloze().then(setCloze, () => setCloze([]));
+      loadPrepositions().then(setPreps, () => setPreps([]));
+    }
   }, [exam]);
 
   // Match: meanings on the tiles in every shown language, like the other exercises.
@@ -110,7 +119,7 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
   const matchReady = useMemo(() => !exam && !!newBoard(), [all, progress, langs.join(), exam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Only tasks that work are shown: Part 1 once its questions have loaded, Match once a board can be made.
-  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length) && (k.kind !== "match" || matchReady));
+  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length) && (k.kind !== "prep" || preps?.length) && (k.kind !== "match" || matchReady));
 
   const studied = all?.filter((w) => progress.cards[w.id]).length ?? 0;
 
@@ -130,7 +139,9 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
     setQuestions(
       k === "cloze"
         ? buildCloze(cloze ?? [], all, settings.level)
-        : k === "form"
+        : k === "prep"
+          ? buildCloze(preps ?? [], all, settings.level)
+          : k === "form"
           ? buildRecall(formPool(all, progress), all, k, langs, CLOZE_ROUND) // 8 gaps, as in the paper
           : buildRecall(recallPool(all, progress), all, k, langs),
     );
@@ -377,7 +388,7 @@ function Question({
   const answered = typing ? verdict !== undefined : picked !== undefined;
   const right = typing ? verdict === "right" : picked === q.correct;
   // Listening and Part 1 always wait for "Next", so there is time to read the meaning or the explanation.
-  const waitForNext = !right || kind === "listen" || kind === "cloze";
+  const waitForNext = !right || kind === "listen" || isClozeKind(kind);
 
   useEffect(() => {
     if (kind === "listen") playWord(word.id, word.word);
@@ -440,9 +451,9 @@ function Question({
               </div>
             )}
           </>
-        ) : round && (kind === "cloze" || kind === "form") ? (
+        ) : round && (isClozeKind(kind) || kind === "form") ? (
           <>
-            <p className="text-sm font-semibold text-muted">{kind === "cloze" ? t.exam.clozePrompt : t.recall.formPrompt}</p>
+            <p className="text-sm font-semibold text-muted">{kind === "cloze" ? t.exam.clozePrompt : kind === "prep" ? t.exam.prepPrompt : t.recall.formPrompt}</p>
             <ExamText questions={round.questions} kind={kind} results={round.results} current={round.index} answered={answered} right={right} scroll />
             {kind === "form" && (
               <p className="mt-4 flex items-baseline gap-2 rounded-2xl border-2 border-brand/30 bg-brand-soft px-5 py-2">
@@ -450,7 +461,7 @@ function Question({
                 <span className="font-display text-2xl font-extrabold tracking-[0.12em] text-brand-ink uppercase">{word.base}</span>
               </p>
             )}
-            {answered && kind === "cloze" && q.cloze && (
+            {answered && isClozeKind(kind) && q.cloze && (
               <p className="mt-5 rounded-2xl bg-brand-soft px-4 py-3 text-left text-[15px] leading-snug font-medium" lang="en">
                 <span className="font-bold text-brand-ink">{t.exam.why} </span>
                 {q.cloze.note}
@@ -536,7 +547,7 @@ function Question({
         </form>
       ) : (
         <>
-          <p className="mt-6 mb-2.5 font-display text-lg font-bold">{kind === "listen" ? t.recall.whichHeard : kind === "cloze" ? t.exam.whichFits((round?.index ?? 0) + 1) : t.recall.whichIs}</p>
+          <p className="mt-6 mb-2.5 font-display text-lg font-bold">{kind === "listen" ? t.recall.whichHeard : isClozeKind(kind) ? t.exam.whichFits((round?.index ?? 0) + 1) : t.recall.whichIs}</p>
           <div className="flex flex-col gap-2.5">
             {q.options.map((opt, k) => (
               <button
