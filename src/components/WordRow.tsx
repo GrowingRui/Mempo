@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useT } from "../i18n";
 import { toDay } from "../lib/date";
 import { MAX_BOX, statusOf, type WordStatus } from "../lib/srs";
+import { isTrouble } from "../lib/trouble";
 import type { CardProgress, Settings, Word } from "../lib/types";
 import Highlight from "./Highlight";
 import SpeakButton from "./SpeakButton";
@@ -69,6 +70,9 @@ export default function WordRow({
             <p className="rounded-2xl bg-paper px-3.5 py-2.5 text-[15px] leading-relaxed text-ink/80">
               <Highlight text={word.examples[0].text} terms={terms} />
             </p>
+          )}
+          {isTrouble(card) && (
+            <p className="rounded-2xl border-2 border-unsure/45 bg-unsure/12 px-3.5 py-2 text-sm font-bold text-unsure-dark">{t.card.troubleNote}</p>
           )}
           {card && card.state !== "mastered" && (
             <p className="text-xs font-semibold text-muted">{t.card.nextReviewStep(t.when(card.due, toDay()), card.box, MAX_BOX)}</p>

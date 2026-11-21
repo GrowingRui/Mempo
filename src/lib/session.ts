@@ -1,6 +1,7 @@
 import { toDay } from "./date";
 import { isDue } from "./srs";
 import { myListIds } from "./mylist";
+import { TROUBLE_ROUND, troubleIds } from "./trouble";
 import type { Answer, Progress, Word } from "./types";
 
 /** FNV-1a hash: gives every word a fixed pseudo-random place in the study order,
@@ -18,9 +19,10 @@ const byHash = (a: string, b: string) => hash(a) - hash(b);
 
 /**
  * today: due reviews (capped) → "Don't know" words → new words. review: every due card, no cap. dontknow: the whole list.
+ * trouble: up to TROUBLE_ROUND words you keep missing, the most missed first (see trouble.ts).
  * mylist: every word on My list, weakest first. phrasal: up to PHRASAL_ROUND phrasal verbs of your level, weakest first.
  */
-export type SessionMode = "today" | "review" | "dontknow" | "mylist" | "phrasal";
+export type SessionMode = "today" | "review" | "dontknow" | "mylist" | "phrasal" | "trouble";
 
 /** How many phrasal verbs one "Practise phrasal verbs" session holds. */
 export const PHRASAL_ROUND = 20;
@@ -93,6 +95,7 @@ export function buildSession(words: Word[], p: Progress, mode: SessionMode, toda
   if (mode === "dontknow") {
     return pick(Object.keys(p.cards).filter((id) => p.cards[id].inDontKnow).sort(byHash));
   }
+  if (mode === "trouble") return pick(troubleIds(p)).slice(0, TROUBLE_ROUND);
   if (mode === "mylist") {
     // "Don't know" words first, then words not studied yet, then due ones, then the rest by next review.
     const rank = (id: string) => {

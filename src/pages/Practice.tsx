@@ -4,6 +4,7 @@ import { useT } from "../i18n";
 import { toDay } from "../lib/date";
 import type { Screen } from "../lib/nav";
 import { sessionParts } from "../lib/session";
+import { troubleIds } from "../lib/trouble";
 import type { Progress } from "../lib/types";
 import { loadWords } from "../lib/words";
 
@@ -57,6 +58,7 @@ export const PRACTICE_ICONS = {
   dontknow: <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9M12 17h.01" />,
   mylist: <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" />,
   reader: <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" />,
+  trouble: <path d="M12 3.5 2.5 20h19zM12 10v4.5M12 17.4v.1" />,
   phrasal: <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />,
   recall: <path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 19.5h5M10.5 22h3" />,
   exam: <path d="M2 9l10-5 10 5-10 5zM6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6" />,
@@ -76,6 +78,7 @@ export default function Practice({ progress, go }: { progress: Progress; go: (s:
   }, [level]);
   const parts = sessionParts(progress, toDay());
   const myListSize = Object.keys(progress.myList).length;
+  const troubleCount = troubleIds(progress).length;
   // "Skip words you know" goes away once every word of the level has been seen.
   const canSkip = levelIds !== undefined && levelIds.some((id) => !progress.cards[id]);
 
@@ -93,6 +96,16 @@ export default function Practice({ progress, go }: { progress: Progress; go: (s:
           tone="dontknow"
           count={parts.dontKnowTotal}
         />
+        {troubleCount > 0 && (
+          <PracticeCard
+            onClick={() => go({ name: "study", mode: "trouble" })}
+            title={t.practice.troubleTitle}
+            sub={t.practice.troubleSub}
+            icon={PRACTICE_ICONS.trouble}
+            tone="dontknow"
+            count={troubleCount}
+          />
+        )}
         <PracticeCard
           onClick={() => go({ name: "mylist" })}
           title={t.practice.myListTitle}
