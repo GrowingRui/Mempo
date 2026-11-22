@@ -142,6 +142,7 @@ const zh: Messages = {
     alsoSpelled: (v: string) => `也拼作 ${v}。`,
     forms: (f: string) => `词形：${f}`,
     family: "词族",
+    note: { title: "我的笔记", add: "添加我的笔记", edit: "编辑", save: "保存", remove: "删除", placeholder: "一幅画面、一个句子或一个小窍门，帮你记住这个词…" },
     troubleNote: "难记的词：你总是忘记它。试试联想记忆，比如一幅画面或你自己造的句子。",
     showWord: "显示单词",
     showMeaning: "显示释义",

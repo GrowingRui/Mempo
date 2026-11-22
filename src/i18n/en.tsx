@@ -157,6 +157,7 @@ const en = {
     alsoSpelled: (v: string) => `Also spelled ${v}.`,
     forms: (f: string) => `Forms: ${f}`,
     family: "Word family",
+    note: { title: "My note", add: "Add my note", edit: "Edit", save: "Save", remove: "Remove", placeholder: "A picture, a sentence or a trick that helps you remember this word…" },
     troubleNote: "Trouble word: you keep forgetting it. Try a memory trick, such as a picture or a sentence of your own.",
     showWord: "Show the word",
     showMeaning: "Show the meaning",

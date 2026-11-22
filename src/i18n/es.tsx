@@ -149,6 +149,7 @@ const es: Messages = {
     alsoSpelled: (v: string) => `También se escribe ${v}.`,
     forms: (f: string) => `Formas: ${f}`,
     family: "Familia de palabras",
+    note: { title: "Mi nota", add: "Añadir mi nota", edit: "Editar", save: "Guardar", remove: "Quitar", placeholder: "Una imagen, una frase o un truco que te ayude a recordar esta palabra…" },
     troubleNote: "Palabra difícil: la sigues olvidando. Prueba un truco de memoria, como una imagen o una frase tuya.",
     showWord: "Mostrar la palabra",
     showMeaning: "Mostrar el significado",

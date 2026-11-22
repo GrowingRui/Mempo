@@ -8,6 +8,7 @@ import Highlight from "./Highlight";
 import SpeakButton from "./SpeakButton";
 import StarButton from "./StarButton";
 import WordFamily from "./WordFamily";
+import WordNote from "./WordNote";
 import { GlossList, SensitiveNote } from "./WordCard";
 
 const STATUS_CLASS: Record<WordStatus, string> = {
@@ -74,6 +75,7 @@ export default function WordRow({
           {isTrouble(card) && (
             <p className="rounded-2xl border-2 border-unsure/45 bg-unsure/12 px-3.5 py-2 text-sm font-bold text-unsure-dark">{t.card.troubleNote}</p>
           )}
+          <WordNote id={word.id} />
           {card && card.state !== "mastered" && (
             <p className="text-xs font-semibold text-muted">{t.card.nextReviewStep(t.when(card.due, toDay()), card.box, MAX_BOX)}</p>
           )}

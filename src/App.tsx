@@ -2,10 +2,12 @@ import { MotionConfig } from "motion/react";
 import { useEffect, useState } from "react";
 import { Sidebar, TabBar, tabOf, type Tab } from "./components/AppNav";
 import UpdatePrompt from "./components/UpdatePrompt";
+import { NotesProvider } from "./components/WordNote";
 import { HTML_LANG, LangProvider } from "./i18n";
 import { takeCodeFromUrl } from "./lib/move";
 import { nav, type Screen } from "./lib/nav";
 import { syncReminder, studyInfo } from "./lib/reminder";
+import { setNote } from "./lib/notes";
 import { loadProgress, saveProgress } from "./lib/storage";
 import { applyTheme } from "./lib/theme";
 import { countUsage } from "./lib/usage";
@@ -96,6 +98,7 @@ export default function App() {
 
   return (
     <LangProvider lang={lang}>
+    <NotesProvider notes={progress.notes} save={(id, text) => setProgress((p) => setNote(p, id, text))}>
     <MotionConfig reducedMotion="user">
       <UpdatePrompt />
       <div className="flex min-h-dvh">
@@ -143,6 +146,7 @@ export default function App() {
       </div>
       {tabbar && <TabBar active={tabOf(screen)} onTab={tab} />}
     </MotionConfig>
+    </NotesProvider>
     </LangProvider>
   );
 }

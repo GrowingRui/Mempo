@@ -93,4 +93,6 @@ export interface Progress {
   history: Record<string, DayHistory>;
   /** My list: words the user starred, word id → day added (YYYY-MM-DD). */
   myList: Record<string, string>;
+  /** My notes: a memory trick or sentence the user wrote on a word, word id → text (up to 200 characters). */
+  notes: Record<string, string>;
 }

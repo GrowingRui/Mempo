@@ -1,4 +1,5 @@
 import { site } from "../config/site";
+import { cleanNote } from "./notes";
 import { LEVELS, type CardProgress, type DayHistory, type Progress, type Settings } from "./types";
 
 const KEY = `${site.storageKey}:progress`;
@@ -16,7 +17,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export function emptyProgress(): Progress {
-  return { settings: { ...DEFAULT_SETTINGS }, cards: {}, history: {}, myList: {} };
+  return { settings: { ...DEFAULT_SETTINGS }, cards: {}, history: {}, myList: {}, notes: {} };
 }
 
 const isObj = (v: unknown): v is Record<string, any> => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -81,7 +82,13 @@ export function normalizeProgress(p: unknown): { progress: Progress; dropped: nu
   for (const [id, day] of Object.entries(isObj(src.myList) ? src.myList : {})) {
     if (id && typeof day === "string" && DAY.test(day)) myList[id] = day;
   }
-  return { progress: { settings: cleanSettings(src.settings), cards, history, myList }, dropped };
+  // My notes (added later, so older progress and backups simply have none).
+  const notes: Progress["notes"] = {};
+  for (const [id, text] of Object.entries(isObj(src.notes) ? src.notes : {})) {
+    const clean = typeof text === "string" ? cleanNote(text) : "";
+    if (id && clean) notes[id] = clean;
+  }
+  return { progress: { settings: cleanSettings(src.settings), cards, history, myList, notes }, dropped };
 }
 
 export function loadProgress(): Progress {
