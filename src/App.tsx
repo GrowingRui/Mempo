@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Sidebar, TabBar, tabOf, type Tab } from "./components/AppNav";
 import UpdatePrompt from "./components/UpdatePrompt";
 import { NotesProvider } from "./components/WordNote";
+import { WordPeekProvider } from "./components/WordPeek";
 import { HTML_LANG, LangProvider } from "./i18n";
 import { takeCodeFromUrl } from "./lib/move";
 import { nav, type Screen } from "./lib/nav";
@@ -99,6 +100,7 @@ export default function App() {
   return (
     <LangProvider lang={lang}>
     <NotesProvider notes={progress.notes} save={(id, text) => setProgress((p) => setNote(p, id, text))}>
+    <WordPeekProvider progress={progress} setProgress={setProgress}>
     <MotionConfig reducedMotion="user">
       <UpdatePrompt />
       <div className="flex min-h-dvh">
@@ -146,6 +148,7 @@ export default function App() {
       </div>
       {tabbar && <TabBar active={tabOf(screen)} onTab={tab} />}
     </MotionConfig>
+    </WordPeekProvider>
     </NotesProvider>
     </LangProvider>
   );

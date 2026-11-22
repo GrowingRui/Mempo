@@ -5,6 +5,7 @@ import QuestionReportDialog from "../components/QuestionReportDialog";
 import QuizHeader from "../components/QuizHeader";
 import ScreenHeader from "../components/ScreenHeader";
 import SpeakButton from "../components/SpeakButton";
+import { NoteLine } from "../components/WordNote";
 import { useT } from "../i18n";
 import { meaning, type TestLang } from "../lib/leveltest";
 import { buildMatch } from "../lib/match";
@@ -542,6 +543,7 @@ function Question({
             </p>
           </>
         )}
+        {answered && <NoteLine id={word.id} className="mt-4 w-full" />}
       </section>
 
       {typing ? (

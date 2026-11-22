@@ -21,9 +21,10 @@ export function searchIndex(words: Word[]): SearchIndex {
 
 /**
  * The words that match `q` (already normalized), best first: the exact word, then words that start with it,
- * then words that contain it, then words whose translations contain it. Keeps the input order within a rank.
+ * then words that contain it, then words whose translations or the user's own note (`notes`, word id → text)
+ * contain it. Keeps the input order within a rank.
  */
-export function searchWords(words: Word[], index: SearchIndex, q: string): Word[] {
+export function searchWords(words: Word[], index: SearchIndex, q: string, notes: Record<string, string> = {}): Word[] {
   if (!q) return words;
   const rank = (w: Word) => {
     const s = index.get(w.id);
@@ -32,6 +33,7 @@ export function searchWords(words: Word[], index: SearchIndex, q: string): Word[
     if (s.en.some((e) => e.startsWith(q))) return 1;
     if (s.en.some((e) => e.includes(q))) return 2;
     if (s.tr.includes(q)) return 3;
+    if (notes[w.id] && norm(notes[w.id]).includes(q)) return 3;
     return 4;
   };
   return words

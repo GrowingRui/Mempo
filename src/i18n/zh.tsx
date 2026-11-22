@@ -151,7 +151,8 @@ const zh: Messages = {
     alsoSpelled: (v: string) => `也拼作 ${v}。`,
     forms: (f: string) => `词形：${f}`,
     family: "词族",
-    note: { title: "我的笔记", add: "添加我的笔记", edit: "编辑", save: "保存", remove: "删除", placeholder: "一幅画面、一个句子或一个小窍门，帮你记住这个词…" },
+    openWord: (w: string) => `打开“${w}”`,
+    note: { title: "我的笔记", add: "添加我的笔记", edit: "编辑", save: "保存", remove: "删除", show: "看我的笔记", placeholder: "一幅画面、一个句子或一个小窍门，帮你记住这个词…" },
     troubleNote: "难记的词：你总是忘记它。试试联想记忆，比如一幅画面或你自己造的句子。",
     showWord: "显示单词",
     showMeaning: "显示释义",
@@ -403,7 +404,7 @@ const zh: Messages = {
 
   wordList: {
     title: "单词表",
-    search: "搜索英文、中文或西班牙语",
+    search: "搜索英文、中文、西班牙语或你的笔记",
     searchAria: "搜索单词",
     allLevels: "全部级别",
     anyStatus: "全部状态",

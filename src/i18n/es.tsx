@@ -158,7 +158,8 @@ const es: Messages = {
     alsoSpelled: (v: string) => `También se escribe ${v}.`,
     forms: (f: string) => `Formas: ${f}`,
     family: "Familia de palabras",
-    note: { title: "Mi nota", add: "Añadir mi nota", edit: "Editar", save: "Guardar", remove: "Quitar", placeholder: "Una imagen, una frase o un truco que te ayude a recordar esta palabra…" },
+    openWord: (w: string) => `Abrir «${w}»`,
+    note: { title: "Mi nota", add: "Añadir mi nota", edit: "Editar", save: "Guardar", remove: "Quitar", show: "Ver mi nota", placeholder: "Una imagen, una frase o un truco que te ayude a recordar esta palabra…" },
     troubleNote: "Palabra difícil: la sigues olvidando. Prueba un truco de memoria, como una imagen o una frase tuya.",
     showWord: "Mostrar la palabra",
     showMeaning: "Mostrar el significado",
@@ -413,7 +414,7 @@ const es: Messages = {
 
   wordList: {
     title: "Lista de palabras",
-    search: "Busca en inglés, 中文 o español",
+    search: "Busca en inglés, 中文, español o en tus notas",
     searchAria: "Buscar palabras",
     allLevels: "Todos los niveles",
     anyStatus: "Cualquier estado",

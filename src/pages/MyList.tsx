@@ -34,7 +34,7 @@ export default function MyList({ progress, setProgress, onPractise, onBack }: Pr
 
   const index = useMemo(() => searchIndex(words ?? []), [words]);
   const byId = useMemo(() => new Map((words ?? []).map((w) => [w.id, w])), [words]);
-  const results = q && words ? searchWords(words, index, q).slice(0, RESULTS) : [];
+  const results = q && words ? searchWords(words, index, q, progress.notes).slice(0, RESULTS) : [];
   const list = myListIds(progress)
     .map((id) => byId.get(id))
     .filter((w): w is Word => w !== undefined);

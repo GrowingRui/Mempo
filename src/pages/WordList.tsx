@@ -55,7 +55,7 @@ export default function WordList({ progress, setProgress }: { progress: Progress
   for (const w of inLevel) counts[statusOf(cards[w.id])]++;
 
   let list = inLevel.filter((w) => status === "all" || statusOf(cards[w.id]) === status);
-  list = searchWords(list, searchable, q);
+  list = searchWords(list, searchable, q, progress.notes);
 
   return (
     <main className="flex flex-1 flex-col">

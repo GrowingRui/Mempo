@@ -13,6 +13,52 @@ export function NotesProvider({ notes, save, children }: NotesApi & { children: 
   return <NotesContext.Provider value={{ notes, save }}>{children}</NotesContext.Provider>;
 }
 
+/** The user's note on a word ("" when there's none). */
+export function useNote(id: string): string {
+  return useContext(NotesContext)?.notes[id] ?? "";
+}
+
+/** The note as a plain line (Recall, after answering). Nothing when the word has no note. */
+export function NoteLine({ id, className = "" }: { id: string; className?: string }) {
+  const t = useT();
+  const note = useNote(id);
+  if (!note) return null;
+  return (
+    <p className={`rounded-2xl border-2 border-brand/30 bg-brand-soft/50 px-3.5 py-2.5 text-left text-[15px] leading-snug font-medium [overflow-wrap:anywhere] ${className}`}>
+      <span className="mr-1.5 text-xs font-extrabold text-brand-ink">{t.card.note.title}</span>
+      {note}
+    </p>
+  );
+}
+
+/**
+ * Front of the study card: a "Show my note" link that reveals the note, as a hint before flipping.
+ * Hidden until tapped, because a note often gives the meaning away. Give it `key={word.id}` so it closes again on the next card.
+ */
+export function NoteHint({ id, className = "" }: { id: string; className?: string }) {
+  const t = useT();
+  const note = useNote(id);
+  const [shown, setShown] = useState(false);
+  if (!note) return null;
+  const stop = (e: { stopPropagation: () => void }) => e.stopPropagation();
+  return shown ? (
+    <NoteLine id={id} className={`max-h-28 overflow-y-auto ${className}`} />
+  ) : (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation(); // don't flip the card
+        setShown(true);
+      }}
+      onKeyDown={stop}
+      onPointerDown={stop} // don't start a swipe
+      className={`self-center text-sm font-bold text-brand-ink underline decoration-line decoration-2 underline-offset-2 hover:decoration-brand ${className}`}
+    >
+      💡 {t.card.note.show}
+    </button>
+  );
+}
+
 /**
  * "My note" on a word: shows the note with Edit, or an "Add my note" link. Typing, tapping and dragging here
  * must not flip or swipe the card around it, so the events stop at this box.

@@ -6,7 +6,7 @@ import ReportDialog from "./ReportDialog";
 import SpeakButton from "./SpeakButton";
 import StarButton from "./StarButton";
 import WordFamily from "./WordFamily";
-import WordNote from "./WordNote";
+import WordNote, { NoteHint } from "./WordNote";
 
 /** Meanings in one language. The label is the language's own name (中文, Español, English) in every app language. */
 export function GlossList({ label, glosses, lang }: { label: string; glosses: Gloss[]; lang?: string }) {
@@ -151,6 +151,7 @@ export default function WordCard({ word, flipped, onFlip, settings, star }: Prop
               <Highlight text={example.text} terms={terms} />
             </p>
           )}
+          {!flipped && <NoteHint key={word.id} id={word.id} className="mt-3" />}
           <p className="mt-4 text-center text-sm font-semibold text-muted">{t.card.tapToFlip}</p>
         </div>
 
