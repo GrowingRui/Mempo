@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import MatchGame from "../components/MatchGame";
 import Mascot from "../components/Mascot";
 import QuestionReportDialog from "../components/QuestionReportDialog";
@@ -12,6 +12,7 @@ import { buildMatch } from "../lib/match";
 import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, isClozeKind, loadCloze, loadConfused, loadPrepositions, textLine, type ClozeItem } from "../lib/exam";
 import { buildRecall, checkSpelling, clozeFor, GAP, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
+import { canListen, heardWord, listenOnce, type ListenError, type Listening } from "../lib/speak";
 import { dueCount, dueMissIds, recordExamAnswer } from "../lib/misses";
 import { markDontKnow } from "../lib/srs";
 import { toDay } from "../lib/date";
@@ -63,6 +64,16 @@ const KINDS: { kind: RecallKind; section: QuizSection; part?: number; icon: Reac
     kind: "gap",
     section: "recall",
     icon: <path d="M3 7h6M15 7h6M10 5h4v4h-4zM3 13h18M3 18h12" />,
+  },
+  {
+    kind: "speak",
+    section: "recall",
+    icon: (
+      <>
+        <rect x="9" y="3" width="6" height="11" rx="3" />
+        <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" />
+      </>
+    ),
   },
   {
     kind: "match",
@@ -135,7 +146,7 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
   const matchReady = useMemo(() => !exam && !!newBoard(), [all, progress, langs.join(), exam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Only tasks that work are shown: Part 1 once its questions have loaded, Match once a board can be made.
-  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length) && (k.kind !== "prep" || preps?.length) && (k.kind !== "confused" || confused?.length) &&(k.kind !== "match" || matchReady));
+  const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length) && (k.kind !== "prep" || preps?.length) && (k.kind !== "confused" || confused?.length) && (k.kind !== "match" || matchReady) && (k.kind !== "speak" || canListen()));
 
   // Missed questions that are due for another try, per task (shown on its button).
   const dueOf = (k: RecallKind) => dueCount(k === "cloze" ? cloze ?? [] : k === "prep" ? preps ?? [] : k === "confused" ? confused ?? [] : [], progress, toDay());
@@ -413,10 +424,12 @@ function Question({
   const nextBtn = useRef<HTMLButtonElement>(null);
   const word = q.word;
   const typing = kind === "spell" || kind === "gap" || kind === "form";
+  const speaking = kind === "speak";
+  const [said, setSaid] = useState<{ right: boolean; heard?: string }>(); // Speak it: the verdict and what was heard
   const [hint, setHint] = useState(false);
   const [reporting, setReporting] = useState(false);
-  const answered = typing ? verdict !== undefined : picked !== undefined;
-  const right = typing ? verdict === "right" : picked === q.correct;
+  const answered = typing ? verdict !== undefined : speaking ? said !== undefined : picked !== undefined;
+  const right = typing ? verdict === "right" : speaking ? !!said?.right : picked === q.correct;
   // Listening and Part 1 always wait for "Next", so there is time to read the meaning or the explanation.
   const waitForNext = !right || kind === "listen" || isClozeKind(kind);
 
@@ -439,7 +452,7 @@ function Question({
 
   // Keys 1-4 pick an option.
   useEffect(() => {
-    if (typing) return;
+    if (typing || speaking) return;
     const onKey = (e: KeyboardEvent) => {
       const n = Number(e.key);
       if (n >= 1 && n <= q.options.length && !e.ctrlKey && !e.metaKey && !e.altKey) choose(n - 1);
@@ -455,7 +468,7 @@ function Question({
     return "border-line bg-card opacity-50";
   };
 
-  const cloze = kind === "spell" || kind === "gap" ? clozeFor(word, kind === "gap") : undefined;
+  const cloze = kind === "spell" || kind === "gap" || speaking ? clozeFor(word, kind === "gap") : undefined;
   const gap = kind === "form" ? formGap(word) : undefined;
 
   return (
@@ -543,10 +556,27 @@ function Question({
             </p>
           </>
         )}
+        {speaking && (
+          <>
+            {cloze && <p className="mt-4 text-[16px] leading-relaxed text-ink/80">{cloze}</p>}
+            {!answered &&
+              (hint ? (
+                <p className="mt-4 font-mono text-xl font-bold tracking-wider text-muted" aria-label={t.recall.startsWith(word.word[0], word.word.length)}>
+                  {letterHint(word.word)}
+                </p>
+              ) : (
+                <button type="button" onClick={() => setHint(true)} className="mt-4 text-sm font-bold text-brand-ink underline decoration-line decoration-2 underline-offset-2 hover:decoration-brand">
+                  {t.recall.hint}
+                </button>
+              ))}
+          </>
+        )}
         {answered && <NoteLine id={word.id} className="mt-4 w-full" />}
       </section>
 
-      {typing ? (
+      {speaking ? (
+        <SpeakAnswer word={word} said={said} onSaid={setSaid} nextRef={nextBtn} onNext={() => onDone(right)} onSaidRight={() => onDone(true)} />
+      ) : typing ? (
         <form
           className="mt-6 flex flex-col gap-3"
           onSubmit={(e) => {
@@ -712,6 +742,133 @@ function ExamText({
         );
       })}
     </ol>
+  );
+}
+
+/**
+ * Speak it: a big microphone button. A guess that isn't the word can be tried again (up to MAX_TRIES) before
+ * the answer shows; after a miss, "I said it right" counts it anyway, because the recogniser mishears
+ * accents and look-alike words (aide / aid).
+ */
+const MAX_TRIES = 3;
+function SpeakAnswer({
+  word,
+  said,
+  onSaid,
+  nextRef,
+  onNext,
+  onSaidRight,
+}: {
+  word: Word;
+  said?: { right: boolean; heard?: string };
+  onSaid: (s: { right: boolean; heard?: string }) => void;
+  nextRef: RefObject<HTMLButtonElement | null>;
+  onNext: () => void;
+  onSaidRight: () => void;
+}) {
+  const t = useT();
+  const [listening, setListening] = useState<Listening>();
+  const [miss, setMiss] = useState<{ heard: string; tries: number }>();
+  const [error, setError] = useState<ListenError>();
+  const micRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => () => listening?.cancel(), [listening]); // stop listening when leaving the question
+
+  const listen = () => {
+    if (listening) {
+      listening.cancel();
+      setListening(undefined);
+      return;
+    }
+    setError(undefined);
+    const l = listenOnce();
+    setListening(l);
+    l.result.then(
+      (guesses) => {
+        setListening(undefined);
+        const hit = guesses.find((g) => heardWord([g], word));
+        if (hit) return onSaid({ right: true, heard: hit });
+        const tries = (miss?.tries ?? 0) + 1;
+        if (tries >= MAX_TRIES) return onSaid({ right: false, heard: guesses[0] });
+        setMiss({ heard: guesses[0], tries });
+        micRef.current?.focus();
+      },
+      (e: ListenError) => {
+        setListening(undefined);
+        setError(e);
+        micRef.current?.focus();
+      },
+    );
+  };
+
+  if (said?.right) {
+    return (
+      <p role="status" className="mt-6 rounded-2xl border-2 border-know bg-know/10 px-4 py-3 text-center font-display text-xl font-bold text-know-ink">
+        ✓ {said.heard ? t.recall.speak.heard(said.heard) : word.word}
+      </p>
+    );
+  }
+  if (said) {
+    return (
+      <div className="mt-6">
+        <Reveal word={word} note={said.heard ? `${t.recall.speak.heard(said.heard)} · ${t.recall.theAnswer}` : t.recall.theAnswer}>
+          <button ref={nextRef} type="button" onClick={onNext} className={NEXT_CLASS}>
+            {t.common.next}
+          </button>
+          {said.heard && (
+            <button
+              type="button"
+              onClick={onSaidRight}
+              className="self-center text-sm font-bold text-muted underline decoration-line decoration-2 underline-offset-2 hover:text-brand-ink"
+            >
+              {t.recall.speak.saidRight}
+            </button>
+          )}
+        </Reveal>
+      </div>
+    );
+  }
+
+  const label = listening ? t.recall.speak.listening : miss || error ? t.recall.speak.tryAgain : t.recall.speak.tap;
+  const message = error ? t.recall.speak[error === "no-speech" ? "noSpeech" : error] : miss ? t.recall.speak.notIt(miss.heard) : undefined;
+  return (
+    <div className="mt-6 flex flex-col items-center gap-3">
+      <p className="font-display text-lg font-bold">{t.recall.speak.prompt}</p>
+      <button
+        ref={micRef}
+        type="button"
+        autoFocus
+        onClick={listen}
+        aria-pressed={!!listening}
+        aria-label={label}
+        className={`press grid size-24 place-items-center rounded-full text-white [--depth:6px] ${
+          listening ? "animate-pulse bg-dontknow [--edge:var(--color-dontknow-edge)]" : "bg-brand [--edge:var(--color-brand-edge)] hover:bg-brand-dark"
+        }`}
+      >
+        <svg viewBox="0 0 24 24" className="size-10" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <rect x="9" y="3" width="6" height="11" rx="3" fill={listening ? "currentColor" : "none"} />
+          <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" />
+        </svg>
+      </button>
+      <p className="text-sm font-semibold text-muted" aria-hidden>
+        {label}
+      </p>
+      {message && (
+        <p role="status" className={`w-full rounded-2xl px-4 py-2.5 text-center text-[15px] font-semibold ${error ? "bg-dontknow/10 text-dontknow-ink" : "bg-unsure/15 text-unsure-dark"}`}>
+          {message}
+        </p>
+      )}
+      <button
+        type="button"
+        onClick={() => {
+          listening?.cancel();
+          onSaid({ right: false, heard: miss?.heard });
+        }}
+        className="press mt-1 w-full rounded-2xl border-2 border-unsure/50 bg-card py-3 font-display text-lg font-bold text-unsure-dark"
+      >
+        {t.recall.showAnswer}
+      </button>
+    </div>
   );
 }
 

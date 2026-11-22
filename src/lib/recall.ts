@@ -15,8 +15,9 @@ import type { Progress, Word } from "./types";
  * prep: dependent prepositions (exam practice; hand-written questions in src/data/prepositions.json, played like cloze).
  * confused: easily confused words (affect / effect; hand-written, src/data/confused.json, played like cloze).
  * match: words and meanings on a board, against the clock (boards from match.ts, played in MatchGame).
+ * speak: read the translation, say the word; the browser's speech recognition checks it (speak.ts).
  */
-export type RecallKind = "meaning" | "listen" | "spell" | "gap" | "form" | "cloze" | "prep" | "confused" | "match";
+export type RecallKind = "meaning" | "listen" | "spell" | "gap" | "speak" | "form" | "cloze" | "prep" | "confused" | "match";
 
 export const ROUND = 15;
 export const OPTIONS = 4;
@@ -220,7 +221,7 @@ export function buildRecall(pool: Word[], all: Word[], kind: RecallKind, langs: 
   const usable = kind === "listen" || kind === "form" ? pool : kind === "gap" ? pool.filter((w) => clozeFor(w)) : pool.filter((w) => promptMeanings(w, langs).length > 0);
   const picked = shuffle(usable.slice(0, count), rnd);
   return picked.map((word) => {
-    if (kind === "spell" || kind === "gap" || kind === "form") return { word, options: [], correct: -1 };
+    if (kind === "spell" || kind === "gap" || kind === "form" || kind === "speak") return { word, options: [], correct: -1 };
     const options = shuffle([word, ...distractors(word, all, kind, langs, rnd)], rnd);
     return { word, options, correct: options.indexOf(word) };
   });
