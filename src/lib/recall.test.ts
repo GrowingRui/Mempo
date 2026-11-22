@@ -59,6 +59,12 @@ describe("letterHint and gaps", () => {
     const x = w({ id: "pick", examples: [{ text: "Nothing here." }, { text: "Pick one." }] });
     expect(clozeFor(x)).toBe("_____ one.");
   });
+
+  it("clozeFor can pick the longest example, for Fill the gap where the sentence is the only clue", () => {
+    const x = w({ id: "pick", examples: [{ text: "Pick one." }, { text: "You may pick any book you like from the top shelf." }, { text: "Nothing here." }] });
+    expect(clozeFor(x, true)).toBe("You may _____ any book you like from the top shelf.");
+    expect(clozeFor(w({ id: "pick", examples: [{ text: "Nothing here." }] }), true)).toBeUndefined();
+  });
 });
 
 describe("promptMeanings", () => {

@@ -5,6 +5,8 @@ import ScreenHeader from "../components/ScreenHeader";
 import { useT } from "../i18n";
 import { badgesOf } from "../lib/badges";
 import { addDays, toDay } from "../lib/date";
+import { troubleIds } from "../lib/trouble";
+import { accuracyOf, weeklySummary } from "../lib/weekly";
 import { breakdown, FREEZE_EVERY, lastDays, MAX_FREEZES, streakOf, type DayBar, type LevelBreakdown, type Streak } from "../lib/stats";
 import type { WordStatus } from "../lib/srs";
 import { LEVELS, type Level, type Progress, type Word } from "../lib/types";
@@ -19,6 +21,82 @@ function Tile({ n, label }: { n: number; label: string }) {
       <div className="font-display text-[26px] leading-tight font-extrabold tabular-nums">{t.num(n)}</div>
       <div className="text-[13px] leading-tight font-semibold text-muted">{label}</div>
     </div>
+  );
+}
+
+/** One number in the weekly summary, with how it compares with the week before (when there was one). */
+function WeekStat({ label, value, delta, hint }: { label: string; value: string; delta?: string; hint?: string }) {
+  return (
+    <div className="rounded-[18px] bg-paper px-3 py-2.5" title={hint}>
+      <div className="font-display text-[26px] leading-tight font-extrabold tabular-nums">{value}</div>
+      <div className="text-[13px] leading-tight font-semibold text-muted">{label}</div>
+      {delta && <div className="mt-1 text-xs leading-tight font-semibold text-muted">{delta}</div>}
+    </div>
+  );
+}
+
+/** The last 7 days next to the 7 before: days studied, new words, reviews, accuracy, the best day and the words to watch. */
+function WeeklySummary({ progress, names }: { progress: Progress; names: Map<string, string> }) {
+  const t = useT();
+  const today = toDay();
+  const { week, before } = weeklySummary(progress.history, today);
+  const trouble = troubleIds(progress);
+  const w = t.stats.week;
+
+  const diff = (now: number, prev: number | undefined, up: (n: number) => string, down: (n: number) => string) =>
+    prev === undefined ? undefined : now === prev ? w.same : now > prev ? up(now - prev) : down(prev - now);
+  const acc = accuracyOf(week);
+  const prevAcc = before && accuracyOf(before);
+  const shown = trouble.map((id) => names.get(id)).filter((n): n is string => !!n);
+
+  return (
+    <section aria-labelledby="week-title" className="raised rounded-[28px] border-2 border-line bg-card p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-2">
+        <h2 id="week-title" className="font-display text-lg font-bold">
+          {w.title}
+        </h2>
+        <span className="text-sm font-semibold text-muted">{w.daysOf(week.days)}</span>
+      </div>
+      {week.days === 0 && !before ? (
+        <p className="mt-2 text-sm font-semibold text-muted">{w.empty}</p>
+      ) : (
+        <>
+          <div className="mt-3 grid grid-cols-2 gap-2.5">
+            <WeekStat label={w.newWords} value={t.num(week.new)} delta={diff(week.new, before?.new, w.up, w.down)} />
+            <WeekStat label={w.reviews} value={t.num(week.reviewed)} delta={diff(week.reviewed, before?.reviewed, w.up, w.down)} />
+            <WeekStat label={w.daysStudied} value={`${week.days}/7`} delta={diff(week.days, before?.days, w.up, w.down)} />
+            <WeekStat
+              label={w.knewIt}
+              hint={w.knewItHint}
+              value={acc === undefined ? "–" : `${acc}%`}
+              delta={acc === undefined ? undefined : diff(acc, prevAcc, w.upPoints, w.downPoints)}
+            />
+          </div>
+          {week.best && <p className="mt-3 text-sm font-semibold text-muted">{w.bestDay(t.pastDay(week.best.day, today), week.best.cards)}</p>}
+        </>
+      )}
+
+      {progress && Object.keys(progress.cards).length > 0 && (
+        <div className="mt-4 border-t-2 border-line pt-3">
+          <h3 className="font-display text-base font-bold">{w.watch}</h3>
+          {trouble.length === 0 ? (
+            <p className="mt-1 text-sm font-semibold text-muted">{w.noTrouble}</p>
+          ) : (
+            <>
+              <ul className="mt-2 flex flex-wrap gap-1.5">
+                {shown.slice(0, 6).map((n) => (
+                  <li key={n} className="rounded-full border-2 border-unsure/45 bg-unsure/12 px-3 py-1 text-sm font-bold text-unsure-dark">
+                    {n}
+                  </li>
+                ))}
+                {trouble.length > 6 && <li className="px-1 py-1 text-sm font-semibold text-muted">{w.more(trouble.length - 6)}</li>}
+              </ul>
+              <p className="mt-2 text-xs font-semibold text-muted">{w.watchHint}</p>
+            </>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -204,6 +282,8 @@ export default function Stats({ progress }: { progress: Progress }) {
     for (const lv of LEVELS) loadWords(lv).then((ws) => setWords((w) => ({ ...w, [lv]: ws }))).catch(() => {});
   }, []);
 
+  const names = new Map(Object.values(words).flatMap((ws) => ws?.map((w): [string, string] => [w.id, w.word]) ?? []));
+
   const all = Object.values(cards);
   const mastered = all.filter((c) => c.state === "mastered").length;
   const reviews = Object.values(history).reduce((s, h) => s + h.reviewed, 0);
@@ -240,6 +320,8 @@ export default function Stats({ progress }: { progress: Progress }) {
         <Tile n={mastered} label={t.stats.mastered} />
         <Tile n={streak.daysStudied} label={t.stats.daysStudied} />
       </div>
+
+      <WeeklySummary progress={progress} names={names} />
 
       <DailyChart bars={lastDays(history, DAYS)} frozen={streak.frozen} />
 

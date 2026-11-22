@@ -156,9 +156,9 @@ export default function WordCard({ word, flipped, onFlip, settings, star }: Prop
 
         {/* Back */}
         <div aria-hidden={!flipped} className={`${FACE} flip-back overflow-y-auto`}>
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="font-display text-3xl leading-tight font-extrabold [overflow-wrap:anywhere]">{word.word}</h2>
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+            <div className="min-w-0 flex-1 basis-40">
+              <h2 className="font-display text-[clamp(1.5rem,7.5vw,1.875rem)] leading-tight font-extrabold [overflow-wrap:anywhere]">{word.word}</h2>
               {word.phonetic && <p className="text-sm font-medium text-muted">/{word.phonetic}/</p>}
             </div>
             <span className="flex shrink-0 items-center gap-2">

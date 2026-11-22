@@ -109,7 +109,8 @@ export function answer(p: Progress, wordId: string, result: Answer, today = toDa
   }
 
   const day = p.history[today] ?? { new: 0, reviewed: 0 };
-  const nextDay = !prev ? { ...day, new: day.new + 1 } : firstToday ? { ...day, reviewed: day.reviewed + 1 } : day;
+  const counted = { ...day, answers: (day.answers ?? 0) + 1, right: (day.right ?? 0) + (result === "know" ? 1 : 0) };
+  const nextDay = !prev ? { ...counted, new: day.new + 1 } : firstToday ? { ...counted, reviewed: day.reviewed + 1 } : counted;
   return {
     ...p,
     cards: { ...p.cards, [wordId]: card },

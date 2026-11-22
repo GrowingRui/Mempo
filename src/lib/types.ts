@@ -87,6 +87,9 @@ export interface Settings {
 export interface DayHistory {
   new: number;
   reviewed: number;
+  /** Every answer given that day, and how many were "Know" (for the weekly summary). Missing on days before they were counted. */
+  answers?: number;
+  right?: number;
 }
 
 export interface Progress {

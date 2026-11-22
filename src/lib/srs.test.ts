@@ -25,7 +25,7 @@ describe("answer: brand-new words", () => {
 
   it("counts a new word in today's history", () => {
     const p = answer(progress(), "w", "dontknow", TODAY);
-    expect(p.history[TODAY]).toEqual({ new: 1, reviewed: 0 });
+    expect(p.history[TODAY]).toEqual({ new: 1, reviewed: 0, answers: 1, right: 0 });
   });
 });
 
@@ -130,7 +130,7 @@ describe("cards saved before FSRS", () => {
 describe("answer: history", () => {
   it("counts a review (not a new word) in history", () => {
     const p = answer(progress({ cards: { w: card() } }), "w", "know", TODAY);
-    expect(p.history[TODAY]).toEqual({ new: 0, reviewed: 1 });
+    expect(p.history[TODAY]).toEqual({ new: 0, reviewed: 1, answers: 1, right: 1 });
   });
 });
 
@@ -174,13 +174,14 @@ describe("answer: only the first answer of the day moves a card up", () => {
   it("seeing a card twice in one day counts it in history once", () => {
     let p = answer(progress({ cards: { w: card() } }), "w", "dontknow", TODAY);
     p = answer(p, "w", "know", TODAY);
-    expect(p.history[TODAY]).toEqual({ new: 0, reviewed: 1 });
+    expect(p.history[TODAY]).toEqual({ new: 0, reviewed: 1, answers: 2, right: 1 }); // two answers, but one card
+    expect(p.history[TODAY]).toMatchObject({ new: 0, reviewed: 1 });
   });
 
   it("a new word answered twice counts as 1 new, 0 reviews", () => {
     let p = answer(progress(), "w", "dontknow", TODAY);
     p = answer(p, "w", "know", TODAY);
-    expect(p.history[TODAY]).toEqual({ new: 1, reviewed: 0 });
+    expect(p.history[TODAY]).toEqual({ new: 1, reviewed: 0, answers: 2, right: 1 });
   });
 });
 

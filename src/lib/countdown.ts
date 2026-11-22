@@ -2,6 +2,9 @@
 // with a week left for revision.
 import { daysBetween } from "./date";
 
+/** The most new words a day the app allows (Today → Your plan). */
+export const MAX_DAILY_GOAL = 500;
+
 /** New words stop this many days before the exam, so the last week is for revising. */
 export const REVISION_DAYS = 7;
 /** Under this many days to go there is no week to spare: the new words just have to fit before the exam. */

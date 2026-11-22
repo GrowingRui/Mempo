@@ -1,5 +1,5 @@
 import { useT } from "../i18n";
-import { countdownPlan } from "../lib/countdown";
+import { countdownPlan, MAX_DAILY_GOAL } from "../lib/countdown";
 import { toDay } from "../lib/date";
 import type { Level } from "../lib/types";
 
@@ -53,10 +53,10 @@ export default function ExamCountdown({
               {plan.status === "behind" && (
                 <button
                   type="button"
-                  onClick={() => onGoal(plan.need)}
+                  onClick={() => onGoal(Math.min(plan.need, MAX_DAILY_GOAL))}
                   className="press mt-2 rounded-xl bg-brand px-3.5 py-1.5 text-sm font-extrabold text-white [--depth:3px] [--edge:var(--color-brand-edge)]"
                 >
-                  {t.home.examSetGoal(plan.need)}
+                  {t.home.examSetGoal(Math.min(plan.need, MAX_DAILY_GOAL))}
                 </button>
               )}
             </>

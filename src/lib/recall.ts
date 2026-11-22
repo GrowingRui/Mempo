@@ -100,13 +100,14 @@ export function blankOut(text: string, w: Word): string | undefined {
   return out === text ? undefined : out;
 }
 
-/** The example to show in "spell": the first one that contains the word. */
-export function clozeFor(w: Word): string | undefined {
-  for (const ex of w.examples) {
-    const b = blankOut(ex.text, w);
-    if (b) return b;
-  }
-  return undefined;
+/**
+ * The example to show in "spell": the first one that contains the word. With `longest` ("Fill the gap", where
+ * the sentence is the only clue): the longest one, which gives the most context.
+ */
+export function clozeFor(w: Word, longest = false): string | undefined {
+  const blanks = w.examples.map((ex) => blankOut(ex.text, w)).filter((b): b is string => !!b);
+  if (!longest) return blanks[0];
+  return blanks.reduce<string | undefined>((best, b) => (best === undefined || b.length > best.length ? b : best), undefined);
 }
 
 /**

@@ -454,7 +454,7 @@ function Question({
     return "border-line bg-card opacity-50";
   };
 
-  const cloze = kind === "spell" || kind === "gap" ? clozeFor(word) : undefined;
+  const cloze = kind === "spell" || kind === "gap" ? clozeFor(word, kind === "gap") : undefined;
   const gap = kind === "form" ? formGap(word) : undefined;
 
   return (

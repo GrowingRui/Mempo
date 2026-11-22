@@ -76,7 +76,12 @@ export function normalizeProgress(p: unknown): { progress: Progress; dropped: nu
   }
   const history: Progress["history"] = {};
   for (const [day, h] of Object.entries(isObj(src.history) ? src.history : {})) {
-    if (DAY.test(day) && isObj(h)) history[day] = { new: Math.max(0, num(h.new)), reviewed: Math.max(0, num(h.reviewed)) } satisfies DayHistory;
+    if (DAY.test(day) && isObj(h)) {
+      const entry: DayHistory = { new: Math.max(0, num(h.new)), reviewed: Math.max(0, num(h.reviewed)) };
+      const answers = Math.max(0, Math.round(num(h.answers)));
+      if (answers > 0) Object.assign(entry, { answers, right: Math.min(answers, Math.max(0, Math.round(num(h.right)))) });
+      history[day] = entry;
+    }
     else dropped++;
   }
   // My list (added later, so older progress and backups simply have none).
