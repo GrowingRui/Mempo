@@ -14,10 +14,11 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: "light",
   lang: "en",
   maxReviews: 100,
+  examDate: "",
 };
 
 export function emptyProgress(): Progress {
-  return { settings: { ...DEFAULT_SETTINGS }, cards: {}, history: {}, myList: {}, notes: {} };
+  return { settings: { ...DEFAULT_SETTINGS }, cards: {}, history: {}, myList: {}, notes: {}, examMisses: {} };
 }
 
 const isObj = (v: unknown): v is Record<string, any> => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -36,6 +37,7 @@ function cleanSettings(s: unknown): Settings {
   if (!out.showZh && !out.showEs) out.showZh = out.showEs = true;
   if (s.swipeKnow === "left" || s.swipeKnow === "right") out.swipeKnow = s.swipeKnow;
   if (Number.isInteger(s.maxReviews) && s.maxReviews >= 0 && s.maxReviews <= 1000) out.maxReviews = s.maxReviews;
+  if (typeof s.examDate === "string" && DAY.test(s.examDate)) out.examDate = s.examDate;
   if (s.theme === "light" || s.theme === "dark" || s.theme === "system") out.theme = s.theme;
   if (s.lang === "en" || s.lang === "zh" || s.lang === "es") out.lang = s.lang;
   return out;
@@ -88,7 +90,11 @@ export function normalizeProgress(p: unknown): { progress: Progress; dropped: nu
     const clean = typeof text === "string" ? cleanNote(text) : "";
     if (id && clean) notes[id] = clean;
   }
-  return { progress: { settings: cleanSettings(src.settings), cards, history, myList, notes }, dropped };
+  const examMisses: Progress["examMisses"] = {};
+  for (const [id, m] of Object.entries(isObj(src.examMisses) ? src.examMisses : {})) {
+    if (id && isObj(m) && typeof m.due === "string" && DAY.test(m.due)) examMisses[id] = { due: m.due, n: Math.min(2, Math.max(0, Math.round(num(m.n)))) };
+  }
+  return { progress: { settings: cleanSettings(src.settings), cards, history, myList, notes, examMisses }, dropped };
 }
 
 export function loadProgress(): Progress {

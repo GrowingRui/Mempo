@@ -10,7 +10,9 @@ import { buildMatch } from "../lib/match";
 import { buildCloze, checkForm, CLOZE_ROUND, formGap, formPool, isClozeKind, loadCloze, loadConfused, loadPrepositions, textLine, type ClozeItem } from "../lib/exam";
 import { buildRecall, checkSpelling, clozeFor, GAP, letterHint, promptMeanings, recallPool, ROUND, type RecallKind, type RecallQuestion } from "../lib/recall";
 import { playWord, preloadWord } from "../lib/speech";
+import { dueCount, dueMissIds, recordExamAnswer } from "../lib/misses";
 import { markDontKnow } from "../lib/srs";
+import { toDay } from "../lib/date";
 import { site } from "../config/site";
 import { LEVELS, type Progress, type Word } from "../lib/types";
 import { loadAllWords } from "../lib/words";
@@ -54,6 +56,11 @@ const KINDS: { kind: RecallKind; section: QuizSection; part?: number; icon: Reac
     kind: "spell",
     section: "recall",
     icon: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" />,
+  },
+  {
+    kind: "gap",
+    section: "recall",
+    icon: <path d="M3 7h6M15 7h6M10 5h4v4h-4zM3 13h18M3 18h12" />,
   },
   {
     kind: "match",
@@ -128,6 +135,9 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
   // Only tasks that work are shown: Part 1 once its questions have loaded, Match once a board can be made.
   const kinds = KINDS.filter((k) => k.section === section && (k.kind !== "cloze" || cloze?.length) && (k.kind !== "prep" || preps?.length) && (k.kind !== "confused" || confused?.length) &&(k.kind !== "match" || matchReady));
 
+  // Missed questions that are due for another try, per task (shown on its button).
+  const dueOf = (k: RecallKind) => dueCount(k === "cloze" ? cloze ?? [] : k === "prep" ? preps ?? [] : k === "confused" ? confused ?? [] : [], progress, toDay());
+
   const studied = all?.filter((w) => progress.cards[w.id]).length ?? 0;
 
   // Exam tasks are listed before the word lists arrive; a task tapped meanwhile waits here and starts once they're in.
@@ -145,11 +155,11 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
     if (k === "match") return; // MatchGame makes its own boards
     setQuestions(
       k === "cloze"
-        ? buildCloze(cloze ?? [], all, settings.level)
+        ? buildCloze(cloze ?? [], all, settings.level, CLOZE_ROUND, Math.random, dueMissIds(progress, toDay()))
         : k === "prep"
-          ? buildCloze(preps ?? [], all, settings.level)
+          ? buildCloze(preps ?? [], all, settings.level, CLOZE_ROUND, Math.random, dueMissIds(progress, toDay()))
           : k === "confused"
-            ? buildCloze(confused ?? [], all, settings.level)
+            ? buildCloze(confused ?? [], all, settings.level, CLOZE_ROUND, Math.random, dueMissIds(progress, toDay()))
             : k === "form"
           ? buildRecall(formPool(all, progress), all, k, langs, CLOZE_ROUND) // 8 gaps, as in the paper
           : buildRecall(recallPool(all, progress), all, k, langs),
@@ -207,6 +217,9 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
                   <span className="block text-sm font-medium text-muted">
                     {pending === k.kind ? t.common.loadingWords : t.recall.kinds[k.kind].sub}
                   </span>
+                  {dueOf(k.kind) > 0 && (
+                    <span className="mt-1 inline-block rounded-full bg-dontknow/12 px-2.5 py-0.5 text-xs font-bold text-dontknow-ink">{t.exam.toReview(dueOf(k.kind))}</span>
+                  )}
                 </span>
               </button>
             ))}
@@ -337,7 +350,11 @@ export default function Recall({ section, progress, setProgress, onExit, onStudy
         kind={kind}
         langs={langs}
         round={exam ? { questions, results: results.map((r) => r.right), index: i } : undefined}
-        onDone={(right) => setResults((r) => [...r, { word: questions[i].word, right }])}
+        onDone={(right) => {
+          const item = questions[i].cloze;
+          if (item) setProgress((p) => recordExamAnswer(p, item.id, right, toDay())); // mistake review
+          setResults((r) => [...r, { word: questions[i].word, right }]);
+        }}
       />
     </main>
   );
@@ -393,7 +410,8 @@ function Question({
   const timer = useRef<number>(undefined);
   const nextBtn = useRef<HTMLButtonElement>(null);
   const word = q.word;
-  const typing = kind === "spell" || kind === "form";
+  const typing = kind === "spell" || kind === "gap" || kind === "form";
+  const [hint, setHint] = useState(false);
   const answered = typing ? verdict !== undefined : picked !== undefined;
   const right = typing ? verdict === "right" : picked === q.correct;
   // Listening and Part 1 always wait for "Next", so there is time to read the meaning or the explanation.
@@ -434,7 +452,7 @@ function Question({
     return "border-line bg-card opacity-50";
   };
 
-  const cloze = kind === "spell" ? clozeFor(word) : undefined;
+  const cloze = kind === "spell" || kind === "gap" ? clozeFor(word) : undefined;
   const gap = kind === "form" ? formGap(word) : undefined;
 
   return (
@@ -478,6 +496,25 @@ function Question({
             )}
             {answered && word.zh.length + word.es.length > 0 && (
               <div className="mt-5">
+                <MeaningPrompt word={word} langs={langs} revealed />
+              </div>
+            )}
+          </>
+        ) : kind === "gap" ? (
+          <>
+            <p className="text-sm font-semibold text-muted">{t.recall.gapPrompt}</p>
+            <p className="mt-4 text-[20px] leading-relaxed font-medium">{cloze}</p>
+            {!answered && (hint ? (
+              <p className="mt-4 font-mono text-xl font-bold tracking-wider text-muted" aria-label={t.recall.startsWith(word.word[0], word.word.length)}>
+                {letterHint(word.word)}
+              </p>
+            ) : (
+              <button type="button" onClick={() => setHint(true)} className="mt-4 text-sm font-bold text-brand-ink underline decoration-line decoration-2 underline-offset-2 hover:decoration-brand">
+                {t.recall.hint}
+              </button>
+            ))}
+            {answered && (
+              <div className="mt-4">
                 <MeaningPrompt word={word} langs={langs} revealed />
               </div>
             )}

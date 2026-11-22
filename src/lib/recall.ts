@@ -16,7 +16,7 @@ import type { Progress, Word } from "./types";
  * confused: easily confused words (affect / effect; hand-written, src/data/confused.json, played like cloze).
  * match: words and meanings on a board, against the clock (boards from match.ts, played in MatchGame).
  */
-export type RecallKind = "meaning" | "listen" | "spell" | "form" | "cloze" | "prep" | "confused" | "match";
+export type RecallKind = "meaning" | "listen" | "spell" | "gap" | "form" | "cloze" | "prep" | "confused" | "match";
 
 export const ROUND = 15;
 export const OPTIONS = 4;
@@ -215,10 +215,11 @@ function distractors(target: Word, all: Word[], kind: RecallKind, langs: TestLan
  */
 export function buildRecall(pool: Word[], all: Word[], kind: RecallKind, langs: TestLang[], count = ROUND, rnd = Math.random): RecallQuestion[] {
   // "form" pools come ready from formPool (exam.ts).
-  const usable = kind === "listen" || kind === "form" ? pool : pool.filter((w) => promptMeanings(w, langs).length > 0);
+  // "gap" shows only the example sentence, so a word needs an example that contains it (the meaning is shown afterwards).
+  const usable = kind === "listen" || kind === "form" ? pool : kind === "gap" ? pool.filter((w) => clozeFor(w)) : pool.filter((w) => promptMeanings(w, langs).length > 0);
   const picked = shuffle(usable.slice(0, count), rnd);
   return picked.map((word) => {
-    if (kind === "spell" || kind === "form") return { word, options: [], correct: -1 };
+    if (kind === "spell" || kind === "gap" || kind === "form") return { word, options: [], correct: -1 };
     const options = shuffle([word, ...distractors(word, all, kind, langs, rnd)], rnd);
     return { word, options, correct: options.indexOf(word) };
   });

@@ -103,11 +103,13 @@ function plainWord(id: string, text: string, level: Level): Word {
  * few. Each question's `word` is the answer's card (so a missed one can go on "Don't know") or a
  * stand-in; the choices are shuffled.
  */
-export function buildCloze(items: ClozeItem[], words: Word[], level: Level, count = CLOZE_ROUND, rnd = Math.random): RecallQuestion[] {
+export function buildCloze(items: ClozeItem[], words: Word[], level: Level, count = CLOZE_ROUND, rnd = Math.random, due: Set<string> = new Set()): RecallQuestion[] {
   const byId = new Map(words.map((w) => [w.id, w]));
-  const mine = shuffle(items.filter((q) => q.level === level), rnd);
-  const rest = shuffle(items.filter((q) => q.level !== level), rnd);
-  return [...mine, ...rest].slice(0, count).map((item) => {
+  // Missed questions that are due come first (mistake review), then the user's level, then the others.
+  const again = shuffle(items.filter((q) => due.has(q.id)), rnd);
+  const mine = shuffle(items.filter((q) => q.level === level && !due.has(q.id)), rnd);
+  const rest = shuffle(items.filter((q) => q.level !== level && !due.has(q.id)), rnd);
+  return [...again, ...mine, ...rest].slice(0, count).map((item) => {
     const word = (item.card && byId.get(item.card)) || plainWord(`part1:${item.id}`, item.answer, item.level);
     const texts = shuffle([item.answer, ...item.others], rnd);
     const options = texts.map((t, k) => plainWord(`part1:${item.id}:${k}`, t, item.level));

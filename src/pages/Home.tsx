@@ -10,8 +10,9 @@ import SpeakButton from "../components/SpeakButton";
 import StarButton from "../components/StarButton";
 import { inMyList, toggleMyList } from "../lib/mylist";
 import { site } from "../config/site";
+import ExamCountdown from "../components/ExamCountdown";
 import { useT } from "../i18n";
-import { toDay } from "../lib/date";
+import { daysBetween, toDay } from "../lib/date";
 import { newWordsLeftToday, sessionParts } from "../lib/session";
 import { streakOf } from "../lib/stats";
 import { streakLine } from "./Stats";
@@ -306,7 +307,10 @@ export default function Home({ progress, setProgress, go, tab }: Props) {
                 <span className="rounded-xl bg-brand px-2.5 py-1 font-display text-xl font-extrabold text-white">{settings.level}</span>
                 <span className="min-w-0">
                   <span className="block leading-tight font-bold">{t.levelName[settings.level]}</span>
-                  <span className="block text-sm font-semibold text-muted">{t.home.planGoal(settings.dailyNew)}</span>
+                  <span className="block text-sm font-semibold text-muted">
+                    {t.home.planGoal(settings.dailyNew)}
+                    {settings.examDate && daysBetween(today, settings.examDate) >= 0 && ` · ${t.home.examIn(daysBetween(today, settings.examDate))}`}
+                  </span>
                 </span>
               </button>
             )}
@@ -408,6 +412,15 @@ export default function Home({ progress, setProgress, go, tab }: Props) {
               {editingGoal && !goalValid && goalDraft !== "" && (
                 <p className="mt-2 text-sm font-semibold text-dontknow">{t.home.goalRange(MIN_GOAL, MAX_GOAL)}</p>
               )}
+
+              <ExamCountdown
+                examDate={settings.examDate}
+                level={settings.level}
+                left={levelIds ? levelIds.length - seen : undefined}
+                goal={settings.dailyNew}
+                onDate={(examDate) => update({ examDate })}
+                onGoal={(n) => update({ dailyNew: Math.min(MAX_GOAL, Math.max(MIN_GOAL, n)) })}
+              />
             </div>
           </section>
         </div>

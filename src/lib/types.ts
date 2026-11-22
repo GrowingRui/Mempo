@@ -80,6 +80,8 @@ export interface Settings {
   lang: Lang;
   /** Most reviews in the daily session; 0 = no limit. */
   maxReviews: number;
+  /** The day of the exam (YYYY-MM-DD), for the countdown on Today; "" = none. */
+  examDate: string;
 }
 
 export interface DayHistory {
@@ -95,4 +97,6 @@ export interface Progress {
   myList: Record<string, string>;
   /** My notes: a memory trick or sentence the user wrote on a word, word id → text (up to 200 characters). */
   notes: Record<string, string>;
+  /** Missed exam questions (Part 1, prepositions, confused words) waiting for another try: question id → next day to ask it, and how many right answers in a row since. */
+  examMisses: Record<string, { due: string; n: number }>;
 }
