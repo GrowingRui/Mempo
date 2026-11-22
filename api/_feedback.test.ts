@@ -26,8 +26,10 @@ describe("parseFeedback", () => {
     const f = parseFeedback({ kind: "idea", message: "Dark blue theme", email: " ana@example.com ", about: "x\ny", details: "Version: abc" });
     expect(f).toEqual({ kind: "idea", message: "Dark blue theme", email: "ana@example.com", about: "x y", details: "Version: abc" });
   });
-  it("lets a word report have no message, but nothing else", () => {
+  it("lets a word or exam-question report have no message, but nothing else", () => {
     expect(parseFeedback({ kind: "word", message: "" })).toEqual({ kind: "word", message: "" });
+    expect(parseFeedback({ kind: "question", message: "" })).toEqual({ kind: "question", message: "" });
+    expect(subject({ kind: "question", message: "", about: "b2-120 · Another choice also fits" })).toBe("[Mempo] Exam question: b2-120 · Another choice also fits");
     expect(parseFeedback({ kind: "bug", message: "   " })).toBeNull();
   });
   it("rejects bad kinds, emails and long messages", () => {

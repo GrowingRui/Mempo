@@ -8,13 +8,14 @@ import { standalone } from "./install";
  * without asking back. If sending fails, the form offers a pre-filled email (mailto:) instead.
  */
 
-export type FeedbackKind = "bug" | "idea" | "word" | "other";
+export type FeedbackKind = "bug" | "idea" | "word" | "question" | "other";
 
 /** For the email subject, which the developer reads: always English. The form shows the app language's names. */
 export const KIND_LABEL: Record<FeedbackKind, string> = {
   bug: "Bug",
   idea: "Suggestion",
   word: "Wrong word info",
+  question: "Exam question",
   other: "Other",
 };
 

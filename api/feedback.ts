@@ -1,6 +1,6 @@
 // "Send feedback": suggestions and problem reports from inside the app. Runs as a Vercel serverless function at /api/feedback.
 //
-//   POST { kind: "bug" | "idea" | "word" | "other", message, email?, about?, details?, website? }
+//   POST { kind: "bug" | "idea" | "word" | "question" | "other", message, email?, about?, details?, website? }
 //        → { ok: true }, or { error } with 400 (bad form), 429 (too many), 502/503 (couldn't send)
 //
 // The message is emailed to the developer through Resend (resend.com). If the user gives an email address, it
@@ -23,7 +23,7 @@ const TO = ["xiarui091", "gmail.com"].join("@"); // same as site.feedbackMail
 // Resend's test sender: delivers to the Resend account's own address without verifying a domain.
 const FROM = "Mempo feedback <onboarding@resend.dev>";
 
-export const KINDS = { bug: "Bug", idea: "Suggestion", word: "Wrong word info", other: "Other" } as const;
+export const KINDS = { bug: "Bug", idea: "Suggestion", word: "Wrong word info", question: "Exam question", other: "Other" } as const;
 export type Kind = keyof typeof KINDS;
 export const MAX_MESSAGE = 4000;
 export const MAX_DETAILS = 6000;
@@ -55,8 +55,8 @@ export function parseFeedback(body: unknown): Feedback | null {
   const kind = b.kind as Kind;
   const message = typeof b.message === "string" ? b.message.trim() : "";
   if (message.length > MAX_MESSAGE) return null;
-  // A word report can be just "this is wrong" (the word and what's shown come in the details); anything else needs words.
-  if (!message && kind !== "word") return null;
+  // A word or exam-question report can be just "this is wrong" (what's shown comes in the details); anything else needs words.
+  if (!message && kind !== "word" && kind !== "question") return null;
   const f: Feedback = { kind, message };
   if (b.email !== undefined && b.email !== "") {
     if (typeof b.email !== "string") return null;

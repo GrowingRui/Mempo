@@ -472,7 +472,7 @@ const es: Messages = {
 
   feedback: {
     legend: "¿Sobre qué es?",
-    kinds: { bug: "Error", idea: "Sugerencia", word: "Palabra incorrecta", other: "Otro" },
+    kinds: { bug: "Error", idea: "Sugerencia", word: "Palabra incorrecta", question: "Pregunta de examen", other: "Otro" },
     bugLabel: "¿Qué pasó? ¿Qué esperabas?",
     wordLabel: "¿Qué palabra y qué está mal?",
     messageLabel: "Tu mensaje",
@@ -504,6 +504,11 @@ const es: Messages = {
     betterTranslation: "Mejor traducción (opcional)",
     whatShouldSay: "¿Qué debería decir? (opcional)",
     public: "¿Prefieres que sea público?",
+    questionTitle: "Informar de esta pregunta",
+    questionLink: "Informar de esta pregunta",
+    questionTopics: { fits: "Otra opción también encaja", answer: "La respuesta es incorrecta", note: "La explicación es incorrecta", other: "Otra cosa" },
+    whichFits: "¿Qué otra opción encaja? (opcional)",
+    questionComment: "¿Qué debería decir? (opcional)",
     issue: "Abrir un issue en GitHub",
   },
 

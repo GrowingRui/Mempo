@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import MatchGame from "../components/MatchGame";
 import Mascot from "../components/Mascot";
+import QuestionReportDialog from "../components/QuestionReportDialog";
 import QuizHeader from "../components/QuizHeader";
 import ScreenHeader from "../components/ScreenHeader";
 import SpeakButton from "../components/SpeakButton";
@@ -412,6 +413,7 @@ function Question({
   const word = q.word;
   const typing = kind === "spell" || kind === "gap" || kind === "form";
   const [hint, setHint] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const answered = typing ? verdict !== undefined : picked !== undefined;
   const right = typing ? verdict === "right" : picked === q.correct;
   // Listening and Part 1 always wait for "Next", so there is time to read the meaning or the explanation.
@@ -493,6 +495,15 @@ function Question({
                 <span className="font-bold text-brand-ink">{t.exam.why} </span>
                 {q.cloze.note}
               </p>
+            )}
+            {answered && isClozeKind(kind) && q.cloze && (
+              <button
+                type="button"
+                onClick={() => setReporting(true)}
+                className="mt-3 self-center text-xs font-semibold text-muted underline decoration-line decoration-2 underline-offset-2 hover:text-brand-ink"
+              >
+                {t.report.questionLink}
+              </button>
             )}
             {answered && word.zh.length + word.es.length > 0 && (
               <div className="mt-5">
@@ -625,6 +636,7 @@ function Question({
           )}
         </>
       )}
+      {reporting && q.cloze && <QuestionReportDialog item={q.cloze} shown={picked != null ? q.options[picked]?.word : undefined} onClose={() => setReporting(false)} />}
     </>
   );
 }

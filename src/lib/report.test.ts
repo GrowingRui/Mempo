@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { manualLine, reportUrl } from "./report";
+import type { ClozeItem } from "./exam";
+import { manualLine, questionReportBody, reportUrl } from "./report";
 import { word } from "./test-helpers";
 
 describe("report a translation", () => {
@@ -25,5 +26,26 @@ describe("report a translation", () => {
     expect(body).toContain("id `access`");
     expect(body).toContain("Español: n. acceso");
     expect(body).toContain("'access': { es: { n: ['entrada'] } },");
+  });
+});
+
+describe("report an exam question", () => {
+  const q: ClozeItem = { id: "b2-120", level: "B2", text: "Tickets were sold _____ in an hour.", answer: "out", others: ["off", "away", "through"], note: "Sold out = none left." };
+
+  it("says which question it is, what was shown and what the reader chose", () => {
+    const body = questionReportBody(q, "fits", "Sold off also works", "off");
+    expect(body).toContain("`b2-120` (B2)");
+    expect(body).toContain("Another choice also fits");
+    expect(body).toContain("Tickets were sold _____ in an hour.");
+    expect(body).toContain("Answer: out");
+    expect(body).toContain("Other choices: off, away, through");
+    expect(body).toContain("The reader chose: off");
+    expect(body).toContain("Sold off also works");
+  });
+
+  it("works with no comment and no choice", () => {
+    const body = questionReportBody(q, "answer", "  ");
+    expect(body).toContain("(none given)");
+    expect(body).not.toContain("The reader chose");
   });
 });

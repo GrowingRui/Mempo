@@ -2,6 +2,7 @@
 // prefer it, as a pre-filled public GitHub issue.
 // The issue includes a line ready to paste into scripts/manual.ts (hand fixes used by `npm run data:enrich`).
 import { site } from "../config/site";
+import type { ClozeItem } from "./exam";
 import type { Gloss, Word } from "./types";
 
 export type ReportTopic = "zh" | "es" | "example" | "other";
@@ -50,6 +51,35 @@ export function reportBody(w: Word, topic: ReportTopic, suggestion: string): str
     "**Suggestion**",
     text || "(none given)",
     ...(line ? ["", "For `scripts/manual.ts`:", "```ts", line, "```"] : []),
+  ].join("\n");
+}
+
+// "Report this question": a hand-written exam question (Part 1, prepositions, confused words) that seems wrong.
+
+export type QuestionTopic = "fits" | "answer" | "note" | "other";
+
+export const QUESTION_TOPIC_LABEL: Record<QuestionTopic, string> = {
+  fits: "Another choice also fits",
+  answer: "The answer is wrong",
+  note: "The explanation is wrong",
+  other: "Something else",
+};
+
+/** What a question report says (Markdown): the question as shown, so it can be found and fixed in src/data. */
+export function questionReportBody(q: ClozeItem, topic: QuestionTopic, message: string, shown?: string): string {
+  return [
+    `**Question:** \`${q.id}\` (${q.level})`,
+    `**Problem:** ${QUESTION_TOPIC_LABEL[topic]}`,
+    "",
+    q.text,
+    "",
+    `- Answer: ${q.answer}`,
+    `- Other choices: ${q.others.join(", ")}`,
+    ...(shown ? [`- The reader chose: ${shown}`] : []),
+    `- Explanation: ${q.note}`,
+    "",
+    "**Comment**",
+    message.trim() || "(none given)",
   ].join("\n");
 }
 

@@ -460,7 +460,7 @@ const zh: Messages = {
 
   feedback: {
     legend: "关于什么？",
-    kinds: { bug: "程序错误", idea: "建议", word: "单词信息有误", other: "其他" },
+    kinds: { bug: "程序错误", idea: "建议", word: "单词信息有误", question: "考试题目有误", other: "其他" },
     bugLabel: "发生了什么？你原本期望怎样？",
     wordLabel: "哪个单词？哪里不对？",
     messageLabel: "你的留言",
@@ -492,6 +492,11 @@ const zh: Messages = {
     betterTranslation: "更好的翻译（选填）",
     whatShouldSay: "应该怎么写？（选填）",
     public: "想公开报告？",
+    questionTitle: "举报这道题",
+    questionLink: "举报这道题",
+    questionTopics: { fits: "另一个选项也对", answer: "答案不对", note: "解释不对", other: "其他问题" },
+    whichFits: "哪个选项也对？（可选）",
+    questionComment: "应该怎么写？（可选）",
     issue: "在 GitHub 上提 issue",
   },
 

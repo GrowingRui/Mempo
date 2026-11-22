@@ -477,7 +477,7 @@ const en = {
 
   feedback: {
     legend: "What is it about?",
-    kinds: { bug: "Bug", idea: "Suggestion", word: "Wrong word info", other: "Other" },
+    kinds: { bug: "Bug", idea: "Suggestion", word: "Wrong word info", question: "Exam question", other: "Other" },
     bugLabel: "What happened? What did you expect?",
     wordLabel: "Which word, and what’s wrong?",
     messageLabel: "Your message",
@@ -510,6 +510,11 @@ const en = {
     betterTranslation: "Better translation (optional)",
     whatShouldSay: "What should it say? (optional)",
     public: "Prefer it public?",
+    questionTitle: "Report this question",
+    questionLink: "Report this question",
+    questionTopics: { fits: "Another choice also fits", answer: "The answer is wrong", note: "The explanation is wrong", other: "Something else" },
+    whichFits: "Which other choice fits? (optional)",
+    questionComment: "What should it say? (optional)",
     issue: "Open a GitHub issue",
   },
 
