@@ -204,25 +204,28 @@ function DailyChart({ bars, frozen }: { bars: DayBar[]; frozen: string[] }) {
         ))}
       </div>
 
-      <table className="sr-only">
-        <caption>{t.stats.tableCaption(DAYS)}</caption>
-        <thead>
-          <tr>
-            <th>{t.stats.day}</th>
-            <th>{t.stats.new}</th>
-            <th>{t.stats.reviewed}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bars.map((b) => (
-            <tr key={b.day}>
-              <td>{t.pastDay(b.day, today)}</td>
-              <td>{b.new}</td>
-              <td>{frozen.includes(b.day) ? `${b.reviewed} (${t.stats.frozenDay})` : b.reviewed}</td>
+      {/* sr-only goes on a wrapper: a table doesn't clip, so its caption would show over the heading */}
+      <div className="sr-only">
+        <table>
+          <caption>{t.stats.tableCaption(DAYS)}</caption>
+          <thead>
+            <tr>
+              <th>{t.stats.day}</th>
+              <th>{t.stats.new}</th>
+              <th>{t.stats.reviewed}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {bars.map((b) => (
+              <tr key={b.day}>
+                <td>{t.pastDay(b.day, today)}</td>
+                <td>{b.new}</td>
+                <td>{frozen.includes(b.day) ? `${b.reviewed} (${t.stats.frozenDay})` : b.reviewed}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
